@@ -19,8 +19,18 @@ Route::get('/',[Master::class,'login']);
 Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
 
-Route::get('admin-register',[Master::class,'register']);
+Route::get('admin-register',[Master::class,'register'])->name('admin-register');
 Route::post('admin-registration',[Master::class,'admin_register_data'])->name('admin-registration');
 
 
 Route::get('admin-dashboard',[Master::class,'dashboard'])->name('admin-dashboard');
+Route::get('admin-buyer',[Master::class,'admin_buyer'])->name('admin-buyer');
+
+Route::get('customer-sales',[Master::class,'customer_sale'])->name('customer-sales');
+
+Route::get('admin-logout',[Master::class,'logout'])->name('admin-logout');
+Route::post('store-buyer-details',[Master::class,'store_buyer_details'])->name('store-buyer-details');
+
+Route::get('Edit_sale/{id}',[Master::class,'Edit_sale']);
+Route::get('delete_sale/{id}',[Master::class,'delete_sale']);
+Route::get('view_specific_sale/{id}',[Master::class,'view_specific_sale']);
