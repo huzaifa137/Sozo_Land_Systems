@@ -37,8 +37,9 @@
       </a>
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="/admin-buyer">Buyer</a></li>
-          {{-- <li class="nav-item"> <a class="nav-link" href="/admin-buyer">Search</a></li> --}}
+          <li class="nav-item"> <a class="nav-link" href="{{ route('admin-buyer')}}">Sell</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('plots')}}">Plots</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('estates')}}">Estates</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('customer-sales')}}">Customer Sales</a></li>
         </ul>
       </div>

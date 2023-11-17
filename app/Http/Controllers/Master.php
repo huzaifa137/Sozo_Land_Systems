@@ -146,7 +146,7 @@ class Master extends Controller
     {
         return buyer::find($id);
     }
-
+ 
     public function delete_sale($id)
     {
         return buyer::find($id);
@@ -158,5 +158,22 @@ class Master extends Controller
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
         return view('Admin.view_specific_buyer',$data,compact(['userdata']));
+    }
+
+    public function estates(){
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+         return view('Admin.estates',$data);
+    }
+
+    public function add_estate(){
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        return view('Admin.add_estate',$data);
+    }
+
+    public function plots(){
+
+        return view('Admin.plots');
     }
 }

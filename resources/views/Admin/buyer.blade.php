@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
+
   </head>
   <body>
     <div class="container-scroller">
@@ -227,9 +228,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Select Payment Method:</label>
                             <div class="col-sm-9">
-                              <select name="payment_method" class="form-control">
-                                <option>Paying in Installments</option>
-                                <option>Full Payment</option>
+                              <select name="payment_method" id="payment_method" class="form-control">
+                                <option value="Full_payment">Full Payment</option>
+                                <option value="paying_in_installments">Paying in Installments</option>
                               </select>
                             </div>
                           </div>
@@ -237,12 +238,32 @@
                       </div>
                      
 
+                      <div class="row" id="installment_display" style="display: none">
+                        <div class="col-md-10">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Select Installment period :</label>
+                            <div class="col-sm-9">
+                              <select name="installment_payments" class="form-control">
+                                <option value="">--Select period for Installment---</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <div class="row">
                         <div class="col-md-10">
                           <div class="form-group row">
                           
                             <div class="col-sm-9">
-                              <button type="submit" class="btn btn-primary">Submit</button>
+                            
+                              <button type="button" id="btn_click" class="btn btn-primary">Submit</button>
                             </div>
                           </div>
                         </div>
@@ -271,6 +292,27 @@
       </div>
       <!-- page-body-wrapper ends -->
     </div>
+
+    <script type="text/javascript"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+
+  <script>
+
+  $(document).ready(function(){
+            $("#payment_method").change(function(){
+
+            var payment_method = $(this).val();
+
+            if(payment_method == 'paying_in_installments'){
+                $('#installment_display').show();
+            }
+            else{
+              $('#installment_display').hide();
+            }
+          });
+			});
+  </script>
+
 
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->

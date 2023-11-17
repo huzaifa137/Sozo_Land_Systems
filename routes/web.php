@@ -34,3 +34,9 @@ Route::post('store-buyer-details',[Master::class,'store_buyer_details'])->name('
 Route::get('Edit_sale/{id}',[Master::class,'Edit_sale']);
 Route::get('delete_sale/{id}',[Master::class,'delete_sale']);
 Route::get('view_specific_sale/{id}',[Master::class,'view_specific_sale']);
+
+// Estates  and Plots Routes:
+
+Route::get('estates',[Master::class,'estates'])->name('estates');
+Route::get('plots',[Master::class,'plots'])->name('plots');
+Route::get('add-estate',[Master::class,'add_estate'])->name('add-estate');
