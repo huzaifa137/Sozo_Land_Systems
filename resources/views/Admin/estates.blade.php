@@ -143,7 +143,7 @@
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <a href="{{ route('add-estate')}}">
+                    <a href="{{ route('add-estate')}}" style="text-decoration: none;color:white;">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">

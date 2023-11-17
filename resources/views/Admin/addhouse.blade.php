@@ -62,7 +62,7 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Add a plot :</h4>
+                    <h4 class="card-title">House Module :</h4>
 
                     @if (Session::get('success'))
 										<div class="alert alert-success">
@@ -79,7 +79,7 @@
 
                     <form class="form-sample" action="{{ route('store-buyer-details')}}" method="POST">
                       @csrf
-                      <p class="card-description">Enter Plot Information:</p>
+                      <p class="card-description">Enter House Information:</p>
 
                       <div class="row">
                         <div class="col-md-6">
@@ -132,31 +132,10 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Status</label>
-                            <div class="col-sm-9">
-                              <select name="Estate" class="form-control">
-                                <option value="Mukono">Not taken</option>
-                                <option value="Nabugabo">Taken</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">PLot Number</label>
                               <div class="col-sm-9">
-                                <select name="plot_number" class="form-control">
-                                  <option value="plot 1">plot 1</option>
-                                  <option value="plot 2">plot 2</option>
-                                  <option value="plot 3">plot 3</option>
-                                  <option value="plot 4">plot 4</option>
-                                  <option value="plot 5">plot 5</option>
-                                  <option value="plot 6">plot 6</option>
-                                  <option value="plot 7">plot 7</option>
-                                  <option value="plot 8">plot 8</option>
-                                </select>
+                                <input type="text" name="lastname" class="form-control" />
                               </div>
                             </div>
                           </div>

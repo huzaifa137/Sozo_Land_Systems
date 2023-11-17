@@ -40,3 +40,7 @@ Route::get('view_specific_sale/{id}',[Master::class,'view_specific_sale']);
 Route::get('estates',[Master::class,'estates'])->name('estates');
 Route::get('plots',[Master::class,'plots'])->name('plots');
 Route::get('add-estate',[Master::class,'add_estate'])->name('add-estate');
+
+// Houses Module
+
+Route::get('add-house',[Master::class,'add_house'])->name('add-house');

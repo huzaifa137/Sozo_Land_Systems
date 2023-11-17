@@ -165,7 +165,7 @@
                       </div>
 
 
-                    <p class="card-description"> Land Details : </p>
+                    {{-- <p class="card-description"> Land Details : </p>
 
                     <div class="row">
                         <div class="col-md-6">
@@ -199,7 +199,7 @@
                               </div>
                             </div>
                           </div>
-                      </div>
+                      </div> --}}
 
                       <div class="row">
                         <div class="col-md-6">
@@ -221,7 +221,7 @@
                         </div>
                       </div>
                       
-                      <p class="card-description">Payment Method:</p>
+                      <p class="card-description">Payments:</p>
 
                       <div class="row">
                         <div class="col-md-10">
@@ -236,7 +236,6 @@
                           </div>
                         </div>
                       </div>
-                     
 
                       <div class="row" id="installment_display" style="display: none">
                         <div class="col-md-10">
@@ -257,6 +256,169 @@
                         </div>
                       </div>
 
+
+                      <div class="row">
+                        <div class="col-md-10">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Purchase Category:</label>
+                            <div class="col-sm-9">
+                              <select name="purchase_type" id="purchase_type" class="form-control">
+                                <option value="buying_a_plot">Buying a plot</option>
+                                <option value="buying_a_house">Buying a house</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div id="plot_information_block" style="display: none;">
+                      <p class="card-description">Enter Plot Information:</p>
+
+                      <div class="row" >
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Estate</label>
+                              <div class="col-sm-9">
+                                <select name="Estate" class="form-control">
+                                  <option value="Nabugabo">Nabugabo</option>
+                                  <option value="Mukono">Mukono</option>
+                                  <option value="Mukono Phase 2">Mukono Phase 2</option>
+                                  <option value="Kyengera">Kyengera</option>
+                                </select>
+                              </div>
+                            </div>
+                         
+                        </div>
+
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Location</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="lastname" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="row">
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Width</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="lastname" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Height</label>
+                              <div class="col-sm-9">
+                                  <input type="text" name="lastname" class="form-control" />
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Status</label>
+                            <div class="col-sm-9">
+                              <select name="Estate" class="form-control">
+                                <option value="Mukono">Not taken</option>
+                                <option value="Nabugabo">Taken</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">PLot Number</label>
+                              <div class="col-sm-9">
+                                <select name="plot_number" class="form-control">
+                                  <option value="plot 1">plot 1</option>
+                                  <option value="plot 2">plot 2</option>
+                                  <option value="plot 3">plot 3</option>
+                                  <option value="plot 4">plot 4</option>
+                                  <option value="plot 5">plot 5</option>
+                                  <option value="plot 6">plot 6</option>
+                                  <option value="plot 7">plot 7</option>
+                                  <option value="plot 8">plot 8</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+
+                    <div id="house_information_block" style="display: none;">
+                      <p class="card-description">Enter House Information:</p>
+
+                      <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Estate</label>
+                              <div class="col-sm-9">
+                                <select name="Estate" class="form-control">
+                                  <option value="Nabugabo">Nabugabo</option>
+                                  <option value="Mukono">Mukono</option>
+                                  <option value="Mukono Phase 2">Mukono Phase 2</option>
+                                  <option value="Kyengera">Kyengera</option>
+                                </select>
+                              </div>
+                            </div>
+                         
+                        </div>
+
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Location</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="lastname" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="row">
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Width</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="lastname" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Height</label>
+                              <div class="col-sm-9">
+                                  <input type="text" name="lastname" class="form-control" />
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">PLot Number</label>
+                              <div class="col-sm-9">
+                                <input type="text" name="lastname" class="form-control" />
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
                       <div class="row">
                         <div class="col-md-10">
                           <div class="form-group row">
@@ -298,19 +460,37 @@
 
   <script>
 
-  $(document).ready(function(){
-            $("#payment_method").change(function(){
+    $(document).ready(function(){
+              $("#payment_method").change(function(){
 
-            var payment_method = $(this).val();
+              var payment_method = $(this).val();
 
-            if(payment_method == 'paying_in_installments'){
-                $('#installment_display').show();
+              if(payment_method == 'paying_in_installments'){
+                  $('#installment_display').show();
+              }
+              else{
+                $('#installment_display').hide();
+              }
+            });
+        });
+
+      $(document).ready(function(){
+            $("#purchase_type").change(function(){
+
+            var purchase_type = $(this).val();
+
+            if(purchase_type == 'buying_a_plot'){
+                $('#plot_information_block').show();
+                $('#house_information_block').hide();
             }
-            else{
-              $('#installment_display').hide();
+            else if(purchase_type == 'buying_a_house'){
+              $('#house_information_block').show();
+              $('#plot_information_block').hide();
+
             }
           });
 			});
+
   </script>
 
 

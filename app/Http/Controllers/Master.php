@@ -174,6 +174,15 @@ class Master extends Controller
 
     public function plots(){
 
-        return view('Admin.plots');
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.plots',$data);
+    }
+
+    public function add_house()
+    {
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.addhouse',$data);
     }
 }
