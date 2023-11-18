@@ -41,6 +41,11 @@ Route::get('estates',[Master::class,'estates'])->name('estates');
 Route::get('plots',[Master::class,'plots'])->name('plots');
 Route::get('add-estate',[Master::class,'add_estate'])->name('add-estate');
 
+
+Route::post('send-estate-data',[Master::class,'store_estate'])->name('send-estate-data');
+Route::post('send-plot-data',[Master::class,'send_plot_estate'])->name('send-plot-data');
 // Houses Module
 
 Route::get('add-house',[Master::class,'add_house'])->name('add-house');
+
+Route::post('send-house-data',[Master::class,'send_house_data'])->name('send-house-data');

@@ -64,6 +64,9 @@
                   <div class="card-body">
                     <h4 class="card-title">Add a plot :</h4>
 
+                    @include('sweetalert::alert')
+
+                    
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -77,7 +80,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-buyer-details')}}" method="POST">
+                    <form class="form-sample" action="{{ route('send-plot-data')}}" method="POST">
                       @csrf
                       <p class="card-description">Enter Plot Information:</p>
 
@@ -86,12 +89,12 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Estate</label>
                               <div class="col-sm-9">
-                                <select name="Estate" class="form-control">
-                                  <option value="Nabugabo">Nabugabo</option>
-                                  <option value="Mukono">Mukono</option>
-                                  <option value="Mukono Phase 2">Mukono Phase 2</option>
-                                  <option value="Kyengera">Kyengera</option>
+                                <select name="Estate"  class="form-control">
+                                  @foreach ($estates as $estate)
+                                  <option value="{{$estate->estate_name}}">{{$estate->estate_name}}</option>
+                                  @endforeach
                                 </select>
+
                               </div>
                             </div>
                          
@@ -102,7 +105,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location</label>
                             <div class="col-sm-9">
-                              <input type="text" name="lastname" class="form-control" />
+                              <input type="text" name="location" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -112,9 +115,9 @@
 
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Width</label>
+                            <label class="col-sm-3 col-form-label">Width (sqm)</label>
                             <div class="col-sm-9">
-                                <input type="text" name="lastname" class="form-control" />
+                                <input type="number" name="width" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -122,9 +125,9 @@
 
                         <div class="col-md-6">
                             <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Height</label>
+                              <label class="col-sm-3 col-form-label">Height (sqm)</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="lastname" class="form-control" />
+                                  <input type="number" name="height" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -135,9 +138,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Status</label>
                             <div class="col-sm-9">
-                              <select name="Estate" class="form-control">
-                                <option value="Mukono">Not taken</option>
-                                <option value="Nabugabo">Taken</option>
+                              <select name="status" class="form-control">
+                                <option value="Not taken">Not taken</option>
+                                <option value="Taken">Taken</option>
                               </select>
                             </div>
                           </div>
@@ -147,16 +150,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">PLot Number</label>
                               <div class="col-sm-9">
-                                <select name="plot_number" class="form-control">
-                                  <option value="plot 1">plot 1</option>
-                                  <option value="plot 2">plot 2</option>
-                                  <option value="plot 3">plot 3</option>
-                                  <option value="plot 4">plot 4</option>
-                                  <option value="plot 5">plot 5</option>
-                                  <option value="plot 6">plot 6</option>
-                                  <option value="plot 7">plot 7</option>
-                                  <option value="plot 8">plot 8</option>
-                                </select>
+                                  <input type="text" name="plot_number" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -169,7 +163,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="button" id="btn_click" class="btn btn-primary">Submit</button>
+                              <button type="submit"  class="btn btn-primary">Add a plot</button>
                             </div>
                           </div>
                         </div>

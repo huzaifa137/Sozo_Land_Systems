@@ -20,6 +20,8 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
 
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
   </head>
   <body>
     <div class="container-scroller">
@@ -64,6 +66,9 @@
                   <div class="card-body">
                     <h4 class="card-title">Add new Estate :</h4>
 
+                    @include('sweetalert::alert')
+
+
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -77,7 +82,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-buyer-details')}}" method="POST">
+                    <form class="form-sample" action="{{ route('send-estate-data')}}" method="POST">
                       @csrf
                       <p class="card-description">Enter new Estate Information:</p>
 
@@ -86,7 +91,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Estate Name :</label>
                             <div class="col-sm-9">
-                              <input type="text" name="estate_name" class="form-control" />
+                              <input type="text" name="estate_name" id="estate_name" class="form-control" required>
                             </div>
                           </div>
                         </div>
@@ -95,7 +100,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location :</label>
                             <div class="col-sm-9">
-                              <input type="text" name="location" class="form-control" />
+                              <input type="text" name="location" id="location" class="form-control" required>
                             </div>
                           </div>
                         </div>
@@ -107,19 +112,11 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Number of plots :</label>
                             <div class="col-sm-9">
-                              <input type="number" name="number_of_plots" class="form-control" />
+                              <input type="number" name="number_of_plots" id="number_of_plots" class="form-control" required>
                             </div>
                           </div>
                         </div>
                         
-                        {{-- <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Location :</label>
-                            <div class="col-sm-9">
-                              <input type="text" name="location" class="form-control" />
-                            </div>
-                          </div>
-                        </div> --}}
                       </div>
                       
                       <div class="row">
@@ -128,7 +125,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="button" id="btn_click" class="btn btn-primary">Submit</button>
+                              <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                           </div>
                         </div>
@@ -163,19 +160,45 @@
 
   <script>
 
-  $(document).ready(function(){
-            $("#payment_method").change(function(){
+    $(document).ready(function(){
+						$('#btn_click').click(function(){
 
-            var payment_method = $(this).val();
 
-            if(payment_method == 'paying_in_installments'){
-                $('#installment_display').show();
-            }
-            else{
-              $('#installment_display').hide();
-            }
-          });
-			});
+							var estate_name = $('#estate_name').val();
+							var location = $('#location').val();
+							var number_of_plots = $('#number_of_plots').val();
+
+						
+							var form_data = new FormData();
+
+							form_data.append('estate_name', estate_name);
+							form_data.append('location', location);
+							form_data.append('number_of_plots', number_of_plots);
+
+							$.ajax({
+								type: "post",
+								processData: false,
+								contentType: false,
+								cache: false,
+								data		: form_data,								
+								headers		:{	'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')},
+
+								url			:'/send-estate-data',
+								success		:function(response){
+                  Swal.fire({
+                  title: response.title,
+                  text: response.text,
+                  icon: response.icon,
+              });
+								},
+								error: function(data)
+								{
+									$('body').html(data.responseText);
+								}
+							});
+						});
+				});
+
   </script>
 
 

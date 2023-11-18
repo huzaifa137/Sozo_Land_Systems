@@ -64,6 +64,8 @@
                   <div class="card-body">
                     <h4 class="card-title">House Module :</h4>
 
+                    @include('sweetalert::alert')
+
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -77,7 +79,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-buyer-details')}}" method="POST">
+                    <form class="form-sample" action="{{ route('send-house-data')}}" method="POST">
                       @csrf
                       <p class="card-description">Enter House Information:</p>
 
@@ -87,10 +89,9 @@
                               <label class="col-sm-3 col-form-label">Estate</label>
                               <div class="col-sm-9">
                                 <select name="Estate" class="form-control">
-                                  <option value="Nabugabo">Nabugabo</option>
-                                  <option value="Mukono">Mukono</option>
-                                  <option value="Mukono Phase 2">Mukono Phase 2</option>
-                                  <option value="Kyengera">Kyengera</option>
+                                  @foreach ($estates as $estate)
+                                  <option value={{$estate->estate_name}}>{{$estate->estate_name}}</option>
+                                  @endforeach
                                 </select>
                               </div>
                             </div>
@@ -102,7 +103,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location</label>
                             <div class="col-sm-9">
-                              <input type="text" name="lastname" class="form-control" />
+                              <input type="text" name="location" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -114,7 +115,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Width</label>
                             <div class="col-sm-9">
-                                <input type="text" name="lastname" class="form-control" />
+                                <input type="text" name="width" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -124,7 +125,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Height</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="lastname" class="form-control" />
+                                  <input type="text" name="height" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -135,10 +136,25 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">PLot Number</label>
                               <div class="col-sm-9">
-                                <input type="text" name="lastname" class="form-control" />
+                                <input type="text" name="plot_number" class="form-control" />
                               </div>
                             </div>
                           </div>
+
+
+                          <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Status</label>
+                              <div class="col-sm-9">
+                                <select name="status" class="form-control">
+                                  <option value="Not taken">Not taken</option>
+                                  <option value="Taken">Taken</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+                          
                       </div>
                       
 
@@ -148,7 +164,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="button" id="btn_click" class="btn btn-primary">Submit</button>
+                              <button type="submit" class="btn btn-primary">Add a house</button>
                             </div>
                           </div>
                         </div>

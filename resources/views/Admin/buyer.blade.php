@@ -64,6 +64,8 @@
                   <div class="card-body">
                     <h4 class="card-title">Buyer Information :</h4>
 
+                    @include('sweetalert::alert')
+
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -164,43 +166,6 @@
                         </div>
                       </div>
 
-
-                    {{-- <p class="card-description"> Land Details : </p>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Estate</label>
-                            <div class="col-sm-9">
-                              <select name="Estate" class="form-control">
-                                <option value="Nabugabo">Nabugabo</option>
-                                <option value="Mukono">Mukono</option>
-                                <option value="Mukono Phase 2">Mukono Phase 2</option>
-                                <option value="Kyengera">Kyengera</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">PLot Number</label>
-                              <div class="col-sm-9">
-                                <select name="plot_number" class="form-control">
-                                  <option value="plot 1">plot 1</option>
-                                  <option value="plot 2">plot 2</option>
-                                  <option value="plot 3">plot 3</option>
-                                  <option value="plot 4">plot 4</option>
-                                  <option value="plot 5">plot 5</option>
-                                  <option value="plot 6">plot 6</option>
-                                  <option value="plot 7">plot 7</option>
-                                  <option value="plot 8">plot 8</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                      </div> --}}
-
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
@@ -242,7 +207,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Select Installment period :</label>
                             <div class="col-sm-9">
-                              <select name="installment_payments" class="form-control">
+                              <select name="installment_payments" id="installment_payments" class="form-control">
                                 <option value="">--Select period for Installment---</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -279,11 +244,10 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Estate</label>
                               <div class="col-sm-9">
-                                <select name="Estate" class="form-control">
-                                  <option value="Nabugabo">Nabugabo</option>
-                                  <option value="Mukono">Mukono</option>
-                                  <option value="Mukono Phase 2">Mukono Phase 2</option>
-                                  <option value="Kyengera">Kyengera</option>
+                                <select name="Estate_plot" class="form-control">
+                                  @foreach ($estates as $estate)
+                                  <option value={{$estate->estate_name}}>{{$estate->estate_name}}</option>
+                                  @endforeach
                                 </select>
                               </div>
                             </div>
@@ -295,7 +259,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location</label>
                             <div class="col-sm-9">
-                              <input type="text" name="lastname" class="form-control" />
+                              <input type="text" name="location_plot" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -307,7 +271,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Width</label>
                             <div class="col-sm-9">
-                                <input type="text" name="lastname" class="form-control" />
+                                <input type="text" name="plot_width" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -317,7 +281,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Height</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="lastname" class="form-control" />
+                                  <input type="text" name="plot_height" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -328,7 +292,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Status</label>
                             <div class="col-sm-9">
-                              <select name="Estate" class="form-control">
+                              <select name="plot_status" class="form-control">
                                 <option value="Mukono">Not taken</option>
                                 <option value="Nabugabo">Taken</option>
                               </select>
@@ -338,17 +302,12 @@
 
                         <div class="col-md-6">
                             <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">PLot Number</label>
+                              <label class="col-sm-3 col-form-label">Plot Number</label>
                               <div class="col-sm-9">
                                 <select name="plot_number" class="form-control">
-                                  <option value="plot 1">plot 1</option>
-                                  <option value="plot 2">plot 2</option>
-                                  <option value="plot 3">plot 3</option>
-                                  <option value="plot 4">plot 4</option>
-                                  <option value="plot 5">plot 5</option>
-                                  <option value="plot 6">plot 6</option>
-                                  <option value="plot 7">plot 7</option>
-                                  <option value="plot 8">plot 8</option>
+                                  @foreach ($plots as $plot)
+                                  <option value="{{$plot->plot_number}}">{{$plot->plot_number}}</option>
+                                  @endforeach
                                 </select>
                               </div>
                             </div>
@@ -364,11 +323,10 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Estate</label>
                               <div class="col-sm-9">
-                                <select name="Estate" class="form-control">
-                                  <option value="Nabugabo">Nabugabo</option>
-                                  <option value="Mukono">Mukono</option>
-                                  <option value="Mukono Phase 2">Mukono Phase 2</option>
-                                  <option value="Kyengera">Kyengera</option>
+                                <select name="Estate_house" class="form-control">
+                                  @foreach ($estates as $estate)
+                                  <option value={{$estate->estate_name}}>{{$estate->estate_name}}</option>
+                                  @endforeach
                                 </select>
                               </div>
                             </div>
@@ -380,7 +338,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location</label>
                             <div class="col-sm-9">
-                              <input type="text" name="lastname" class="form-control" />
+                              <input type="text" name="location_house" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -392,7 +350,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Width</label>
                             <div class="col-sm-9">
-                                <input type="text" name="lastname" class="form-control" />
+                                <input type="text" name="house_width" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -402,7 +360,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Height</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="lastname" class="form-control" />
+                                  <input type="text" name="house_height" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -411,9 +369,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">PLot Number</label>
+                              <label class="col-sm-3 col-form-label">Plot Number</label>
                               <div class="col-sm-9">
-                                <input type="text" name="lastname" class="form-control" />
+                                <select name="house_plot_number" class="form-control">
+                                  @foreach ($plots as $plot)
+                                  <option value="{{$plot->plot_number}}">{{$plot->plot_number}}</option>
+                                  @endforeach
+                                </select>
                               </div>
                             </div>
                           </div>
@@ -425,7 +387,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="button" id="btn_click" class="btn btn-primary">Submit</button>
+                              <button type="button" id="submit_click" class="btn btn-primary">Sell</button>
                             </div>
                           </div>
                         </div>
@@ -465,31 +427,97 @@
 
               var payment_method = $(this).val();
 
-              if(payment_method == 'paying_in_installments'){
-                  $('#installment_display').show();
-              }
-              else{
-                $('#installment_display').hide();
-              }
+                if(payment_method == 'paying_in_installments'){
+                    $('#installment_display').show();
+                }
+                else{
+                  $('#installment_display').hide();
+                }
             });
-        });
+            
 
-      $(document).ready(function(){
             $("#purchase_type").change(function(){
 
-            var purchase_type = $(this).val();
+              var purchase_type = $(this).val();
 
-            if(purchase_type == 'buying_a_plot'){
-                $('#plot_information_block').show();
-                $('#house_information_block').hide();
-            }
-            else if(purchase_type == 'buying_a_house'){
-              $('#house_information_block').show();
-              $('#plot_information_block').hide();
+                if(purchase_type == 'buying_a_plot'){
+                    $('#plot_information_block').show();
+                    $('#house_information_block').hide();
+                }
+                else if(purchase_type == 'buying_a_house'){
+                  $('#house_information_block').show();
+                  $('#plot_information_block').hide();
 
-            }
-          });
-			});
+                }
+              });
+
+
+              $('#submit_click').click(function(){
+
+
+              var firstname = $('#firstname').val();
+							var lastname = $('#lastname').val();
+							var gender = $('#gender').val();
+              var date_of_birth = $('#date_of_birth').val();
+              var NIN = $('#NIN').val();
+              var card_number = $('#card_number').val();
+              // var national_id = $('#national_id').val();
+              // var signature = $('#signature').val();
+              var land_poster = $('#land_poster').val();
+              var payment_method = $('#payment_method').val();
+
+              if(payment_method == "Full_payment"){
+                var installment_payments = "Empty";
+              }
+              else{
+                var installment_payments = $('#installment_payments').val();
+              }
+
+              var purchase_type = $('#purchase_type').val();
+
+              if(purchase_type == "buying_a_plot"){
+                var Estate_plot = $('#Estate_plot').val();
+                var location_plot = $('#location_plot').val();
+                var plot_width = $('#plot_width').val();
+                var plot_height = $('#plot_height').val();
+                var plot_status = $('#plot_status').val();
+                var plot_number = $('#plot_number').val();
+              }
+              else{
+                var Estate_house = $('#Estate_house').val();
+                var location_house = $('#location_house').val();
+                var house_width = $('#house_width').val();
+                var house_height = $('#house_height').val();
+                var house_plot_number = $('#house_plot_number').val();
+              }
+
+							var form_data = new FormData();
+
+							form_data.append('_pass_', _pass_);
+							form_data.append('user_id', user_id);
+							form_data.append('original_supplier_email', original_supplier_email);
+
+							$.ajax({
+								type: "post",
+								processData: false,
+								contentType: false,
+								cache: false,
+								data		: form_data,								
+								headers		:{	'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')},
+								url			:'/store-buyer-details',
+								success		:function(data){
+									if(data.status){
+										alert(data.message);
+										location.replace('/userdata/'+data.user_id);
+									}
+								},
+								error: function(data)
+								{
+									$('body').html(data.responseText);
+								}
+							});
+            });
+        });
 
   </script>
 

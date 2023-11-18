@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AdminRegister;
 use App\Models\buyer;
+use App\Models\Estate;
+use App\Models\plot;
+use App\Models\house;
 use Illuminate\Support\Facades\Hash;
+use Alert;
 
 class Master extends Controller
 {
@@ -101,37 +105,19 @@ class Master extends Controller
 
     public function admin_buyer(){
 
+        $estates = Estate::all();
+        $plots = plot::all();
+
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-        return view('Admin.buyer',$data);
+        return view('Admin.buyer',$data,compact(['estates','plots']));
     }
 
     public function store_buyer_details(Request $request){
 
         $save = new buyer;
 
-        $save->firstname = $request->firstname;
-        $save->lastname = $request->lastname;
-        $save->gender = $request->gender;
-        $save->date_of_birth = $request->date_of_birth;
-        $save->NIN = $request->NIN;
-        $save->card_number = $request->card_number;
-        $save->national_id = $request->national_id;
-        $save->signature = $request->signature;
-        $save->Estate = $request->Estate;
-        $save->plot_number = $request->plot_number;
-        $save->land_poster = $request->land_poster;
-        $save->payment_method = $request->payment_method;
-
         $save->save();
-
-        if($save){
-
-            return  redirect()->back()->with('success','New plot has been sold successfully');
-        }
-        else{
-            redirect()->back()->with('fail','Data has not been stored in the database');
-        }
     }
 
     public function customer_sale(){
@@ -160,6 +146,7 @@ class Master extends Controller
         return view('Admin.view_specific_buyer',$data,compact(['userdata']));
     }
 
+    // ESTATES FUNCTIONS
     public function estates(){
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
@@ -172,17 +159,78 @@ class Master extends Controller
         return view('Admin.add_estate',$data);
     }
 
+    public function store_estate(Request $request){
+
+
+        $post = new Estate;
+
+       $post->estate_name = $request->estate_name;
+       $post->location = $request->location;
+       $post->number_of_plots = $request->number_of_plots;
+       $post->save();
+        
+       Alert::success('Estate added', 'Congurations on adding a new Estate');
+
+
+       return back();
+    }
+
     public function plots(){
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-        return view('Admin.plots',$data);
+        $estates = Estate::all();
+
+        return view('Admin.plots',$data,compact('estates'));
     }
 
     public function add_house()
     {
+        $estates = Estate::all();
+
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-        return view('Admin.addhouse',$data);
+        return view('Admin.addhouse',$data,compact(['estates']));
+    }
+
+    public function send_plot_estate(Request $request){
+        
+        $data = $request->all();
+
+        $post = new plot;
+
+       $post->estate = $request->Estate;
+       $post->plot_number = $request->plot_number;
+       $post->location = $request->location;
+       $post->width = $request->width;
+       $post->height = $request->height;
+       $post->status = $request->status;
+       
+       $post->save();
+        
+       Alert::success('Plot added', 'Congurations on adding a new Plot');
+
+       return back();
+    }
+
+    public function send_house_data(Request $request){
+
+        // return $request->all();
+
+        $post = new house;
+
+        $post->estate = $request->Estate;
+        $post->plot_number = $request->plot_number;
+        $post->location = $request->location;
+        $post->width = $request->width;
+        $post->height = $request->height;
+        $post->status = $request->status;
+
+        $post->save();
+        
+        Alert::success('House added', 'Congurations on adding a new house');
+ 
+        return back();
+
     }
 }
