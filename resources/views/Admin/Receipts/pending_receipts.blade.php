@@ -20,6 +20,8 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
 
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
   </head>
   <body>
     <div class="container-scroller">
@@ -62,11 +64,10 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Add a plot :</h4>
+                    <h4 class="card-title">Pending Receipts :</h4>
 
                     @include('sweetalert::alert')
 
-                    
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -79,100 +80,71 @@
 										</div>
 									@endif
 
+                                    <div class="row ">
+                                        <div class="col-12 grid-margin">
+                                          <div class="card">
+                                            <div class="card-body">
+                                              {{-- <h4 class="card-title">Order Status</h4> --}}
+                                              <div class="table-responsive">
+                                                <table class="table">
+                                                  <thead>
+                                                    <tr>
+                                                      <th>No.</th>
+                                                      <th> Client Name </th>
+                                                      <th> NIN No </th>
+                                                      <th> Estate </th>
+                                                      <th> Plot No </th>
+                                                      <th> Location </th>
+                                                      <th> Amount Payed </th>
+                                                      <th> Status </th>
+                                                      <th colspan="2" style="text-align: center"> Reciepts </th>
+                                                      {{-- <th> Make Agreement</th> --}}
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    @foreach ($pending_reciepts as $key => $item)
+        
+                                                    <tr>
+                                                        
+                                                        <td>{{$key+1}}</td>
+                                                      <td>
+                                                        {{-- <img src="assets/images/faces/face1.jpg" alt="image" /> --}}
+                                                        <span >{{$item->firstname}} {{$item->lastname}}</span>
+                                                      </td>
+                                                      <td> {{$item->NIN}}  </td>
+                                                      <td> {{$item->estate}} </td>
+                                                      <td> {{$item->plot_number}} </td>
+                                                      <td> {{$item->location}} </td>
+                                                      <td> {{$item->amount_payed}} </td>
+                                                      <td>
+                                                        <div class="badge badge-outline-warning">Under payment</div>
+                                                      </td>
 
-                    <form class="form-sample" action="{{ route('send-plot-data')}}" method="POST">
-                      @csrf
-                      <p class="card-description">Enter Plot Information:</p>
+                                                        <td><a href="{{'add-first-receipt/'.$item->id}}" class="btn btn-outline-primary btn-icon-text">
+                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Make First reciept </a> </td>
 
-                      <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Estate</label>
-                              <div class="col-sm-9">
-                                <select name="Estate"  class="form-control" required>
-                                  <option value="">---Select Estate ---</option>
-                                  @foreach ($estates as $estate)
-                                  <option value="{{$estate->estate_name}}">{{$estate->estate_name}}</option>
-                                  @endforeach
-                                </select>
+                                                        <td><a href="{{'view-reciept/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
+                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
+                                                            
 
-                              </div>
-                            </div>
-                         
-                        </div>
+                                                            {{-- <td><a href="{{'add-agreement/'.$item->id}}" class="btn btn-outline-success btn-icon-text">
+                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Upload agreement </a> </td> --}}
 
-
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Location</label>
-                            <div class="col-sm-9">
-                              <input type="text" name="location" class="form-control" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div class="row">
-
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Width (sqm)</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="width" class="form-control" />
-                            </div>
-                          </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Height (sqm)</label>
-                              <div class="col-sm-9">
-                                  <input type="number" name="height" class="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                      </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Status</label>
-                            <div class="col-sm-9">
-                              <select name="status" class="form-control">
-                                <option value="Not taken">Not taken</option>
-                                <option value="Taken">Taken</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">PLot Number</label>
-                              <div class="col-sm-9">
-                                  <input type="text" name="plot_number" class="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                      </div>
-                      
-
-                      <div class="row">
-                        <div class="col-md-10">
-                          <div class="form-group row">
-                          
-                            <div class="col-sm-9">
-                            
-                              <button type="submit"  class="btn btn-primary">Add a plot</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                                                        </tr>
+                                                    <tr>
 
 
+                                                        @endforeach
+                                                     
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
 
-                    </form>
+                  
                   </div>
                 </div>
               </div>
@@ -199,19 +171,7 @@
 
   <script>
 
-  $(document).ready(function(){
-            $("#payment_method").change(function(){
 
-            var payment_method = $(this).val();
-
-            if(payment_method == 'paying_in_installments'){
-                $('#installment_display').show();
-            }
-            else{
-              $('#installment_display').hide();
-            }
-          });
-			});
   </script>
 
 

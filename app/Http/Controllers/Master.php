@@ -8,8 +8,11 @@ use App\Models\buyer;
 use App\Models\Estate;
 use App\Models\plot;
 use App\Models\house;
+use App\Models\reciept;
+use App\Models\agreement;
 use Illuminate\Support\Facades\Hash;
 use Alert;
+use DB;
 
 class Master extends Controller
 {
@@ -106,7 +109,8 @@ class Master extends Controller
     public function admin_buyer(){
 
         $estates = Estate::all();
-        $plots = plot::all();
+
+        $plots = DB::table('plots')->where('status','=',"Not taken")->get();
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
@@ -115,9 +119,50 @@ class Master extends Controller
 
     public function store_buyer_details(Request $request){
 
-        $save = new buyer;
+        $post = new buyer;
 
-        $save->save();
+        $post->firstname= $request->firstname;
+        $post->lastname= $request->lastname;
+        $post->gender= $request->gender;
+        $post->date_of_birth= $request->date_of_birth;
+        $post->NIN= $request->NIN;
+        $file=$request->national_id;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/national_id'),$filename);
+        $post->national_id=$filename;    
+        $post->card_number= $request->card_number;
+        $post->land_poster= $request->land_poster;
+        $post->method_payment= $request->payment_method;
+        $post->purchase_type= $request->purchase_type;
+        $post->estate= $request->estate;
+        $post->location= $request->location;
+        $post->width= $request->width;
+        $post->height= $request->height;
+        $post->plot_number= $request->plot_number;
+        $post->amount_payed= $request->amount_payed;
+        $post->balance= $request->balance;
+        $post->reciepts= $request->receipt_img;
+        $post->agreement = $request->agreement;
+        // $file=$request->receipt_img;
+        // $filename=date('YmdHi').$file->getClientOriginalName();
+        // $file->move(public_path('public/receipts'),$filename);
+        // $post->reciepts=$filename; 
+
+        // $file=$request->agreement;
+        // $filename=date('YmdHi').$file->getClientOriginalName();
+        // $file->move(public_path('public/agreements'),$filename);
+        // $post->agreement=$filename;
+
+        $post->next_installment_pay= $request->next_installment_pay;
+        
+        $save = $post->save();
+
+        // DB::insert('insert into reciepts (user_id,amount,balance,reciept) values (?,?,?,?)', [$user_agree_id,$balance,$user_amount_paid,$reciepts]);
+
+        if($save){
+           
+            return back()->with('success','Sale has been done successfull');
+        }
     }
 
     public function customer_sale(){
@@ -233,4 +278,207 @@ class Master extends Controller
         return back();
 
     }
+
+
+    public function update_data_form(Request $request){
+
+        $info = $request->Estate_plot;
+
+        $specific_estate = DB::table('plots')->select('plot_number')->where('estate','=',$info)->get();
+
+        return response()->json([
+            "status"=>TRUE,
+            "message"=>"data has been creaeted",
+            "data"=>$specific_estate,
+        ]);
+    }
+
+    // Reciepts and Agreements
+
+    public function pending_agreements(){
+        $pending_agreements = DB::table('buyers')->where('reciepts','=',"0")
+                    ->where('next_installment_pay','=',"Fully payed")->get();
+
+         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.pending_agreements',$data,compact(['pending_agreements']));
+
+    }
+
+    public function pending_buyers()
+    {
+
+        $not_fully_paid = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")
+                                             ->where('reciepts','!=',"0")->get();
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.pending',$data,compact(['not_fully_paid']));
+    }
+
+    public function pending_receipts()
+    {
+        $pending_reciepts = DB::table('buyers')->where('reciepts','=',"0")
+                                               ->where('next_installment_pay','!=',"Fully payed")->get();
+
+                                        
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.pending_receipts',$data,compact(['pending_reciepts']));
+    }
+
+
+    public function accomplished_buyers()
+    {
+        $fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")
+                                         ->where('reciepts','!=',"0")->get();
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.accomplished',$data,compact(['fully_paid']));
+    }
+
+    public function add_reciept($id){
+
+        $user_id = $id;
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.add_receipt',$data,compact(['user_id']));
+    }
+
+    public function view_reciept($id){
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        $user_information = DB::table('buyers')->where('id','=',$id)->get();
+        $user_reciepts = DB::table('reciepts')->where('user_id','=',$id)->get();
+
+        return view('Admin.Receipts.view_receipts',$data,compact(['user_information','user_reciepts']));
+    }
+
+    public function add_agreement($id){
+
+        $user_id = $id;
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.add_agreement',$data,compact(['user_id']));
+    }
+
+    public function view_agreement($id){
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        $user_information = DB::table('buyers')->where('id','=',$id)->get();
+        $user_reciepts = DB::table('reciepts')->where('user_id','=',$id)->get();
+        $user_agreements = DB::table('agreements')->where('user_id','=',$id)->get();
+
+        return view('Admin.Receipts.view_agreement',$data,compact(['user_information','user_reciepts','user_agreements']));
+    }
+
+    public function store_new_receipt(Request $request)
+    {
+
+        $user_id = $request->user_id;
+        $amount_paid = $request->amount_paid;
+
+        $post = new reciept();
+
+        $file=$request->receipt_added;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/receipts'),$filename);
+        $post->reciept=$filename; 
+        
+        $post->user_id = $request->user_id;
+        $post->Amount = $request->amount_paid;
+        $post->Date_of_payment = $request->Date_of_payment;
+        $post->Balance = $request->balance_pending;
+
+        $save = $post->save();
+        
+        if($save)
+        {
+            return redirect('pending-buyers')->with('success','Reciept has been recorded successfully');
+        }
+    }
+
+    public function add_first_reciept($id){
+
+        $user_id = $id;
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.add_first_receipt',$data,compact(['user_id']));
+    }
+
+    public function store_first_receipt(Request $request)
+    {
+
+
+        $post = new reciept();
+
+        $post->user_id = $request->user_id;
+        $post->Amount = $request->amount_paid;
+        $post->Date_of_payment = $request->Date_of_payment;
+        $post->Balance = $request->balance_pending;
+        
+        $file=$request->receipt_added;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/receipts'),$filename);
+        $post->reciept=$filename; 
+
+        $save = $post->save();
+
+        $user_id = $request->user_id;
+
+        $update_buyer_recipeit=buyer::where('id',$user_id)->update(['reciepts'=>"Pending"]);
+
+        if($update_buyer_recipeit)
+        {
+            return redirect('pending-buyers')->with('success','Reciept has been recorded successfully');
+        }
+    }
+
+
+
+    public function store_agreement(Request $request)
+    {
+
+        $user_id = $request->user_id;
+        $reciepts = $request->reciept_added;
+        $agreement_reciept = $request->agreement_added;
+        $user_amount_paid = $request->amount_paid;
+        $Date_of_payment = $request->Date_of_payment;
+
+
+        $balance = 0;
+
+        $post = new agreement();
+
+        $post->user_id = $request->user_id;
+        $post->Amount_paid = $request->amount_paid;
+        $post->Date_of_payment = $request->Date_of_payment;
+
+        $file=$request->reciept_added;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/receipts'),$filename);
+        $user_receipt =$filename; 
+        $post->reciept=$filename; 
+
+        $file=$request->agreement_added;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/agreements'),$filename);
+        $post->agreement=$filename; 
+
+        $save = $post->save();
+
+        $update_buyer_agreement = buyer::where('id',$user_id)->update(['next_installment_pay'=>"Fully payed",
+                                                            'reciepts'=>$reciepts,
+                                                            'agreement'=>$agreement_reciept]);
+
+        DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment) values (?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment]);
+        
+        
+        if($save)
+        {
+            return redirect('pending-buyers')->with('success','Agreement has been recorded successfully');
+        }
+    }
+
 }

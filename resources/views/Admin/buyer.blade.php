@@ -20,6 +20,18 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
+    <style>
+      /* Custom CSS to change the title color */
+      .swal-title {
+        color: 'red' !important; /* Change the color as per your preference */
+      }
+    </style>
+
+
   </head>
   <body>
     <div class="container-scroller">
@@ -79,7 +91,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-buyer-details')}}" method="POST">
+                    <form class="form-sample" id="myForm" action="{{ route('store-buyer-details')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter Customer Buyer Information:</p>
 
@@ -88,7 +100,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">First Name</label>
                             <div class="col-sm-9">
-                              <input type="text" name="firstname" class="form-control" />
+                              <input type="text" name="firstname" id="firstname" class="form-control" required>
                             </div>
                           </div>
                         </div>
@@ -96,7 +108,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Last Name</label>
                             <div class="col-sm-9">
-                              <input type="text" name="lastname" class="form-control" />
+                              <input type="text" name="lastname" id="lastname" class="form-control" required>
                             </div>
                           </div>
                         </div>
@@ -108,7 +120,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Gender</label>
                             <div class="col-sm-9">
-                              <select name="gender" class="form-control">
+                              <select name="gender" id="gender" class="form-control" required>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                               </select>
@@ -121,7 +133,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Date of Birth</label>
                             <div class="col-sm-9">
-                              <input type="date" name="date_of_birth" class="form-control" placeholder="dd/mm/yyyy" />
+                              <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" placeholder="dd/mm/yyyy" required>
                             </div>
                           </div>
                         </div>
@@ -132,7 +144,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Nin Number</label>
                             <div class="col-sm-9">
-                              <input type="text" name="NIN" class="form-control" />
+                              <input type="text" name="NIN" id="NIN" class="form-control" required>
                             </div>
                           </div>
                         </div>
@@ -140,7 +152,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">CardNumber</label>
                             <div class="col-sm-9">
-                              <input type="text" name="card_number" class="form-control" />
+                              <input type="text" name="card_number" id="card_number" class="form-control" required>
                             </div>
                           </div>
                         </div>
@@ -152,48 +164,44 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">National ID</label>
                             <div class="col-sm-9">
-                              <input type="file" name="national_id" class="form-control" />
+                              <input type="file" name="national_id" id="national_id" class="form-control" required>
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-6">
+
+                        {{-- <div class="col-md-6">
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Signature</label>
                             <div class="col-sm-9">
                               <input type="file" name="signature" class="form-control" />
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        </div> --}}
 
-                      <div class="row">
-                        <div class="col-md-6">
+                         <div class="col-md-6">  
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label mt-2">Land Poster</label>
-                            <div class="col-sm-4">
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="radio" class="form-check-input" name="land_poster" id="membershipRadios1" value="Paid" checked> Paid </label>
-                              </div>
-                            </div>
-                            <div class="col-sm-5">
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="radio" class="form-check-input" name="land_poster" id="membershipRadios2" value="Not Paid"> Not Paid </label>
-                              </div>
-                            </div>
+                            <div class="col-sm-9">
+                              <select name="land_poster" id="land_poster" class="form-control" required>
+                                <option value="">--- Poster Payment---</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Not paid">Not paid</option>
+                              </select>
                           </div>
                         </div>
+
                       </div>
+
                       
-                      <p class="card-description">Payments:</p>
+                      <p class="card-description">Payment Method:</p>
 
                       <div class="row">
                         <div class="col-md-10">
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Select Payment Method:</label>
                             <div class="col-sm-9">
-                              <select name="payment_method" id="payment_method" class="form-control">
+                              <select name="payment_method" id="payment_method" class="form-control" required>
+                                <option value="">--- Select Payment ---</option>
                                 <option value="Full_payment">Full Payment</option>
                                 <option value="paying_in_installments">Paying in Installments</option>
                               </select>
@@ -205,9 +213,9 @@
                       <div class="row" id="installment_display" style="display: none">
                         <div class="col-md-10">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Select Installment period :</label>
+                            <label class="col-sm-3 col-form-label">Select Installment period:</label>
                             <div class="col-sm-9">
-                              <select name="installment_payments" id="installment_payments" class="form-control">
+                              <select name="installment_payments" id="installment_payments" class="form-control" required>
                                 <option value="">--Select period for Installment---</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -227,7 +235,8 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Purchase Category:</label>
                             <div class="col-sm-9">
-                              <select name="purchase_type" id="purchase_type" class="form-control">
+                              <select name="purchase_type" id="purchase_type" class="form-control" required>
+                                 <option value="">---Select Category ---</option>
                                 <option value="buying_a_plot">Buying a plot</option>
                                 <option value="buying_a_house">Buying a house</option>
                               </select>
@@ -244,7 +253,8 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Estate</label>
                               <div class="col-sm-9">
-                                <select name="Estate_plot" class="form-control">
+                                <select name="Estate_plot" id="Estate_plot" class="form-control" >
+                                  <option value="">--Select Estate ---</option>
                                   @foreach ($estates as $estate)
                                   <option value={{$estate->estate_name}}>{{$estate->estate_name}}</option>
                                   @endforeach
@@ -259,7 +269,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location</label>
                             <div class="col-sm-9">
-                              <input type="text" name="location_plot" class="form-control" />
+                              <input type="text" name="location_plot" id="location_plot" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -271,7 +281,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Width</label>
                             <div class="col-sm-9">
-                                <input type="text" name="plot_width" class="form-control" />
+                                <input type="text" name="plot_width" id="plot_width" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -281,7 +291,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Height</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="plot_height" class="form-control" />
+                                  <input type="text" name="plot_height" id="plot_height" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -289,22 +299,11 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Status</label>
-                            <div class="col-sm-9">
-                              <select name="plot_status" class="form-control">
-                                <option value="Mukono">Not taken</option>
-                                <option value="Nabugabo">Taken</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Plot Number</label>
                               <div class="col-sm-9">
-                                <select name="plot_number" class="form-control">
+                                <select name="plot_number" id="plot_number" class="form-control">
+                                  <option value="">---Select plot ----</option>
                                   @foreach ($plots as $plot)
                                   <option value="{{$plot->plot_number}}">{{$plot->plot_number}}</option>
                                   @endforeach
@@ -323,7 +322,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Estate</label>
                               <div class="col-sm-9">
-                                <select name="Estate_house" class="form-control">
+                                <select name="Estate_house" id="Estate_house" class="form-control">
                                   @foreach ($estates as $estate)
                                   <option value={{$estate->estate_name}}>{{$estate->estate_name}}</option>
                                   @endforeach
@@ -338,7 +337,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location</label>
                             <div class="col-sm-9">
-                              <input type="text" name="location_house" class="form-control" />
+                              <input type="text" name="location_house" id="location_house" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -350,7 +349,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Width</label>
                             <div class="col-sm-9">
-                                <input type="text" name="house_width" class="form-control" />
+                                <input type="text" name="house_width" id="house_width" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -360,7 +359,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Height</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="house_height" class="form-control" />
+                                  <input type="text" name="house_height" id="house_height" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -371,7 +370,8 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Plot Number</label>
                               <div class="col-sm-9">
-                                <select name="house_plot_number" class="form-control">
+                                <select name="house_plot_number" id="house_plot_number" class="form-control">
+                                 <option value="">---Select Plot ---</option>
                                   @foreach ($plots as $plot)
                                   <option value="{{$plot->plot_number}}">{{$plot->plot_number}}</option>
                                   @endforeach
@@ -381,6 +381,72 @@
                           </div>
                       </div>
                     </div>
+
+                    
+                    <div class="row" id="installment_money_payment" style="display: none">
+
+                      <p class="card-description">Payments : </p>
+
+
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Enter amount </label>
+                          <div class="col-sm-9">
+                            <input type="number" name="entered_installment_amount" id="entered_installment_amount" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-4 col-form-label">Next  payment</label>
+                          <div class="col-sm-8">
+                            <input type="date" name="next_installment_date" id="next_installment_date" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+
+                      
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Balance </label>
+                            <div class="col-sm-9">
+                              <input type="number" name="balance" id="balance" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="full_money_payment" style="display: none">
+                      <p class="card-description">Payments : </p>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Enter amount</label>
+                          <div class="col-sm-9">
+                            <input type="number" name="entered_amount" id="entered_amount" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {{-- <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Payment Reciept </label>
+                            <div class="col-sm-9">
+                              <input type="file" name="receipt_img" id="receipt_img" class="form-control" required>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Agreement</label>
+                            <div class="col-sm-9">
+                              <input type="file" name="agreement" id="agreement" class="form-control" />
+                            </div>
+                          </div>
+                        </div>--}}
+                     </div> 
+
+
                       <div class="row">
                         <div class="col-md-10">
                           <div class="form-group row">
@@ -429,9 +495,13 @@
 
                 if(payment_method == 'paying_in_installments'){
                     $('#installment_display').show();
+                    $('#installment_money_payment').show();
+                    $('#full_money_payment').hide();
                 }
                 else{
                   $('#installment_display').hide();
+                  $('#installment_money_payment').hide();
+                  $('#full_money_payment').show();
                 }
             });
             
@@ -454,48 +524,86 @@
 
               $('#submit_click').click(function(){
 
+          
+        var errors = validateForm();
+
+        if (errors.length > 0) {
+            showErrors(errors);
+            return;
+        } else {
+
+            alert("Form submitted successfully!");
+        }
+
 
               var firstname = $('#firstname').val();
 							var lastname = $('#lastname').val();
 							var gender = $('#gender').val();
               var date_of_birth = $('#date_of_birth').val();
               var NIN = $('#NIN').val();
+              var national_id = $("#national_id")[0].files[0];
               var card_number = $('#card_number').val();
-              // var national_id = $('#national_id').val();
-              // var signature = $('#signature').val();
               var land_poster = $('#land_poster').val();
               var payment_method = $('#payment_method').val();
-
-              if(payment_method == "Full_payment"){
-                var installment_payments = "Empty";
-              }
-              else{
-                var installment_payments = $('#installment_payments').val();
-              }
-
               var purchase_type = $('#purchase_type').val();
 
               if(purchase_type == "buying_a_plot"){
-                var Estate_plot = $('#Estate_plot').val();
-                var location_plot = $('#location_plot').val();
-                var plot_width = $('#plot_width').val();
-                var plot_height = $('#plot_height').val();
-                var plot_status = $('#plot_status').val();
+
+                var estate = $('#Estate_plot').val();
+                var location = $('#location_plot').val();
+                var width = $('#plot_width').val();
+                var height = $('#plot_height').val();
                 var plot_number = $('#plot_number').val();
+
               }
               else{
-                var Estate_house = $('#Estate_house').val();
-                var location_house = $('#location_house').val();
-                var house_width = $('#house_width').val();
-                var house_height = $('#house_height').val();
-                var house_plot_number = $('#house_plot_number').val();
+                var estate = $('#Estate_house').val();
+                var location = $('#location_house').val();
+                var width = $('#house_width').val();
+                var height = $('#house_height').val();
+                var plot_number = $('#house_plot_number').val();
               }
+
+              if(payment_method == 'paying_in_installments'){
+              
+                var amount_payed = $('#entered_installment_amount').val();
+                var next_installment_pay = $('#next_installment_date').val();
+                var balance = $('#balance').val();
+                var receipt_img = "0";
+                var agreement = "Pending";
+                }
+                else
+                {
+                  var amount_payed = $('#entered_amount').val();
+                  var next_installment_pay = "Fully payed";
+                  var balance = "No balance";
+                  var receipt_img = "0";
+                  var agreement = "Pending";
+                }
 
 							var form_data = new FormData();
 
-							form_data.append('_pass_', _pass_);
-							form_data.append('user_id', user_id);
-							form_data.append('original_supplier_email', original_supplier_email);
+							form_data.append('firstname', firstname);
+							form_data.append('lastname', lastname);
+              form_data.append('gender', gender);
+							form_data.append('date_of_birth', date_of_birth);
+              form_data.append('NIN', NIN);
+							form_data.append('national_id', national_id);
+              form_data.append('card_number', card_number);
+							form_data.append('land_poster', land_poster);
+              form_data.append('payment_method', payment_method);
+							form_data.append('purchase_type', purchase_type);
+              form_data.append('estate', estate);
+							form_data.append('location', location);
+              form_data.append('width', width);
+							form_data.append('height', height);
+              form_data.append('plot_number', plot_number);
+							form_data.append('amount_payed', amount_payed);
+              form_data.append('balance', balance);
+              form_data.append('receipt_img', receipt_img);
+              form_data.append('agreement', agreement);
+              form_data.append('next_installment_pay', next_installment_pay);
+
 
 							$.ajax({
 								type: "post",
@@ -519,8 +627,46 @@
             });
         });
 
+           function validateForm() {
+              var errors = [];
+              
+            $("#myForm input").each(function () {
+                var value = $(this).val();
+                var fieldName = $(this).attr("name");
+
+                if (!value) {
+                    errors.push(fieldName + " is required.");
+                }
+            });
+
+            return errors;
+    }
+
+    
+              function showErrors(errors) {
+            
+              var errorMessage = "<ol>";
+              for (var i = 0; i < errors.length; i++) {
+                  errorMessage += "<li>" + errors[i] + "</li>";
+              }
+              errorMessage += "</ol>";
+
+              Swal.fire({
+                  icon: "error",
+                  title: "Validation Error",
+                  html: errorMessage,
+                  color: '#FFF',
+                  background:'#452e6f',
+                  
+              });
+             
+          }
+
   </script>
 
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="script.js"></script>
 
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->

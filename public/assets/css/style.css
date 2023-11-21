@@ -20849,3 +20849,14 @@ div.tagsinput {
   color: #fff;
   }
 /*# sourceMappingURL=maps/style.css.map */
+
+input:focus {
+  border: 2px solid #FFF; /* Change the color as per your preference */
+  outline: none; /* Remove the default focus outline */
+  background-color: #000;
+  color:#FFF !important;
+}
+
+.swal-title {
+  color: red !important; /* Change the color as per your preference */
+}

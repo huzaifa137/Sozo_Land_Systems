@@ -20,6 +20,8 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
 
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
   </head>
   <body>
     <div class="container-scroller">
@@ -62,11 +64,10 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Add a plot :</h4>
+                    <h4 class="card-title">Agreement :</h4>
 
                     @include('sweetalert::alert')
 
-                    
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -80,91 +81,61 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('send-plot-data')}}" method="POST">
+                    <form class="form-sample" action="{{ route('store-agreement')}}" method="POST" enctype="multipart/form-data">
                       @csrf
-                      <p class="card-description">Enter Plot Information:</p>
+                      <p class="card-description">Enter the Following Information:</p>
+
+                      <input type="hidden" name="user_id" value="{{$user_id}}">
+
 
                       <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Estate</label>
-                              <div class="col-sm-9">
-                                <select name="Estate"  class="form-control" required>
-                                  <option value="">---Select Estate ---</option>
-                                  @foreach ($estates as $estate)
-                                  <option value="{{$estate->estate_name}}">{{$estate->estate_name}}</option>
-                                  @endforeach
-                                </select>
-
-                              </div>
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Amount paid</label>
+                            <div class="col-sm-9">
+                              <input type="number" name="amount_paid" id="amount_paid" class="form-control" required>
                             </div>
-                         
+                          </div>
                         </div>
-
 
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Location</label>
-                            <div class="col-sm-9">
-                              <input type="text" name="location" class="form-control" />
+                            <label class="col-md-2 col-form-label">Date:</label>
+                            <div class="col-sm-10">
+                              <input type="date" name="Date_of_payment" id="Date_of_payment" class="form-control" required>
                             </div>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="row">
-
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Width (sqm)</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="width" class="form-control" />
-                            </div>
-                          </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Height (sqm)</label>
-                              <div class="col-sm-9">
-                                  <input type="number" name="height" class="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                      </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Status</label>
-                            <div class="col-sm-9">
-                              <select name="status" class="form-control">
-                                <option value="Not taken">Not taken</option>
-                                <option value="Taken">Taken</option>
-                              </select>
+                            <label class="col-md-5 col-form-label">Attach Reciept</label>
+                            <div class="col-sm-12">
+                              <input type="file" name="reciept_added" id="reciept_added" class="form-control" required>
                             </div>
                           </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">PLot Number</label>
-                              <div class="col-sm-9">
-                                  <input type="text" name="plot_number" class="form-control" />
+                              <label class="col-md-5 col-form-label">Attach Agreement</label>
+                              <div class="col-sm-12">
+                                <input type="file" name="agreement_added" id="agreement_added" class="form-control" required>
                               </div>
                             </div>
                           </div>
-                      </div>
-                      
 
+                      </div>
+              
                       <div class="row">
                         <div class="col-md-10">
                           <div class="form-group row">
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit"  class="btn btn-primary">Add a plot</button>
+                              <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                           </div>
                         </div>
@@ -199,19 +170,6 @@
 
   <script>
 
-  $(document).ready(function(){
-            $("#payment_method").change(function(){
-
-            var payment_method = $(this).val();
-
-            if(payment_method == 'paying_in_installments'){
-                $('#installment_display').show();
-            }
-            else{
-              $('#installment_display').hide();
-            }
-          });
-			});
   </script>
 
 

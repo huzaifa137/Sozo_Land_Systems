@@ -20,6 +20,8 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
 
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
   </head>
   <body>
     <div class="container-scroller">
@@ -61,12 +63,11 @@
             
               <div class="col-12 grid-margin">
                 <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Add a plot :</h4>
+                
+                   
 
                     @include('sweetalert::alert')
 
-                    
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -79,102 +80,111 @@
 										</div>
 									@endif
 
-
-                    <form class="form-sample" action="{{ route('send-plot-data')}}" method="POST">
-                      @csrf
-                      <p class="card-description">Enter Plot Information:</p>
-
                       <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Estate</label>
-                              <div class="col-sm-9">
-                                <select name="Estate"  class="form-control" required>
-                                  <option value="">---Select Estate ---</option>
-                                  @foreach ($estates as $estate)
-                                  <option value="{{$estate->estate_name}}">{{$estate->estate_name}}</option>
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-body">
+                              <h4 class="card-title text-primary">Customer Information</h4>
+                              @foreach ($user_information as $data)
+                              <div class="row">
+                                <div class="col-md-5">
+                                  <div class="table-responsive">
+                                    <table class="table">
+                                      <tbody>
+                                      
+                                        <tr>
+                                        
+                                          <td class="text-info">Name</td>
+                                          <td class="text-right font-weight-medium"> {{$data->firstname}} {{$data->lastname}}  </td>
+                                        </tr>
+                                        <tr>
+                                         
+                                          <td class="text-info">Gender</td>
+                                          <td class="text-right font-weight-medium"> {{$data->gender}} </td>
+                                        </tr>
+                                        <tr>
+                                         
+                                          <td class="text-info">Date of birth</td>
+                                          <td class="text-right font-weight-medium">{{$data->date_of_birth}} </td>
+                                        </tr>
+                                        <tr>
+                                         
+                                          <td class="text-info">NIN</td>
+                                          <td class="text-right font-weight-medium"> {{$data->NIN}} </td>
+                                        </tr>
+
+                                        <tr> 
+                                          <td class="text-info">Land Poster</td>
+                                          <td class="text-right font-weight-medium">{{$data->land_poster}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Estate</td>
+                                          <td class="text-right font-weight-medium"> {{$data->estate}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Plot No.</td>
+                                          <td class="text-right font-weight-medium"> {{$data->plot_number}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Amount paid</td>
+                                          <td class="text-right font-weight-medium"> {{$data->amount_payed}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Balance</td>
+                                          <td class="text-right font-weight-medium"> {{$data->balance}} </td>
+                                        </tr>
+
+
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="col-md-7">
+                                  <div id="audience-map" class="vector-map">
+                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id}}" alt="">
+                                  </div>
                                   @endforeach
-                                </select>
+                                </div>
+                              </div>
 
+                              <h4 class="card-title text-primary mt-3">Customer payment receipts</h4>
+                              <div class="row">
+                                <div class="col-md-5">
+                                  <div class="table-responsive">
+                                    <table class="table">
+                                      <tbody>
+
+
+                                       
+                                      </tbody>
+                                      
+                                    </table>
+                                  </div>
+                                </div>
+                                
+                                <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_reciepts as $user_reciept)
+                                  <br> 
+                                  <div id="audience-map" class="vector-map">
+                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->reciept}}" alt="">
+                                  </div>
+                                  @endforeach
+                                </div>
+                             
                               </div>
                             </div>
-                         
-                        </div>
-
-
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Location</label>
-                            <div class="col-sm-9">
-                              <input type="text" name="location" class="form-control" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div class="row">
-
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Width (sqm)</label>
-                            <div class="col-sm-9">
-                                <input type="number" name="width" class="form-control" />
-                            </div>
-                          </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Height (sqm)</label>
-                              <div class="col-sm-9">
-                                  <input type="number" name="height" class="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                      </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Status</label>
-                            <div class="col-sm-9">
-                              <select name="status" class="form-control">
-                                <option value="Not taken">Not taken</option>
-                                <option value="Taken">Taken</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">PLot Number</label>
-                              <div class="col-sm-9">
-                                  <input type="text" name="plot_number" class="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                      </div>
-                      
-
-                      <div class="row">
-                        <div class="col-md-10">
-                          <div class="form-group row">
-                          
-                            <div class="col-sm-9">
                             
-                              <button type="submit"  class="btn btn-primary">Add a plot</button>
-                            </div>
                           </div>
                         </div>
                       </div>
 
-
-
-                    </form>
+                
                   </div>
-                </div>
+              
               </div>
             </div>
           </div>
@@ -199,19 +209,6 @@
 
   <script>
 
-  $(document).ready(function(){
-            $("#payment_method").change(function(){
-
-            var payment_method = $(this).val();
-
-            if(payment_method == 'paying_in_installments'){
-                $('#installment_display').show();
-            }
-            else{
-              $('#installment_display').hide();
-            }
-          });
-			});
   </script>
 
 

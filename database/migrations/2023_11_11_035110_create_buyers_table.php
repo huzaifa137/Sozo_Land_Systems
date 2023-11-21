@@ -18,13 +18,21 @@ return new class extends Migration
             $table->text('gender');
             $table->text('date_of_birth');
             $table->text('NIN');
-            $table->text('card_number');
             $table->text('national_id');
-            $table->text('signature');
-            $table->text('Estate');
-            $table->text('plot_number');
+            $table->text('card_number');
             $table->text('land_poster');
-            $table->text('payment_method');
+            $table->text('method_payment');
+            $table->text('purchase_type');
+            $table->text('estate');
+            $table->text('location');
+            $table->text('width');
+            $table->text('height');
+            $table->text('plot_number');
+            $table->text('amount_payed');
+            $table->text('balance');
+            $table->text('next_installment_pay');
+            $table->text('reciepts')->default('Pending');
+            $table->text('agreement')->default('Pending');
             $table->timestamps();
         });
     }
