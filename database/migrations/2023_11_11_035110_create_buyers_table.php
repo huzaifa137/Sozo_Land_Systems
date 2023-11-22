@@ -28,8 +28,8 @@ return new class extends Migration
             $table->text('width');
             $table->text('height');
             $table->text('plot_number');
-            $table->text('amount_payed');
-            $table->text('balance');
+            $table->bigInteger('amount_payed');
+            $table->bigInteger('balance');
             $table->text('next_installment_pay');
             $table->text('reciepts')->default('Pending');
             $table->text('agreement')->default('Pending');

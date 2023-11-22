@@ -378,6 +378,7 @@ class Master extends Controller
 
         $user_id = $request->user_id;
         $amount_paid = $request->amount_paid;
+        $Balance = $request->balance_pending;
 
         $post = new reciept();
 
@@ -392,7 +393,16 @@ class Master extends Controller
         $post->Balance = $request->balance_pending;
 
         $save = $post->save();
+
+        $original_amount=buyer::where('id',$user_id)->value('amount_payed');
+
+        $all_cash = $original_amount+$amount_paid;
         
+        $update_buyer_amount=buyer::where('id',$user_id)
+                                    ->update([ 'amount_payed'=> $all_cash,
+                                                'balance'=>$Balance
+                                                        ]);
+
         if($save)
         {
             return redirect('pending-buyers')->with('success','Reciept has been recorded successfully');
@@ -410,6 +420,9 @@ class Master extends Controller
     public function store_first_receipt(Request $request)
     {
 
+        $user_id = $request->user_id;
+        $Amount = $request->amount_paid;
+        $Balance = $request->balance_pending;
 
         $post = new reciept();
 
@@ -425,11 +438,15 @@ class Master extends Controller
 
         $save = $post->save();
 
-        $user_id = $request->user_id;
+        $original_amount=buyer::where('id',$user_id)->value('amount_payed');
+        $all_cash = $original_amount+$Amount;
 
-        $update_buyer_recipeit=buyer::where('id',$user_id)->update(['reciepts'=>"Pending"]);
+        $update_buyer_amount=buyer::where('id',$user_id)
+                                    ->update(['reciepts'=>"Pending",
+                                              'amount_payed'=> $all_cash,
+                                              'balance'=>$Balance]);
 
-        if($update_buyer_recipeit)
+        if($update_buyer_amount)
         {
             return redirect('pending-buyers')->with('success','Reciept has been recorded successfully');
         }
@@ -445,7 +462,6 @@ class Master extends Controller
         $agreement_reciept = $request->agreement_added;
         $user_amount_paid = $request->amount_paid;
         $Date_of_payment = $request->Date_of_payment;
-
 
         $balance = 0;
 
@@ -466,11 +482,18 @@ class Master extends Controller
         $file->move(public_path('public/agreements'),$filename);
         $post->agreement=$filename; 
 
+        $original_amount=buyer::where('id',$user_id)->value('amount_payed');
+        $all_cash = $original_amount+$user_amount_paid;
+
+        
         $save = $post->save();
 
         $update_buyer_agreement = buyer::where('id',$user_id)->update(['next_installment_pay'=>"Fully payed",
                                                             'reciepts'=>$reciepts,
-                                                            'agreement'=>$agreement_reciept]);
+                                                            'agreement'=>$agreement_reciept,
+                                                            'amount_payed'=> $all_cash,
+                                                            'balance'=>$balance]);
+
 
         DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment) values (?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment]);
         

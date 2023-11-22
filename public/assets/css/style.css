@@ -20855,8 +20855,6 @@ input:focus {
   outline: none; /* Remove the default focus outline */
   background-color: #000;
   color:#FFF !important;
-}
 
-.swal-title {
-  color: red !important; /* Change the color as per your preference */
+  color: #452e6f;
 }

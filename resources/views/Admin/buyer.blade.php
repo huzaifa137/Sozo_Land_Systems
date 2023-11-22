@@ -522,19 +522,8 @@
               });
 
 
+
               $('#submit_click').click(function(){
-
-          
-        var errors = validateForm();
-
-        if (errors.length > 0) {
-            showErrors(errors);
-            return;
-        } else {
-
-            alert("Form submitted successfully!");
-        }
-
 
               var firstname = $('#firstname').val();
 							var lastname = $('#lastname').val();
@@ -566,22 +555,35 @@
 
               if(payment_method == 'paying_in_installments'){
               
-                var amount_payed = $('#entered_installment_amount').val();
+                // var amount_payed = $('#entered_installment_amount').val();
+                // var balance = $('#balance').val();
+                var amount_payed = "0";
                 var next_installment_pay = $('#next_installment_date').val();
-                var balance = $('#balance').val();
+                var balance = "0";
                 var receipt_img = "0";
                 var agreement = "Pending";
                 }
                 else
                 {
-                  var amount_payed = $('#entered_amount').val();
+                  var amount_payed = "0";
                   var next_installment_pay = "Fully payed";
-                  var balance = "No balance";
+                  var balance = "0";
                   var receipt_img = "0";
                   var agreement = "Pending";
                 }
 
-							var form_data = new FormData();
+              var errors = validateForm();
+
+              if (errors.length > 0) {
+                  showErrors(errors);
+                  return;
+              } 
+              else 
+              {
+
+                  // alert("Form submitted successfully!");
+
+                  var form_data = new FormData();
 
 							form_data.append('firstname', firstname);
 							form_data.append('lastname', lastname);
@@ -605,62 +607,134 @@
               form_data.append('next_installment_pay', next_installment_pay);
 
 
-							$.ajax({
-								type: "post",
-								processData: false,
-								contentType: false,
-								cache: false,
-								data		: form_data,								
-								headers		:{	'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')},
-								url			:'/store-buyer-details',
-								success		:function(data){
-									if(data.status){
-										alert(data.message);
-										location.replace('/userdata/'+data.user_id);
-									}
-								},
-								error: function(data)
-								{
-									$('body').html(data.responseText);
-								}
-							});
-            });
-        });
+                $.ajax({
+                  type: "post",
+                  processData: false,
+                  contentType: false,
+                  cache: false,
+                  data		: form_data,								
+                  headers		:{	'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')},
+                  url			:'/store-buyer-details',
+                  success		:function(data){
+                    if(data.status){
+                      alert(data.message);
+                      location.replace('/userdata/'+data.user_id);
+                    }
+                  },
+                  error: function(data)
+                  {
+                    $('body').html(data.responseText);
+                  }
+                });
+              }
 
-           function validateForm() {
+              function validateForm() {
+
               var errors = [];
               
-            $("#myForm input").each(function () {
-                var value = $(this).val();
-                var fieldName = $(this).attr("name");
-
-                if (!value) {
-                    errors.push(fieldName + " is required.");
+                if (!firstname) {
+                    errors.push("First name is required.");
                 }
-            });
+            
+                if (!lastname) {
+                    errors.push("last name is required.");
+                }
+
+                if (!gender) {
+                    errors.push("Gender is required.");
+                }
+            
+                if (!date_of_birth) {
+                    errors.push("Date of birth name is required.");
+                }
+
+                if (!NIN) {
+                    errors.push("NIN number is required.");
+                }
+            
+                if (!national_id) {
+                    errors.push("National ID is required.");
+                }
+
+                if (!card_number) {
+                    errors.push("Card number is required.");
+                }
+            
+                if (!land_poster) {
+                    errors.push("Land poster is required.");
+                }
+
+                if (!payment_method) {
+                    errors.push("Payment method is required.");
+                }
+            
+                if (!purchase_type) {
+                    errors.push("Purchase is required.");
+                }
+
+                if (!estate) {
+                    errors.push("Estate is required.");
+                }
+            
+                if (!location) {
+                    errors.push("Location is required.");
+                }
+
+                if (!width) {
+                    errors.push("Width is required.");
+                }
+            
+                if (!height) {
+                    errors.push("Height name is required.");
+                }
+
+                if (!plot_number) {
+                    errors.push("Plot number is required.");
+                }
+            
+                if (!amount_payed) {
+                    errors.push("Amount paid is required.");
+                }
+
+                if (!next_installment_pay) {
+                    errors.push("Next Installment pay is required.");
+                }
+
+                if (!balance) {
+                    errors.push("Balance is required.");
+                }
+
+                if (!receipt_img) {
+                    errors.push("Receipt is required.");
+                }
+
+                if (!agreement) {
+                    errors.push("Agreement is required.");
+                }
 
             return errors;
     }
 
-    
-              function showErrors(errors) {
+    function showErrors(errors) {
             
-              var errorMessage = "<ol>";
-              for (var i = 0; i < errors.length; i++) {
-                  errorMessage += "<li>" + errors[i] + "</li>";
-              }
-              errorMessage += "</ol>";
+            var errorMessage = "<ol>";
+            for (var i = 0; i < errors.length; i++) {
+                errorMessage += "<li>" + errors[i] + "</li>";
+            }
+            errorMessage += "</ol>";
 
-              Swal.fire({
-                  icon: "error",
-                  title: "Validation Error",
-                  html: errorMessage,
-                  color: '#FFF',
-                  background:'#452e6f',
-                  
-              });
-             
-          }
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                html: errorMessage,
+                color: '#FFF',
+                background:'#452e6f',
+                
+            });
+        }
+	
+            });
+        });
 
   </script>
 

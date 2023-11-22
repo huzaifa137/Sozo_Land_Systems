@@ -15,11 +15,9 @@ use App\Http\Controllers\Master;
 */
 
 
-Route::get('/',[Master::class,'login']);
-Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
+Route::group(['middleware'=>['AdminAuth']], function(){
 
-
-Route::get('admin-register',[Master::class,'register'])->name('admin-register');
+    Route::get('admin-register',[Master::class,'register'])->name('admin-register');
 Route::post('admin-registration',[Master::class,'admin_register_data'])->name('admin-registration');
 
 
@@ -76,3 +74,11 @@ Route::get('add-first-receipt/{id}',[Master::class,'add_first_reciept']);
 // Agreements
 Route::get('accomplished',[Master::class,'accomplished_buyers'])->name('accomplished');
 Route::get('view-agreement/{id}',[Master::class,'view_agreement'])->name('view-agreement');
+
+ });
+
+ 
+Route::get('/',[Master::class,'login']);
+Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
+
+
