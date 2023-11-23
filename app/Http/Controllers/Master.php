@@ -13,6 +13,8 @@ use App\Models\agreement;
 use Illuminate\Support\Facades\Hash;
 use Alert;
 use DB;
+use Carbon\Carbon;
+
 
 class Master extends Controller
 {
@@ -165,13 +167,6 @@ class Master extends Controller
         }
     }
 
-    public function customer_sale(){
-
-        $All_data = buyer::all();
-        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
-
-        return view('Admin.customer_sales',$data,compact(['All_data']));
-    }
 
     public function Edit_sale($id)
     {
@@ -502,6 +497,82 @@ class Master extends Controller
         {
             return redirect('pending-buyers')->with('success','Agreement has been recorded successfully');
         }
+    }
+
+    // SALES AND ACCOUNTING
+
+    public function weeklyRecords(){
+
+        $data = Carbon::now();
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+                $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        $weeklyRecords = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->get();
+            
+         return view('Admin.Sales.weekly',$data, compact(['weeklyRecords']));
+
+    }
+
+    public function different_weekly_sales_collection()
+    {
+        
+        // $allRecords = buyer::all();
+
+        // $recordsByWeek = $allRecords->groupBy(function ($record) {
+        //     return Carbon::parse($record->created_at)->startOfWeek();
+        // });
+
+        // $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        // return view('Admin.Sales.weekly',$data, ['recordsByWeek' => $recordsByWeek]);
+    }
+
+    public function all_sales(){
+
+        $all_sales = buyer::all();
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.customer_sales',$data,compact(['all_sales']));
+    }
+
+    public function recordsOnCurrentDate()
+    { 
+
+        $currentDate = Carbon::today();
+        $records = buyer::whereDate('created_at', $currentDate)->get();
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Sales.today',$data, ['records' => $records]);
+    }
+
+        public function recordsInCurrentMonth()
+        {
+            $currentMonth = Carbon::now()->month;
+            $currentYear = Carbon::now()->year;
+           
+             $records = buyer::whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->get();
+
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+            
+            return view('Admin.Sales.monthly',$data, ['records' => $records]);
+            
+        }
+
+        // PAYMENT REMINDERS
+
+        public function searchByPaymentDate(Request $request)
+        {
+             $currentDate = Carbon::now();
+
+             $formattedDate = $currentDate->format('Y/m/d');
+             $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
+             $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+             return view('Admin.Sales.payment_reminders',$data, ['records' => $records]);
     }
 
 }

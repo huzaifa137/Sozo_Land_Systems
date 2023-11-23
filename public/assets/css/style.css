@@ -20858,3 +20858,8 @@ input:focus {
 
   color: #452e6f;
 }
+
+#week_img{
+  width: 2rem !important;
+  height: 2rem !important;
+}

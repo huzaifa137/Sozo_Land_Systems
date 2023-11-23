@@ -41,7 +41,6 @@
           <li class="nav-item"> <a class="nav-link" href="{{ route('plots')}}">Plots</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{route('add-house')}}">Houses</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('estates')}}">Estates</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('customer-sales')}}">Customer Sales</a></li>
         </ul>
       </div>
     </li>
@@ -64,4 +63,38 @@
       </div>
     </li>
     
+    <li class="nav-item menu-items">
+      <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false" aria-controls="ui-basic">
+        <span class="menu-icon">
+          <i class="mdi mdi-chart-bar"></i>
+        </span>
+        <span class="menu-title">Sales</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-sales">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="{{ route('all-sales')}}">All Sales</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('current-sales')}}">Today's Sales</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('weekly-records')}}">weekly Sales</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('monthly-records')}}">Monthly Sales</a></li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item menu-items">
+      <a class="nav-link " data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
+        <span class="menu-icon">
+          <i class="mdi mdi-security"></i>
+        </span>
+        <span class="menu-title">Reminders</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-alerts">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="{{ route('payment-reminder')}}">Today's reminders</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{route('current-sales')}}">Pending update</a></li>
+        </ul>
+      </div>
+    </li>
+
   </ul>

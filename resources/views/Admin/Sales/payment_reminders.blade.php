@@ -84,61 +84,23 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">30</h3>
+                          <h3 class="mb-0">30 </h3> 
                         </div>
+                       
                       </div>
                       <div class="col-3">
                         <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
+                          <span class="mdi mdi-phone icon-item"></span>
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Income generated</h6>
+                    <h6 class="text-white font-weight-normal">Client reminders today</h6>
                   </div>
                 </div>
               </div>
 
-              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">800</h3>
-                          {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p> --}}
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Plots fully Sold</h6>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">450</h3>
-                          {{-- <p class="text-danger ms-2 mb-0 font-weight-medium">-2.4%</p> --}}
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-danger">
-                          <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Plots under payment</h6>
-                  </div>
-                </div>
-              </div>
+            
+              
             </div>
 
             <div class="row ">
@@ -160,7 +122,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_sales as $all_sale)
+                            @foreach ($records as $all_sale)
                           <tr>
                             
                             <td>

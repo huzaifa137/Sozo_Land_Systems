@@ -160,7 +160,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_sales as $all_sale)
+                            @foreach ($records as $all_sale)
                           <tr>
                             
                             <td>

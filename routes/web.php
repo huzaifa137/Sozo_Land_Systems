@@ -17,7 +17,7 @@ use App\Http\Controllers\Master;
 
 Route::group(['middleware'=>['AdminAuth']], function(){
 
-    Route::get('admin-register',[Master::class,'register'])->name('admin-register');
+Route::get('admin-register',[Master::class,'register'])->name('admin-register');
 Route::post('admin-registration',[Master::class,'admin_register_data'])->name('admin-registration');
 
 
@@ -25,9 +25,6 @@ Route::get('admin-dashboard',[Master::class,'dashboard'])->name('admin-dashboard
 Route::get('admin-buyer',[Master::class,'admin_buyer'])->name('admin-buyer');
 
 Route::post('update-data-form',[Master::class,'update_data_form'])->name('update-data-form');
-
-
-Route::get('customer-sales',[Master::class,'customer_sale'])->name('customer-sales');
 
 Route::get('admin-logout',[Master::class,'logout'])->name('admin-logout');
 Route::post('store-buyer-details',[Master::class,'store_buyer_details'])->name('store-buyer-details');
@@ -82,3 +79,13 @@ Route::get('/',[Master::class,'login']);
 Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
 
+// Sales
+
+
+Route::get('all-sales',[Master::class,'all_sales'])->name('all-sales');
+Route::get('current-sales',[Master::class,'recordsOnCurrentDate'])->name('current-sales');
+Route::get('weekly-records',[Master::class,'weeklyRecords'])->name('weekly-records');
+Route::get('monthly-records',[Master::class,'recordsInCurrentMonth'])->name('monthly-records');
+
+// Payment reminders
+Route::get('payment-reminder',[Master::class,'searchByPaymentDate'])->name('payment-reminder');
