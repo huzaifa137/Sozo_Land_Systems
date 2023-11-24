@@ -68,14 +68,14 @@
               <div class="col-sm-4 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h5>Revenue</h5>
+                    <h5>Today's Sales</h5>
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">$32123</h2>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
+                          <h2 class="mb-0">{{$totalAmount}}/=</h2>
+                          {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p> --}}
                         </div>
-                        <h6 class="text-muted font-weight-normal">11.38% Since last month</h6>
+                        {{-- <h6 class="text-muted font-weight-normal">11.38% Since last month</h6> --}}
                       </div>
                       <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
                         <i class="icon-lg mdi mdi-codepen text-primary ms-auto"></i>
@@ -87,14 +87,14 @@
               <div class="col-sm-4 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h5>Sales</h5>
+                    <h5>Weekly Sales</h5>
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">$45850</h2>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+8.3%</p>
+                          <h2 class="mb-0">{{$totalweekSales}}/=</h2>
+                          {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+8.3%</p> --}}
                         </div>
-                        <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6>
+                        {{-- <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6> --}}
                       </div>
                       <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
                         <i class="icon-lg mdi mdi-wallet-travel text-danger ms-auto"></i>
@@ -106,14 +106,14 @@
               <div class="col-sm-4 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h5>Purchase</h5>
+                    <h5>Monthly Sales</h5>
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">$2039</h2>
-                          <p class="text-danger ms-2 mb-0 font-weight-medium">-2.1% </p>
+                          <h2 class="mb-0">{{$totalmonthSales}}/=</h2>
+                          {{-- <p class="text-danger ms-2 mb-0 font-weight-medium">-2.1% </p> --}}
                         </div>
-                        <h6 class="text-muted font-weight-normal">2.27% Since last month</h6>
+                        {{-- <h6 class="text-muted font-weight-normal">2.27% Since last month</h6> --}}
                       </div>
                       <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
                         <i class="icon-lg mdi mdi-monitor text-success ms-auto"></i>
@@ -126,54 +126,54 @@
 
 
             <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$12.34</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
+                          <h3 class="mb-0">{{$plots_fully_paid}}</h3>
+                          {{-- <p class="text-success ms-2 mb-0 font-weight-medium">100%</p> --}}
                         </div>
                       </div>
                       <div class="col-3">
-                        <div class="icon icon-box-success ">
+                        {{-- <div class="icon icon-box-success ">
                           <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
+                        </div> --}}
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Potential growth</h6>
+                    <h6 class="text-muted font-weight-normal">Plots fully paid</h6>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$17.34</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p>
+                          <h3 class="mb-0">{{$under_payment}}</h3>
+                          {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p> --}}
                         </div>
                       </div>
                       <div class="col-3">
-                        <div class="icon icon-box-success">
+                        {{-- <div class="icon icon-box-success">
                           <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
+                        </div> --}}
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Revenue current</h6>
+                    <h6 class="text-muted font-weight-normal">Plots under payments</h6>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$12.34</h3>
-                          <p class="text-danger ms-2 mb-0 font-weight-medium">-2.4%</p>
+                          <h3 class="mb-0">{{$amount_in_debts}}/=</h3>
+                          {{-- <p class="text-danger ms-2 mb-0 font-weight-medium">-2.4%</p> --}}
                         </div>
                       </div>
                       <div class="col-3">
@@ -182,30 +182,11 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Daily Income</h6>
+                    <h6 class="text-muted font-weight-normal">Income demanded</h6>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$31.53</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Expense current</h6>
-                  </div>
-                </div>
-              </div>
+              
             </div>
             <div class="row">
               <div class="col-md-6 col-xl-6 grid-margin stretch-card">
@@ -213,35 +194,14 @@
                   <div class="card-body">
                     <h4 class="card-title">Most Recent Customers</h4>
                     <div class="owl-carousel owl-theme full-width owl-carousel-dash portfolio-carousel" id="owl-carousel-basic">
+                      @foreach ($all_sales as $all_sale)
                       <div class="item">
-                        <img src="/assets/images/dashboard/Rectangle.jpg" alt="">
+                        <img src="{{'/public/national_id/'.$all_sale->national_id}}" alt=""  alt="">
+                        {{-- <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id}}" alt="" id="week_img"> --}}
+
                       </div>
-                      <div class="item">
-                        <img src="/assets/images/dashboard/Img_5.jpg" alt="">
-                      </div>
-                      <div class="item">
-                        <img src="/assets/images/dashboard/img_6.jpg" alt="">
-                      </div>
+                      @endforeach
                     </div>
-                    <div class="d-flex py-4">
-                      <div class="preview-list w-100">
-                        <div class="preview-item p-0">
-                          <div class="preview-thumbnail">
-                            <img src="/assets/images/faces/face12.jpg" class="rounded-circle" alt="">
-                          </div>
-                          <div class="preview-item-content d-flex flex-grow">
-                            <div class="flex-grow">
-                              <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                                <h6 class="preview-subject">CeeCee Bass</h6>
-                                <p class="text-muted text-small">Estate: Nabugabo</p>
-                              </div>
-                              <p class="text-muted">Well, Plot details:</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
                   </div>
                 </div>
               </div>
@@ -251,7 +211,7 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="d-flex flex-row justify-content-between">
-                      <h4 class="card-title mb-1">Open Projects</h4>
+                      <h4 class="card-title mb-1">Quick Links</h4>
                       <p class="text-muted mb-1">Your data status</p>
                     </div>
                     <div class="row">
@@ -264,14 +224,13 @@
                               </div>
                             </div>
                             <div class="preview-item-content d-sm-flex flex-grow">
+                              <a href="{{route('accomplished')}}" style="text-decoration: none;color:white;">
                               <div class="flex-grow">
-                                <h6 class="preview-subject">Admin dashboard design</h6>
-                                <p class="text-muted mb-0">Broadcast web app mockup</p>
+                                <h6 class="preview-subject">Full purchased plots and Houses</h6>
+                                <p class="text-muted mb-0">See details of full purchased plots and houses</p>
                               </div>
-                              <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                                <p class="text-muted">15 minutes ago</p>
-                                <p class="text-muted mb-0">30 tasks, 5 issues </p>
-                              </div>
+                            </a>
+                             
                             </div>
                           </div>
                           <div class="preview-item border-bottom">
@@ -281,14 +240,13 @@
                               </div>
                             </div>
                             <div class="preview-item-content d-sm-flex flex-grow">
+                              <a href="{{route('current-sales')}}" style="text-decoration: none;color:white;">
                               <div class="flex-grow">
-                                <h6 class="preview-subject">Wordpress Development</h6>
-                                <p class="text-muted mb-0">Upload new design</p>
+                                <h6 class="preview-subject">Today's Sales</h6>
+                                <p class="text-muted mb-0">See details of full purchased plots and houses today</p>
                               </div>
-                              <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                                <p class="text-muted">1 hour ago</p>
-                                <p class="text-muted mb-0">23 tasks, 5 issues </p>
-                              </div>
+                            </a>
+                              
                             </div>
                           </div>
                           <div class="preview-item border-bottom">
@@ -298,14 +256,12 @@
                               </div>
                             </div>
                             <div class="preview-item-content d-sm-flex flex-grow">
+                              <a href="{{route('weekly-records')}}" style="text-decoration: none;color:white;">
                               <div class="flex-grow">
-                                <h6 class="preview-subject">Project meeting</h6>
-                                <p class="text-muted mb-0">New project discussion</p>
+                                <h6 class="preview-subject">Weekly's Sales</h6>
+                                <p class="text-muted mb-0">See details of weekly plots and houses purchases</p>
                               </div>
-                              <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                                <p class="text-muted">35 minutes ago</p>
-                                <p class="text-muted mb-0">15 tasks, 2 issues</p>
-                              </div>
+                            </a>
                             </div>
                           </div>
                           <div class="preview-item border-bottom">
@@ -315,14 +271,12 @@
                               </div>
                             </div>
                             <div class="preview-item-content d-sm-flex flex-grow">
+                              <a href="{{route('monthly-records')}}" style="text-decoration: none;color:white;">
                               <div class="flex-grow">
-                                <h6 class="preview-subject">Broadcast Mail</h6>
-                                <p class="text-muted mb-0">Sent release details to team</p>
+                                <h6 class="preview-subject">Monthly's Sales</h6>
+                                <p class="text-muted mb-0">See details of monthly plots and houses purchase</p>
                               </div>
-                              <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                                <p class="text-muted">55 minutes ago</p>
-                                <p class="text-muted mb-0">35 tasks, 7 issues </p>
-                              </div>
+                             </a>
                             </div>
                           </div>
                           <div class="preview-item">
@@ -332,14 +286,12 @@
                               </div>
                             </div>
                             <div class="preview-item-content d-sm-flex flex-grow">
+                              <a href="{{route('payment-reminder')}}" style="text-decoration: none;color:white;">
                               <div class="flex-grow">
-                                <h6 class="preview-subject">UI Design</h6>
-                                <p class="text-muted mb-0">New application planning</p>
+                                <h6 class="preview-subject">Reminders</h6>
+                                <p class="text-muted mb-0">See details of client reminders today</p>
                               </div>
-                              <div class="me-auto text-sm-right pt-2 pt-sm-0">
-                                <p class="text-muted">50 minutes ago</p>
-                                <p class="text-muted mb-0">27 tasks, 4 issues </p>
-                              </div>
+                            </a>
                             </div>
                           </div>
                         </div>
@@ -354,96 +306,43 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">All Records </h4>
+                    <h4 class="card-title">All Customer Sales </h4>
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
                           <tr>
                             <th> Client Name </th>
-                            <th> Order No </th>
-                            <th> Product Cost </th>
-                            <th> Project </th>
+                            <th> Estate </th>
+                            <th> Plot no.</th>
                             <th> Payment Mode </th>
-                            <th> Start Date </th>
-                            <th> Payment Status </th>
+                            <th> Amount paid </th>
+                            <th> Balance </th>
+                            <th> View-record </th>
                           </tr>
                         </thead>
                         <tbody>
+                            @foreach ($all_sales as $all_sale)
                           <tr>
                             
                             <td>
-                              <img src="/assets/images/faces/face1.jpg" alt="image" />
-                              <span class="ps-2">{{$LoggedAdminInfo['username']}}</span>
+                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id}}" alt="" id="week_img">
+                              <span class="ps-2">{{$all_sale->firstname}}</span>
                             </td>
-                            <td> 02312 </td>
-                            <td> $14,500 </td>
-                            <td> Dashboard </td>
-                            <td> Credit card </td>
-                            <td> 04 Dec 2019 </td>
-                            <td>
-                              <div class="badge badge-outline-success">Approved</div>
-                            </td>
+
+                            
+                            <td> {{$all_sale->estate}}  </td>
+                            <td> {{$all_sale->plot_number}} </td>
+                            <td> {{$all_sale->method_payment}} </td>
+                            <td> {{$all_sale->amount_payed}} </td>
+                            <td> {{$all_sale->balance}} </td>
+                                
+                                <td><a href="{{'view-reciept/'.$all_sale->id}}" class="btn btn-outline-success btn-icon-text">
+                                    <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>                           
+                            @endforeach
+                            
                           </tr>
-                          <tr>
                           
-                            <td>
-                              <img src="/assets/images/faces/face2.jpg" alt="image" />
-                              <span class="ps-2">Estella Bryan</span>
-                            </td>
-                            <td> 02312 </td>
-                            <td> $14,500 </td>
-                            <td> Website </td>
-                            <td> Cash on delivered </td>
-                            <td> 04 Dec 2019 </td>
-                            <td>
-                              <div class="badge badge-outline-warning">Pending</div>
-                            </td>
-                          </tr>
-                          <tr>
-                            
-                            <td>
-                              <img src="/assets/images/faces/face5.jpg" alt="image" />
-                              <span class="ps-2">Lucy Abbott</span>
-                            </td>
-                            <td> 02312 </td>
-                            <td> $14,500 </td>
-                            <td> App design </td>
-                            <td> Credit card </td>
-                            <td> 04 Dec 2019 </td>
-                            <td>
-                              <div class="badge badge-outline-danger">Rejected</div>
-                            </td>
-                          </tr>
-                          <tr>
-                            
-                            <td>
-                              <img src="/assets/images/faces/face3.jpg" alt="image" />
-                              <span class="ps-2">Peter Gill</span>
-                            </td>
-                            <td> 02312 </td>
-                            <td> $14,500 </td>
-                            <td> Development </td>
-                            <td> Online Payment </td>
-                            <td> 04 Dec 2019 </td>
-                            <td>
-                              <div class="badge badge-outline-success">Approved</div>
-                            </td>
-                          </tr>
-                          <tr>
-                            
-                            <td>
-                              <img src="/assets/images/faces/face4.jpg" alt="image" />
-                              <span class="ps-2">Sallie Reyes</span>
-                            </td>
-                            <td> 02312 </td>
-                            <td> $14,500 </td>
-                            <td> Website </td>
-                            <td> Credit card </td>
-                            <td> 04 Dec 2019 </td>
-                            <td>
-                              <div class="badge badge-outline-success">Approved</div>
-                            </td>
-                          </tr>
+                         
                         </tbody>
                       </table>
                     </div>
@@ -452,78 +351,9 @@
               </div>
             </div>
             <div class="row">
-              
+        
             </div>
-            <div class="row">
-              <div class="col-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Visitors by Countries</h4>
-                    <div class="row">
-                      <div class="col-md-5">
-                        <div class="table-responsive">
-                          <table class="table">
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <i class="flag-icon flag-icon-us"></i>
-                                </td>
-                                <td>USA</td>
-                                <td class="text-right"> 1500 </td>
-                                <td class="text-right font-weight-medium"> 56.35% </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <i class="flag-icon flag-icon-de"></i>
-                                </td>
-                                <td>Germany</td>
-                                <td class="text-right"> 800 </td>
-                                <td class="text-right font-weight-medium"> 33.25% </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <i class="flag-icon flag-icon-au"></i>
-                                </td>
-                                <td>Australia</td>
-                                <td class="text-right"> 760 </td>
-                                <td class="text-right font-weight-medium"> 15.45% </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <i class="flag-icon flag-icon-gb"></i>
-                                </td>
-                                <td>United Kingdom</td>
-                                <td class="text-right"> 450 </td>
-                                <td class="text-right font-weight-medium"> 25.00% </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <i class="flag-icon flag-icon-ro"></i>
-                                </td>
-                                <td>Romania</td>
-                                <td class="text-right"> 620 </td>
-                                <td class="text-right font-weight-medium"> 10.25% </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <i class="flag-icon flag-icon-br"></i>
-                                </td>
-                                <td>Brasil</td>
-                                <td class="text-right"> 230 </td>
-                                <td class="text-right font-weight-medium"> 75.00% </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      <div class="col-md-7">
-                        <div id="audience-map" class="vector-map"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
           </div>
           <!-- content-wrapper ends -->
           <!-- partial:partials/_footer.html -->

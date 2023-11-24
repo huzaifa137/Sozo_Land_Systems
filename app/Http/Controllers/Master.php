@@ -103,9 +103,30 @@ class Master extends Controller
 
     public function dashboard()
     {
+
+        $all_sales = buyer::all();
+
+        $currentDate = Carbon::today();
+        $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
+
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        $totalweekSales = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('amount_payed');
+
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+        $totalmonthSales = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
+                    ->sum('amount_payed');
+
+        $plots_fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")->count();
+        $under_payment = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")->count();
+    
+        $amount_in_debts = buyer::whereDate('created_at', $currentDate)->sum('balance');
+       
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
         
-        return view('Admin.dashboard',$data);
+        return view('Admin.dashboard',$data ,compact(['all_sales','totalAmount','totalweekSales','totalmonthSales'
+                                                    ,'plots_fully_paid','under_payment','amount_in_debts']));
     }
 
     public function admin_buyer(){
@@ -507,11 +528,14 @@ class Master extends Controller
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
-                $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
         $weeklyRecords = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->get();
-            
-         return view('Admin.Sales.weekly',$data, compact(['weeklyRecords']));
+        $totalAmount = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('amount_payed');
+        $plots_sold = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay', "Fully payed")->count();
+        $under_payment_plots = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay','!=', "Fully payed")->count();
+
+        return view('Admin.Sales.weekly',$data, compact(['weeklyRecords','totalAmount','plots_sold','under_payment_plots']));
 
     }
 
@@ -532,9 +556,14 @@ class Master extends Controller
     public function all_sales(){
 
         $all_sales = buyer::all();
+
+        $totalAmount = buyer::sum('amount_payed');
+        $plots_sold =  DB::table('buyers')->where('next_installment_pay', "Fully payed")->count();
+        $under_payment_plots =  DB::table('buyers')->where('next_installment_pay','!=', "Fully payed") ->count();
+
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-        return view('Admin.customer_sales',$data,compact(['all_sales']));
+        return view('Admin.customer_sales',$data,compact(['all_sales','totalAmount','plots_sold','under_payment_plots']));
     }
 
     public function recordsOnCurrentDate()
@@ -542,23 +571,37 @@ class Master extends Controller
 
         $currentDate = Carbon::today();
         $records = buyer::whereDate('created_at', $currentDate)->get();
+        $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
+        $plots_sold = buyer::whereDate('created_at', $currentDate)->where('next_installment_pay', "Fully payed")->count();
+        $under_payment_plots = buyer::whereDate('created_at', $currentDate)->where('next_installment_pay','!=', "Fully payed")->count();
+
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-        return view('Admin.Sales.today',$data, ['records' => $records]);
+        return view('Admin.Sales.today',$data, compact(['records','totalAmount','plots_sold','under_payment_plots']));
     }
 
         public function recordsInCurrentMonth()
         {
+
+
             $currentMonth = Carbon::now()->month;
             $currentYear = Carbon::now()->year;
            
-             $records = buyer::whereYear('created_at', $currentYear)
-                ->whereMonth('created_at', $currentMonth)
-                ->get();
+             $records = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
+                                                                    ->get();
 
+            $totalAmount = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
+                        ->sum('amount_payed');
+
+            $plots_sold = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
+                        ->where('next_installment_pay', "Fully payed")->count();
+          
+            $under_payment_plots = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
+                        ->where('next_installment_pay','!=', "Fully payed")->count();
+                
             $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
             
-            return view('Admin.Sales.monthly',$data, ['records' => $records]);
+            return view('Admin.Sales.monthly',$data, compact(['records','totalAmount','plots_sold','under_payment_plots']));
             
         }
 
