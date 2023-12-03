@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('estates', function (Blueprint $table) {
             $table->id();
             $table->text('estate_name');
+            $table->text('estate_price');
             $table->text('location');
             $table->text('number_of_plots');
             $table->timestamps();

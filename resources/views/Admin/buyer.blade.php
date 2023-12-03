@@ -38,8 +38,8 @@
       <!-- partial:../../partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="../../index.html"><img src="/assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="../../index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
         </div>
         
         @include('includes.SideBar')
@@ -50,7 +50,7 @@
         <!-- partial:../../partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -162,21 +162,21 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">National ID</label>
+                            <label class="col-sm-3 col-form-label">National ID Front</label>
                             <div class="col-sm-9">
-                              <input type="file" name="national_id" id="national_id" class="form-control" required>
+                              <input type="file" name="national_id_front" id="national_id_front" class="form-control" required>
                             </div>
                           </div>
                         </div>
 
-                        {{-- <div class="col-md-6">
+                        <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Signature</label>
+                            <label class="col-sm-3 col-form-label">National ID back</label>
                             <div class="col-sm-9">
-                              <input type="file" name="signature" class="form-control" />
+                              <input type="file" name="national_id_back" id="national_id_back" class="form-control" required>
                             </div>
                           </div>
-                        </div> --}}
+                        </div>
 
                          <div class="col-md-6">  
                           <div class="form-group row">
@@ -185,7 +185,7 @@
                               <select name="land_poster" id="land_poster" class="form-control" required>
                                 <option value="">--- Poster Payment---</option>
                                 <option value="Paid">Paid</option>
-                                <option value="Not paid">Not paid</option>
+                                {{-- <option value="Not paid">Not paid</option> --}}
                               </select>
                           </div>
                         </div>
@@ -202,7 +202,7 @@
                             <div class="col-sm-9">
                               <select name="payment_method" id="payment_method" class="form-control" required>
                                 <option value="">--- Select Payment ---</option>
-                                <option value="Full_payment">Full Payment</option>
+                                {{-- <option value="Full_payment">Full Payment</option> --}}
                                 <option value="paying_in_installments">Paying in Installments</option>
                               </select>
                             </div>
@@ -237,8 +237,8 @@
                             <div class="col-sm-9">
                               <select name="purchase_type" id="purchase_type" class="form-control" required>
                                  <option value="">---Select Category ---</option>
-                                <option value="buying_a_plot">Buying a plot</option>
-                                <option value="buying_a_house">Buying a house</option>
+                                <option value="plot">Buying a plot</option>
+                                <option value="house">Buying a house</option>
                               </select>
                             </div>
                           </div>
@@ -279,19 +279,36 @@
 
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Width</label>
+                            <label class="col-sm-3 col-form-label">Width1</label>
                             <div class="col-sm-9">
-                                <input type="text" name="plot_width" id="plot_width" class="form-control" />
+                                <input type="number" name="plot_width1" id="plot_width1" class="form-control" />
                             </div>
                           </div>
                         </div>
 
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Width2</label>
+                            <div class="col-sm-9">
+                                <input type="number" name="plot_width2" id="plot_width2" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Height</label>
+                              <label class="col-sm-3 col-form-label">Height1</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="plot_height" id="plot_height" class="form-control" />
+                                  <input type="number" name="plot_height1" id="plot_height1" class="form-control" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Height2</label>
+                              <div class="col-sm-9">
+                                  <input type="number" name="plot_height2" id="plot_height2" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -347,9 +364,18 @@
 
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Width</label>
+                            <label class="col-sm-3 col-form-label">Width1</label>
                             <div class="col-sm-9">
-                                <input type="text" name="house_width" id="house_width" class="form-control" />
+                                <input type="text" name="house_width1" id="house_width1" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Width2</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="house_width2" id="house_width2" class="form-control" />
                             </div>
                           </div>
                         </div>
@@ -357,9 +383,18 @@
 
                         <div class="col-md-6">
                             <div class="form-group row">
-                              <label class="col-sm-3 col-form-label">Height</label>
+                              <label class="col-sm-3 col-form-label">Height1</label>
                               <div class="col-sm-9">
-                                  <input type="text" name="house_height" id="house_height" class="form-control" />
+                                  <input type="text" name="house_height1" id="house_height1" class="form-control" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Height2</label>
+                              <div class="col-sm-9">
+                                  <input type="text" name="house_height2" id="house_height2" class="form-control" />
                               </div>
                             </div>
                           </div>
@@ -396,6 +431,7 @@
                           </div>
                         </div>
                       </div>
+                      
                       <div class="col-md-6">
                         <div class="form-group row">
                           <label class="col-sm-4 col-form-label">Next  payment</label>
@@ -510,53 +546,52 @@
 
               var purchase_type = $(this).val();
 
-                if(purchase_type == 'buying_a_plot'){
+                if(purchase_type == 'plot'){
                     $('#plot_information_block').show();
                     $('#house_information_block').hide();
                 }
-                else if(purchase_type == 'buying_a_house'){
+                else if(purchase_type == 'house'){
                   $('#house_information_block').show();
                   $('#plot_information_block').hide();
-
                 }
               });
 
-
-
               $('#submit_click').click(function(){
-
+               
               var firstname = $('#firstname').val();
 							var lastname = $('#lastname').val();
 							var gender = $('#gender').val();
               var date_of_birth = $('#date_of_birth').val();
               var NIN = $('#NIN').val();
-              var national_id = $("#national_id")[0].files[0];
+              var national_id_front = $("#national_id_front")[0].files[0];
+              var national_id_back = $("#national_id_back")[0].files[0];
               var card_number = $('#card_number').val();
               var land_poster = $('#land_poster').val();
               var payment_method = $('#payment_method').val();
               var purchase_type = $('#purchase_type').val();
 
-              if(purchase_type == "buying_a_plot"){
+              if(purchase_type == "plot"){
 
                 var estate = $('#Estate_plot').val();
                 var location = $('#location_plot').val();
-                var width = $('#plot_width').val();
-                var height = $('#plot_height').val();
+                var width_1 = $('#plot_width1').val();
+                var width_2 = $('#plot_width2').val();
+                var height_1 = $('#plot_height1').val();
+                var height_2 = $('#plot_height2').val();
                 var plot_number = $('#plot_number').val();
-
               }
               else{
                 var estate = $('#Estate_house').val();
                 var location = $('#location_house').val();
-                var width = $('#house_width').val();
-                var height = $('#house_height').val();
+                var width_1 = $('#house_width1').val();
+                var width_2 = $('#house_width2').val();
+                var height_1 = $('#house_height1').val();
+                var height_2 = $('#house_height2').val();
                 var plot_number = $('#house_plot_number').val();
               }
 
               if(payment_method == 'paying_in_installments'){
               
-                // var amount_payed = $('#entered_installment_amount').val();
-                // var balance = $('#balance').val();
                 var amount_payed = "0";
                 var next_installment_pay = $('#next_installment_date').val();
                 var balance = "0";
@@ -581,24 +616,28 @@
               else 
               {
 
-                  // alert("Form submitted successfully!");
+                $('#submit_click').attr('disabled','false');
+							       $('#submit_click').html('Selling...');
 
-                  var form_data = new FormData();
+              var form_data = new FormData();
 
 							form_data.append('firstname', firstname);
 							form_data.append('lastname', lastname);
               form_data.append('gender', gender);
 							form_data.append('date_of_birth', date_of_birth);
               form_data.append('NIN', NIN);
-							form_data.append('national_id', national_id);
+							form_data.append('national_id_front', national_id_front);
+              form_data.append('national_id_back', national_id_back);
               form_data.append('card_number', card_number);
 							form_data.append('land_poster', land_poster);
               form_data.append('payment_method', payment_method);
 							form_data.append('purchase_type', purchase_type);
               form_data.append('estate', estate);
 							form_data.append('location', location);
-              form_data.append('width', width);
-							form_data.append('height', height);
+              form_data.append('width_1', width_1);
+              form_data.append('width_2', width_2);
+							form_data.append('height_1', height_1);
+							form_data.append('height_2', height_2);
               form_data.append('plot_number', plot_number);
 							form_data.append('amount_payed', amount_payed);
               form_data.append('balance', balance);
@@ -617,8 +656,17 @@
                   url			:'/store-buyer-details',
                   success		:function(data){
                     if(data.status){
-                      alert(data.message);
-                      location.replace('/userdata/'+data.user_id);
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message,
+                        color: '#FFF',
+                        background:'#452e6f',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/admin-buyer';
+                        }
+                      });
                     }
                   },
                   error: function(data)
@@ -652,8 +700,12 @@
                     errors.push("NIN number is required.");
                 }
             
-                if (!national_id) {
-                    errors.push("National ID is required.");
+                if (!national_id_front) {
+                    errors.push("National ID Front is required.");
+                }
+
+                if (!national_id_back) {
+                    errors.push("National ID back is required.");
                 }
 
                 if (!card_number) {
@@ -678,14 +730,6 @@
             
                 if (!location) {
                     errors.push("Location is required.");
-                }
-
-                if (!width) {
-                    errors.push("Width is required.");
-                }
-            
-                if (!height) {
-                    errors.push("Height name is required.");
                 }
 
                 if (!plot_number) {
@@ -729,7 +773,6 @@
                 html: errorMessage,
                 color: '#FFF',
                 background:'#452e6f',
-                
             });
         }
 	
@@ -740,8 +783,8 @@
 
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="script.js"></script>
 
+  <script src="script.js"></script>
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->

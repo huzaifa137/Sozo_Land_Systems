@@ -116,6 +116,15 @@
                             </div>
                           </div>
                         </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Estate Price :</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="estate_price" id="estate_price" class="form-control" required>
+                            </div>
+                          </div>
+                        </div>
                         
                       </div>
                       

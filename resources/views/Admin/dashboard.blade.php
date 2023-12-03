@@ -28,8 +28,8 @@
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="index.html"><img src="/assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
         </div>
 
         @include('includes.SideBar')
@@ -173,7 +173,6 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           <h3 class="mb-0">{{$amount_in_debts}}/=</h3>
-                          {{-- <p class="text-danger ms-2 mb-0 font-weight-medium">-2.4%</p> --}}
                         </div>
                       </div>
                       <div class="col-3">

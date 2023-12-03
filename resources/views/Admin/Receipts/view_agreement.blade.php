@@ -107,11 +107,22 @@
                                           <td class="text-info">Date of birth</td>
                                           <td class="text-right font-weight-medium">{{$data->date_of_birth}} </td>
                                         </tr>
+
+
                                         <tr>
-                                         
                                           <td class="text-info">NIN</td>
                                           <td class="text-right font-weight-medium"> {{$data->NIN}} </td>
                                         </tr>
+
+                                        {{-- <tr>
+                                          <td class="text-info">Card Number</td>
+                                          <td class="text-right font-weight-medium"> {{$data->card_number}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Payment Method</td>
+                                          <td class="text-right font-weight-medium"> {{$data->method_payment}} </td>
+                                        </tr> --}}
 
                                         <tr> 
                                           <td class="text-info">Land Poster</td>
@@ -129,6 +140,33 @@
                                         </tr>
 
                                         <tr>
+                                          <td class="text-info">Width 1</td>
+                                          <td class="text-right font-weight-medium"> {{$data->width_1}} </td>
+                                        </tr>
+
+
+                                        <tr>
+                                          <td class="text-info">Width 2</td>
+                                          <td class="text-right font-weight-medium"> {{$data->width_2}} </td>
+                                        </tr>
+
+
+                                        <tr>
+                                          <td class="text-info">Height 1</td>
+                                          <td class="text-right font-weight-medium"> {{$data->height_1}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Height 2</td>
+                                          <td class="text-right font-weight-medium"> {{$data->height_2}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">purchasing </td>
+                                          <td class="text-right font-weight-medium"> {{$data->purchase_type}} </td>
+                                        </tr>
+
+                                        <tr>
                                           <td class="text-info">Amount paid</td>
                                           <td class="text-right font-weight-medium"> {{$data->amount_payed}} </td>
                                         </tr>
@@ -138,14 +176,17 @@
                                           <td class="text-right font-weight-medium"> {{$data->balance}} </td>
                                         </tr>
 
-
                                       </tbody>
                                     </table>
                                   </div>
                                 </div>
                                 <div class="col-md-7">
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_front}}" alt="">
+                                  </div>
+
+                                  <div id="audience-map" class="vector-map">
+                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_back}}" alt="">
                                   </div>
                                   @endforeach
                                 </div>

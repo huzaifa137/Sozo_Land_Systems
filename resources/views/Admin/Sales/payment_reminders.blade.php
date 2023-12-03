@@ -40,8 +40,8 @@
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="index.html"><img src="/assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
         </div>
 
         @include('includes.SideBar')
@@ -52,7 +52,7 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="{{route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -107,7 +107,20 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Sozo Properties Customer Sales </h4>
+                    <h4 class="card-title">Sozo Properties Customer to be reminded for payments today </h4>
+                   
+                    @if (Session::get('success'))
+										<div class="alert alert-success">
+											{{Session::get('success')}}
+										</div>
+									@endif
+
+                  @if (Session::get('failed'))
+										<div class="alert alert-danger">
+											{{Session::get('danger')}}
+										</div>
+									@endif
+                  
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
@@ -115,7 +128,7 @@
                             <th> Client Name </th>
                             <th> Estate </th>
                             <th> Plot no.</th>
-                            <th> Payment Mode </th>
+                            <th> Purchasing</th>
                             <th> Amount paid </th>
                             <th> Balance </th>
                             <th> View-record </th>
@@ -126,19 +139,21 @@
                           <tr>
                             
                             <td>
-                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id}}" alt="" id="week_img">
+                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
                               <span class="ps-2">{{$all_sale->firstname}}</span>
                             </td>
-
                             
                             <td> {{$all_sale->estate}}  </td>
                             <td> {{$all_sale->plot_number}} </td>
-                            <td> {{$all_sale->method_payment}} </td>
+                            <td> {{$all_sale->purchase_type}} </td>
                             <td> {{$all_sale->amount_payed}} </td>
                             <td> {{$all_sale->balance}} </td>
                                 
                                 <td><a href="{{'view-reciept/'.$all_sale->id}}" class="btn btn-outline-success btn-icon-text">
-                                    <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>                           
+                                    <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>      
+                                    
+                                    <td><a href="{{'update-payment-reminder/'.$all_sale->id}}" class="btn btn-outline-primary btn-icon-text">
+                                      <i class="mdi mdi-eye btn-icon-prepend"></i> update Status </a> </td> 
                             @endforeach
                             
                           </tr>

@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->text('estate');
             $table->text('plot_number');
-            $table->text('width');
-            $table->text('height');
+            $table->text('width_1');
+            $table->text('width_2');
+            $table->text('height_1');
+            $table->text('height_2');
             $table->text('status');
             $table->text('location');
             $table->timestamps();

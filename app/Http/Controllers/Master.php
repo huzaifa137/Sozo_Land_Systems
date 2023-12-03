@@ -123,6 +123,8 @@ class Master extends Controller
     
         $amount_in_debts = buyer::whereDate('created_at', $currentDate)->sum('balance');
        
+        // $amount_in_debts = DB::select('select sum(balance) from buyers');
+
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
         
         return view('Admin.dashboard',$data ,compact(['all_sales','totalAmount','totalweekSales','totalmonthSales'
@@ -142,6 +144,9 @@ class Master extends Controller
 
     public function store_buyer_details(Request $request){
 
+        $currentDate = Carbon::now();
+        $formattedDate = $currentDate->format('Y/m/d');
+
         $post = new buyer;
 
         $post->firstname= $request->firstname;
@@ -149,23 +154,37 @@ class Master extends Controller
         $post->gender= $request->gender;
         $post->date_of_birth= $request->date_of_birth;
         $post->NIN= $request->NIN;
-        $file=$request->national_id;
+
+        $file=$request->national_id_front;
         $filename=date('YmdHi').$file->getClientOriginalName();
         $file->move(public_path('public/national_id'),$filename);
-        $post->national_id=$filename;    
+        $post->national_id_front=$filename; 
+        
+        $file=$request->national_id_back;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/national_id'),$filename);
+        $post->national_id_back=$filename; 
+        
         $post->card_number= $request->card_number;
         $post->land_poster= $request->land_poster;
         $post->method_payment= $request->payment_method;
         $post->purchase_type= $request->purchase_type;
         $post->estate= $request->estate;
         $post->location= $request->location;
-        $post->width= $request->width;
-        $post->height= $request->height;
+
+        $post->width_1= $request->width_1;
+        $post->width_2= $request->width_2;
+        $post->height_1= $request->height_1;
+        $post->height_2= $request->height_2;
+
+
         $post->plot_number= $request->plot_number;
         $post->amount_payed= $request->amount_payed;
         $post->balance= $request->balance;
         $post->reciepts= $request->receipt_img;
         $post->agreement = $request->agreement;
+        $post->date_sold = $formattedDate;
+
         // $file=$request->receipt_img;
         // $filename=date('YmdHi').$file->getClientOriginalName();
         // $file->move(public_path('public/receipts'),$filename);
@@ -180,12 +199,11 @@ class Master extends Controller
         
         $save = $post->save();
 
-        // DB::insert('insert into reciepts (user_id,amount,balance,reciept) values (?,?,?,?)', [$user_agree_id,$balance,$user_amount_paid,$reciepts]);
+        return response()->json([
+            "status"=>TRUE,
+            "message"=>"Sale has been done successfull",
+        ]);
 
-        if($save){
-           
-            return back()->with('success','Sale has been done successfull');
-        }
     }
 
 
@@ -227,13 +245,13 @@ class Master extends Controller
 
        $post->estate_name = $request->estate_name;
        $post->location = $request->location;
+       $post->estate_price = $request->estate_price;
        $post->number_of_plots = $request->number_of_plots;
        $post->save();
         
-       Alert::success('Estate added', 'Congurations on adding a new Estate');
+    //    Alert::success('Estate added', 'Congurations on adding a new Estate');
 
-
-       return back();
+       return back()->with('success','Congurations on adding a new Estate');
     }
 
     public function plots(){
@@ -255,36 +273,200 @@ class Master extends Controller
     }
 
     public function send_plot_estate(Request $request){
+
+        $status = $request->land_status;
+        $estate_name = $request->Estate;
+
+        $no_of_plots =estate::where('estate_name',$estate_name)->value('number_of_plots');
+        $count_estates = buyer::where('estate',$estate_name)->count();
+
+        $plot_numb = $request->House_plot;
+
+        if($plot_numb == "Plot"){
+            if($count_estates >= $no_of_plots){
+                return response()->json([
+                    "status"=>FALSE,
+                    "message"=>"The plots in this estate are fully taken",
+                  ]);
+            }
+        }
+
+        if($plot_numb == "Plot"){
+                if($status == "Not_taken"){
+                    $count_estates = plot::where('estate',$estate_name)->count();
+                        if($count_estates >= $no_of_plots){
+
+                        return response()->json([
+                        "status"=>FALSE,
+                        "message"=>"The plots in this estate are fully taken",
+                    ]);
+
+                }
+            }
+        }
         
-        $data = $request->all();
+        if($status == "Fully_taken"){
+            $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
 
-        $post = new plot;
+            $paid_amount = $request->amount_paid;
+            if($paid_amount < $estate_price)
+            {
+                return response()->json([
+                    "status"=>FALSE,
+                    "message"=>"Amount used to purchase this plot is less",
+                ]);
+            }
+        }
 
-       $post->estate = $request->Estate;
-       $post->plot_number = $request->plot_number;
-       $post->location = $request->location;
-       $post->width = $request->width;
-       $post->height = $request->height;
-       $post->status = $request->status;
-       
-       $post->save();
+        if($status == "Fully_taken"){
+
+         $post = new buyer;
+
+        $post->firstname= $request->firstname;
+        $post->lastname= $request->lastname;
+        $post->gender= "-";
+        $post->date_of_birth= "-";
+        $post->NIN= "-";
+
+        $file=$request->agreement_added;
+        $filename1=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/agreements'),$filename1);
+        $post->agreement=$filename1;
+
+        $file=$request->national_id_front;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/national_id'),$filename);
+        $post->national_id_front=$filename; 
         
-       Alert::success('Plot added', 'Congurations on adding a new Plot');
+        $file=$request->national_id_back;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/national_id'),$filename);
+        $post->national_id_back=$filename; 
 
-       return back();
+
+        $post->card_number= "-";
+        $post->land_poster= "Paid";
+        $post->method_payment= "paying_in_installments";
+        $post->purchase_type= $request->House_plot;
+        $post->estate= $request->Estate;
+        $post->location= $request->location;
+        $post->width_1= $request->width1;
+        $post->width_2= $request->width2;
+        $post->height_1= $request->height1;
+        $post->height_2= $request->height2;
+        $post->plot_number= $request->plot_number;
+        $post->balance= $request->balance;
+        $post->date_sold = $request->date_sold;
+        $post->next_installment_pay = "Fully payed";
+        $post->amount_payed = $request->amount_paid;
+
+        $post->save();
+        
+        $plot_number = $request->plot_number;
+        $user_id =buyer::where('plot_number',$plot_number)->value('id');
+        
+        $user_id = $user_id;
+        $reciepts = "-";
+        $agreement_reciept = $filename1; 
+        $user_amount_paid = $request->amount_paid;
+        $Date_of_payment = $request->date_sold;
+         
+        $save = new agreement();
+
+        $save->user_id = $user_id;
+        $save->Amount_paid = $user_amount_paid;
+        $save->Date_of_payment = $Date_of_payment;
+        $save->reciept=$reciepts;
+        $save->agreement=$filename1;
+        $save->save();
+
+       return response()->json([
+        "status"=>TRUE,
+        "message"=>"Congurations on adding a new Plot",
+      ]);
+
+        }
+        else if($status == "Under_payment"){
+
+         
+            $post = new buyer;
+
+            $post->firstname= $request->firstname;
+            $post->lastname= $request->lastname;
+            $post->gender= "-";
+            $post->date_of_birth= "-";
+            $post->NIN= "-";
+            $post->agreement=$request->agreement_added;; 
+
+            $file=$request->national_id_front;
+            $filename=date('YmdHi').$file->getClientOriginalName();
+            $file->move(public_path('public/national_id'),$filename);
+            $post->national_id_front=$filename; 
+            
+            $file=$request->national_id_back;
+            $filename=date('YmdHi').$file->getClientOriginalName();
+            $file->move(public_path('public/national_id'),$filename);
+            $post->national_id_back=$filename; 
+
+            
+            $post->card_number= "-";
+            $post->land_poster= "Paid";
+            $post->method_payment= "paying_in_installments";
+            $post->purchase_type= $request->House_plot;
+            $post->estate= $request->Estate;
+            $post->location= $request->location;
+            $post->width_1= $request->width1;
+            $post->width_2= $request->width2;
+            $post->height_1= $request->height1;
+            $post->height_2= $request->height2;
+            $post->plot_number= $request->plot_number;
+            $post->balance= $request->balance;
+            $post->date_sold = $request->date_sold;
+            $post->next_installment_pay = $request->next_installment_date;
+            $post->amount_payed = $request->amount_paid;
+            $post->reciepts = '0';
+    
+            $post->save();
+
+            return response()->json([
+                "status"=>TRUE,
+                "message"=>"Congurations on adding a new Plot",
+              ]);
+        }
+        else
+        {
+
+            $post = new plot;
+
+            $post->estate = $request->Estate;
+            $post->plot_number = $request->plot_number;
+            $post->location = $request->location;
+            $post->width_1= $request->width1;
+            $post->width_2= $request->width2;
+            $post->height_1= $request->height1;
+            $post->height_2= $request->height2;
+            $post->status = "Not taken";
+            
+            $post->save();
+
+            return response()->json([
+                "status"=>TRUE,
+                "message"=>"Congurations on adding a new Plot",
+              ]);
+        }
     }
 
     public function send_house_data(Request $request){
-
-        // return $request->all();
 
         $post = new house;
 
         $post->estate = $request->Estate;
         $post->plot_number = $request->plot_number;
         $post->location = $request->location;
-        $post->width = $request->width;
-        $post->height = $request->height;
+        $post->width_1= $request->width1;
+        $post->width_2= $request->width2;
+        $post->height_1= $request->height1;
+        $post->height_2= $request->height2;
         $post->status = $request->status;
 
         $post->save();
@@ -474,6 +656,22 @@ class Master extends Controller
     {
 
         $user_id = $request->user_id;
+        $original_amount =buyer::where('id',$user_id)->value('amount_payed');
+
+        $estate_name =buyer::where('id',$user_id)->value('estate');
+        $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
+
+        $user_amount_paid = $request->amount_paid;
+        $all_cash = $original_amount+$user_amount_paid;
+
+
+            if($all_cash < $estate_price)
+            {
+                return back()->with('error','This amount paid is not enough to take this plot in this estate');
+            }
+           
+       
+        $user_id = $request->user_id;
         $reciepts = $request->reciept_added;
         $agreement_reciept = $request->agreement_added;
         $user_amount_paid = $request->amount_paid;
@@ -516,7 +714,7 @@ class Master extends Controller
         
         if($save)
         {
-            return redirect('pending-buyers')->with('success','Agreement has been recorded successfully');
+            return redirect('pending-buyers')->with('success','Agreement has been recorded and plot been sold successfully');
         }
     }
 
@@ -617,5 +815,107 @@ class Master extends Controller
 
              return view('Admin.Sales.payment_reminders',$data, ['records' => $records]);
     }
+
+    public function update_payment_reminder($id)
+    {
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        $records = buyer::find($id);
+
+         return view('Admin.Sales.update_payment_reminder',$data,compact(['records']));
+    }
+
+    public function store_update_payment_reminder(Request $request){
+        
+        $status = $request->status;
+        $reminder_date = $request->reminder_date;
+        $user_id = $request->user_id;
+        
+        if($status == 'Fully payed')
+        {
+            $update_buyer = buyer::where('id',$user_id)
+                                    ->update([ 'next_installment_pay'=> $status,
+                                                        ]);
+        }
+        else
+        {
+            $update_buyer = buyer::where('id',$user_id)
+                                    ->update([ 'next_installment_pay'=> $reminder_date,
+                                                        ]);
+        }
+        
+        return redirect('payment-reminder')->with('success','Payment reminder has been updated successfully');
+    }
+
+    // Resale Module
+
+    public function search_plot()
+    {
+
+        $records = Estate::all();
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Resale.search_plot',$data , compact(['records']));
+    }
+
+    public function search_land_db(Request $request)
+    {
+
+        $status = $request->land_plot;
+        $plot_no = $request->plot_no;
+        
+
+        if($status == 'House')
+        {
+            $land_estate = $request->land_estate;
+            $result=buyer::where(['purchase_type'=>$status,
+                                  'estate'=>$land_estate,
+                                  'plot_number'=>$plot_no])->get();
+            if(!count($result))
+            {
+                return back()->with('error','No house has been found with provided information');
+            }
+            else
+            {
+                return back()->with('success','Data has been found');
+            }
+        }
+        else
+        {
+
+            $land_estate = $request->estate;
+            $result=buyer::where(['purchase_type'=>$status,
+                                  'estate'=>$land_estate,
+                                  'plot_number'=>$plot_no])->get();
+
+            // $result1 =buyer::where('purchase_type',$status,
+            //             'estate',$land_estate,
+            //             'plot_number',$plot_no)->value('id');
+
+
+            //  dd($result1);
+
+             $user_information = DB::table('buyers')->where('id','=',$id)->get();
+
+
+             if(!count($result))
+             {
+                 return back()->with('error','No Plot has been found with provided information');
+             }
+             else
+             {
+                 return back()->with('success','Data has been found');
+             }
+             
+        }
+          
+    }
+
+        public function resale()
+        {
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+                        
+            return view('Admin.Resale.resale',$data);
+        }
 
 }

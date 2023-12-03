@@ -38,9 +38,9 @@
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('admin-buyer')}}">Sell</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{ route('plots')}}">Plots</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('add-house')}}">Houses</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('estates')}}">Estates</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('plots')}}">Plots and House</a></li>
+          {{-- <li class="nav-item"> <a class="nav-link" href="{{route('add-house')}}">Houses</a></li> --}}
         </ul>
       </div>
     </li>
@@ -58,7 +58,6 @@
           <li class="nav-item"> <a class="nav-link" href="{{ route('accomplished')}}">Full purchased</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers')}}">Under payments</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts')}}">Pending Receipts</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{ route('pending-agreements')}}">Pending Agreement</a></li>
         </ul>
       </div>
     </li>
@@ -81,6 +80,23 @@
       </div>
     </li>
 
+
+    <li class="nav-item menu-items">
+      <a class="nav-link " data-bs-toggle="collapse" href="#ui-resales" aria-expanded="false" aria-controls="ui-basic">
+        <span class="menu-icon">
+          <i class="mdi mdi-cards"></i>
+        </span>
+        <span class="menu-title">Resales</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-resales">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="{{ route('search-land')}}">Resale</a></li>
+        </ul>
+      </div>
+    </li>
+    
+
     <li class="nav-item menu-items">
       <a class="nav-link " data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
         <span class="menu-icon">
@@ -92,9 +108,10 @@
       <div class="collapse" id="ui-alerts">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('payment-reminder')}}">Today's reminders</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{route('current-sales')}}">Pending update</a></li>
         </ul>
       </div>
     </li>
+
+
 
   </ul>

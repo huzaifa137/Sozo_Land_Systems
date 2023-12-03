@@ -20,7 +20,6 @@ Route::group(['middleware'=>['AdminAuth']], function(){
 Route::get('admin-register',[Master::class,'register'])->name('admin-register');
 Route::post('admin-registration',[Master::class,'admin_register_data'])->name('admin-registration');
 
-
 Route::get('admin-dashboard',[Master::class,'dashboard'])->name('admin-dashboard');
 Route::get('admin-buyer',[Master::class,'admin_buyer'])->name('admin-buyer');
 
@@ -72,15 +71,7 @@ Route::get('add-first-receipt/{id}',[Master::class,'add_first_reciept']);
 Route::get('accomplished',[Master::class,'accomplished_buyers'])->name('accomplished');
 Route::get('view-agreement/{id}',[Master::class,'view_agreement'])->name('view-agreement');
 
- });
-
- 
-Route::get('/',[Master::class,'login']);
-Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
-
-
 // Sales
-
 
 Route::get('all-sales',[Master::class,'all_sales'])->name('all-sales');
 Route::get('current-sales',[Master::class,'recordsOnCurrentDate'])->name('current-sales');
@@ -89,3 +80,21 @@ Route::get('monthly-records',[Master::class,'recordsInCurrentMonth'])->name('mon
 
 // Payment reminders
 Route::get('payment-reminder',[Master::class,'searchByPaymentDate'])->name('payment-reminder');
+Route::get('update-payment-reminder/{id}',[Master::class,'update_payment_reminder']);
+Route::post('store-update-payment',[Master::class,'store_update_payment_reminder'])->name('store-update-payment');
+
+// Resale Module
+
+Route::get('search-land',[Master::class,'search_plot'])->name('search-land');
+Route::post('search-land-db',[Master::class,'search_land_db'])->name('search-land-db');
+
+Route::get('search-land',[Master::class,'search_plot'])->name('search-land');
+Route::get('resale',[Master::class,'resale'])->name('resale');
+ });
+
+ 
+Route::get('/',[Master::class,'login']);
+Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
+
+
+
