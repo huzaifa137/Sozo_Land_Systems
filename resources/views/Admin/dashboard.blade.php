@@ -40,7 +40,7 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -195,9 +195,7 @@
                     <div class="owl-carousel owl-theme full-width owl-carousel-dash portfolio-carousel" id="owl-carousel-basic">
                       @foreach ($all_sales as $all_sale)
                       <div class="item">
-                        <img src="{{'/public/national_id/'.$all_sale->national_id}}" alt=""  alt="">
-                        {{-- <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id}}" alt="" id="week_img"> --}}
-
+                        <img src="{{'/public/national_id/'.$all_sale->national_id_front}}" alt=""  alt="">
                       </div>
                       @endforeach
                     </div>
@@ -324,7 +322,7 @@
                           <tr>
                             
                             <td>
-                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id}}" alt="" id="week_img">
+                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
                               <span class="ps-2">{{$all_sale->firstname}}</span>
                             </td>
 

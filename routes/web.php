@@ -90,7 +90,15 @@ Route::post('search-land-db',[Master::class,'search_land_db'])->name('search-lan
 
 Route::get('search-land',[Master::class,'search_plot'])->name('search-land');
 Route::get('resale',[Master::class,'resale'])->name('resale');
- });
+Route::get('resale-amount/{id}',[Master::class,'resale_amount']);
+Route::post('store-resale-amount',[Master::class,'store_resale_amount'])->name('store-resale-amount');
+
+// Load data dynamically.
+
+Route::get('get-second-option',[Master::class,'get_secound_option'])->name('get-second-option');
+Route::get('get-input-option',[Master::class,'get_input_option'])->name('get-input-option');
+
+});
 
  
 Route::get('/',[Master::class,'login']);

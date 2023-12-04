@@ -8,6 +8,7 @@ use App\Models\buyer;
 use App\Models\Estate;
 use App\Models\plot;
 use App\Models\house;
+use App\Models\resale;
 use App\Models\reciept;
 use App\Models\agreement;
 use Illuminate\Support\Facades\Hash;
@@ -119,11 +120,12 @@ class Master extends Controller
                     ->sum('amount_payed');
 
         $plots_fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")->count();
-        $under_payment = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")->count();
-    
-        $amount_in_debts = buyer::whereDate('created_at', $currentDate)->sum('balance');
+        $under_payment = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")->where('next_installment_pay','!=',"Resold")->count();
+
+
+        // $amount_in_debts = buyer::whereDate('created_at', $currentDate)->sum('balance');
        
-        // $amount_in_debts = DB::select('select sum(balance) from buyers');
+        $amount_in_debts = buyer::sum('balance');
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
         
@@ -306,8 +308,8 @@ class Master extends Controller
         }
         
         if($status == "Fully_taken"){
-            $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
 
+            $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
             $paid_amount = $request->amount_paid;
             if($paid_amount < $estate_price)
             {
@@ -320,7 +322,7 @@ class Master extends Controller
 
         if($status == "Fully_taken"){
 
-         $post = new buyer;
+        $post = new buyer;
 
         $post->firstname= $request->firstname;
         $post->lastname= $request->lastname;
@@ -407,7 +409,6 @@ class Master extends Controller
             $filename=date('YmdHi').$file->getClientOriginalName();
             $file->move(public_path('public/national_id'),$filename);
             $post->national_id_back=$filename; 
-
             
             $post->card_number= "-";
             $post->land_poster= "Paid";
@@ -644,6 +645,17 @@ class Master extends Controller
                                               'amount_payed'=> $all_cash,
                                               'balance'=>$Balance]);
 
+        // Update First reciept records
+
+        $estate_no_no=buyer::where('id',$user_id)->value('estate');
+        $plot_no_no = buyer::where('id',$user_id)->value('plot_number');
+
+        $whereConditions = ['estate' => $estate_no_no,
+                            'plot_number' => $plot_no_no];
+                        
+        DB::table('plots')->where($whereConditions)->update(['status' => 'Underpayment',]);
+            
+
         if($update_buyer_amount)
         {
             return redirect('pending-buyers')->with('success','Reciept has been recorded successfully');
@@ -698,7 +710,6 @@ class Master extends Controller
 
         $original_amount=buyer::where('id',$user_id)->value('amount_payed');
         $all_cash = $original_amount+$user_amount_paid;
-
         
         $save = $post->save();
 
@@ -708,6 +719,15 @@ class Master extends Controller
                                                             'amount_payed'=> $all_cash,
                                                             'balance'=>$balance]);
 
+         // Update First reciept records
+
+         $estate_no_no=buyer::where('id',$user_id)->value('estate');
+         $plot_no_no = buyer::where('id',$user_id)->value('plot_number');
+ 
+         $whereConditions = ['estate' => $estate_no_no,
+                             'plot_number' => $plot_no_no];
+
+        DB::table('plots')->where($whereConditions)->update(['status' => 'Fully payed',]);
 
         DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment) values (?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment]);
         
@@ -731,7 +751,7 @@ class Master extends Controller
         $weeklyRecords = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->get();
         $totalAmount = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('amount_payed');
         $plots_sold = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay', "Fully payed")->count();
-        $under_payment_plots = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay','!=', "Fully payed")->count();
+        $under_payment_plots = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay','!=', "Fully payed")->where('next_installment_pay','!=',"Resold")->count();
 
         return view('Admin.Sales.weekly',$data, compact(['weeklyRecords','totalAmount','plots_sold','under_payment_plots']));
 
@@ -757,7 +777,7 @@ class Master extends Controller
 
         $totalAmount = buyer::sum('amount_payed');
         $plots_sold =  DB::table('buyers')->where('next_installment_pay', "Fully payed")->count();
-        $under_payment_plots =  DB::table('buyers')->where('next_installment_pay','!=', "Fully payed") ->count();
+        $under_payment_plots = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")->where('next_installment_pay','!=',"Resold")->count();
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
@@ -771,8 +791,8 @@ class Master extends Controller
         $records = buyer::whereDate('created_at', $currentDate)->get();
         $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
         $plots_sold = buyer::whereDate('created_at', $currentDate)->where('next_installment_pay', "Fully payed")->count();
-        $under_payment_plots = buyer::whereDate('created_at', $currentDate)->where('next_installment_pay','!=', "Fully payed")->count();
-
+        $under_payment_plots = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")->where('next_installment_pay','!=',"Resold")->count();
+                                        
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
         return view('Admin.Sales.today',$data, compact(['records','totalAmount','plots_sold','under_payment_plots']));
@@ -795,8 +815,9 @@ class Master extends Controller
                         ->where('next_installment_pay', "Fully payed")->count();
           
             $under_payment_plots = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
-                        ->where('next_installment_pay','!=', "Fully payed")->count();
+                        ->where('next_installment_pay','!=', "Fully payed")->where('next_installment_pay','!=',"Resold")->count();
                 
+
             $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
             
             return view('Admin.Sales.monthly',$data, compact(['records','totalAmount','plots_sold','under_payment_plots']));
@@ -868,15 +889,21 @@ class Master extends Controller
         if($status == 'House')
         {
             $land_estate = $request->land_estate;
-            $result=buyer::where(['purchase_type'=>$status,
-                                  'estate'=>$land_estate,
-                                  'plot_number'=>$plot_no])->get();
-            if(!count($result))
+            $result = DB::table('buyers')
+                                  ->where('purchase_type', $status,)
+                                  ->where('estate', $land_estate,)
+                                  ->where('plot_number',$plot_no)
+                                  ->first();
+
+
+
+            if(!$result)
             {
-                return back()->with('error','No house has been found with provided information');
+                return back()->with('error','No House has been found with provided information');
             }
             else
             {
+                $user_id = $result->id;
                 return back()->with('success','Data has been found');
             }
         }
@@ -884,29 +911,27 @@ class Master extends Controller
         {
 
             $land_estate = $request->estate;
-            $result=buyer::where(['purchase_type'=>$status,
-                                  'estate'=>$land_estate,
-                                  'plot_number'=>$plot_no])->get();
+            $result = DB::table('buyers')
+                                  ->where('purchase_type', $status,)
+                                  ->where('estate', $land_estate,)
+                                  ->where('plot_number',$plot_no)
+                                  ->first();
 
-            // $result1 =buyer::where('purchase_type',$status,
-            //             'estate',$land_estate,
-            //             'plot_number',$plot_no)->value('id');
-
-
-            //  dd($result1);
-
-             $user_information = DB::table('buyers')->where('id','=',$id)->get();
-
-
-             if(!count($result))
+             if(!$result)
              {
                  return back()->with('error','No Plot has been found with provided information');
              }
              else
              {
-                 return back()->with('success','Data has been found');
+                 
+                 $id = $result->id;
+                 $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                 $user_reciepts = DB::table('reciepts')->where('user_id','=',$id)->get();
+                 $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+                 return view('Admin.Resale.resale',$data , compact(['user_information','user_reciepts','id']));
+
              }
-             
         }
           
     }
@@ -918,4 +943,91 @@ class Master extends Controller
             return view('Admin.Resale.resale',$data);
         }
 
+        public function resale_amount($id)
+        {
+
+            $user_id = $id;
+            $asset_info = DB::table('buyers')->where('id','=',$id)->first();
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+            return view('Admin.Resale.resale_amount',$data, compact(['asset_info','user_id']));
+        }
+
+        public function store_resale_amount(Request $request){
+
+            $user_id = $request->user_id;
+            $purchase_type = $request->purchase_type;
+            $estate = $request->estate;
+            $plot_no = $request->plot_no;
+            $amount_resold = $request->amount_resold;
+            $reciept = $request->reciept;
+
+            $post = new resale;
+
+            $post->user_id = $user_id;
+            $post->purchase_type = $purchase_type;
+            $post->estate = $estate;
+            $post->plot_number = $plot_no;
+            $post->amount_resold = $amount_resold;
+
+            $file=$reciept;
+            $filename=date('YmdHi').$file->getClientOriginalName();
+            $file->move(public_path('public/receipts'),$filename);
+            $post->reciept_resold=$filename;
+            
+            $save = $post->save();
+
+            $original_amount=buyer::where('id',$user_id)->value('amount_payed');
+            $all_cash = $original_amount+$amount_resold;
+
+            $update_buyer_amount=buyer::where('id',$user_id)
+                                    ->update([ 'amount_payed'=> $all_cash,
+                                                'next_installment_pay'=>"Resold",
+                                                        ]);
+
+                  $whereConditions = [
+                          'estate' => $estate,
+                          'plot_number' => $plot_no,
+                                     ];
+
+                  DB::table('plots')
+                        ->where($whereConditions)
+                        ->update(['status' => 'Not taken',]);
+                            
+                        
+
+            if($save)
+            {
+                return redirect('search-land')->with('success','Reselling has been accomplished successfully');
+            }
+            else
+            {
+                return redirect('search-land')->with('error','Reselling has been accomplished successfully');
+
+            }
+        }
+
+        // Load data dynamically.
+
+        public function get_secound_option(Request $request)
+        {
+            $info = $request->input('value');
+
+            $whereConditions = ['estate' => $info,
+                                'status' => "Not taken"];
+             $data = DB::table('plots')->where($whereConditions)->get();
+
+            return response()->json($data);
+        }
+
+        public function get_input_option(Request $request)
+        {
+            $info = $request->input('value');
+
+           
+            $whereConditions = ['plot_number' => $info,
+                                'status' => "Not taken"];
+                                
+             $data = DB::table('plots')->where($whereConditions)->get();
+             return response()->json($data);
+        }
 }

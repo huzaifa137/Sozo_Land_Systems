@@ -28,8 +28,8 @@
       <!-- partial:../../partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="../../index.html"><img src="/assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="../../index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
         </div>
         
         @include('includes.SideBar')
@@ -40,7 +40,7 @@
         <!-- partial:../../partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -87,6 +87,7 @@
                               <h4 class="card-title text-primary">Customer Information</h4>
                               @foreach ($user_information as $data)
                               <div class="row">
+                                <input type="hidden" name="id" value="{{$data->id}}">
                                 <div class="col-md-5">
                                   <div class="table-responsive">
                                     <table class="table">
@@ -112,21 +113,6 @@
                                         <tr>
                                           <td class="text-info">NIN</td>
                                           <td class="text-right font-weight-medium"> {{$data->NIN}} </td>
-                                        </tr>
-
-                                        {{-- <tr>
-                                          <td class="text-info">Card Number</td>
-                                          <td class="text-right font-weight-medium"> {{$data->card_number}} </td>
-                                        </tr>
-
-                                        <tr>
-                                          <td class="text-info">Payment Method</td>
-                                          <td class="text-right font-weight-medium"> {{$data->method_payment}} </td>
-                                        </tr> --}}
-
-                                        <tr> 
-                                          <td class="text-info">Land Poster</td>
-                                          <td class="text-right font-weight-medium">{{$data->land_poster}} </td>
                                         </tr>
 
                                         <tr>
@@ -176,6 +162,18 @@
                                           <td class="text-right font-weight-medium"> {{$data->balance}} </td>
                                         </tr>
 
+                                        <tr> 
+                                          <td class="text-info">Status</td>
+                                          @if ($data->next_installment_pay == "Fully payed")
+                                          <td class="text-right font-weight-medium">{{$data->next_installment_pay}} </td>
+                                          @elseif ($data->next_installment_pay == "Resold")
+                                          <td class="text-right font-weight-medium">{{$data->next_installment_pay}}</td>
+                                          @else
+                                          <td class="text-right font-weight-medium">Under payment</td>
+                                          @endif
+                                        </tr>
+
+                                        <input type="hidden" name="status" id="status" value="{{$data->next_installment_pay}}">
 
                                       </tbody>
                                     </table>
@@ -199,11 +197,7 @@
                                   <div class="table-responsive">
                                     <table class="table">
                                       <tbody>
-
-
-                                       
                                       </tbody>
-                                      
                                     </table>
                                   </div>
                                 </div>
@@ -216,17 +210,13 @@
                                   </div>
                                   @endforeach
                                 </div>
-                             
                               </div>
+                              <a href="{{'resale-amount/'.$data->id}}" class="btn btn-primary" id="Resale">Resale</a>
                             </div>
-                            
-                          </div>
                         </div>
                       </div>
-
-                
                   </div>
-              
+                  </div>
               </div>
             </div>
           </div>
@@ -249,9 +239,24 @@
     <script type="text/javascript"></script>
     <script src="/assets/js/jquery.min.js"></script>
 
-  <script>
-
-  </script>
+    <script>
+  
+      $(document).ready(function () {
+       
+  
+          var land_plot = $("#status").val();
+        
+          if (land_plot == 'Resold') {
+            $('#Resale').hide();
+          }
+          else
+          {
+            $('#Resale').show();
+          }
+          
+        });
+      
+      </script>
 
 
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
