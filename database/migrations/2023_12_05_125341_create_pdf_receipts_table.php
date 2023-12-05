@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reciepts', function (Blueprint $table) {
+        Schema::create('pdf_receipts', function (Blueprint $table) {
             $table->id();
             $table->text('user_id');
-            $table->text('Amount');
-            $table->text('Balance');
-            $table->text('reciept');
-            $table->text('Phonenumber');
-            $table->text('amount_in_words');
-            $table->text('Date_of_payment');
+            $table->text('receipt');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reciepts');
+        Schema::dropIfExists('pdf_receipts');
     }
 };

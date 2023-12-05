@@ -11,10 +11,15 @@ use App\Models\house;
 use App\Models\resale;
 use App\Models\reciept;
 use App\Models\agreement;
+use App\Models\pdf_receipt;
 use Illuminate\Support\Facades\Hash;
 use Alert;
 use DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Writer\HTML;
+use Illuminate\Support\Facades\Storage;
 
 
 class Master extends Controller
@@ -622,20 +627,38 @@ class Master extends Controller
         $user_id = $request->user_id;
         $Amount = $request->amount_paid;
         $Balance = $request->balance_pending;
+        $Phonenumber = $request->phone_number;
+        $amount_in_words = $request->amount_in_words;
 
+        $user_info =buyer::where('id',$user_id)->get();
+        $receipt_no = rand(10000,50000);
         $post = new reciept();
 
         $post->user_id = $request->user_id;
         $post->Amount = $request->amount_paid;
         $post->Date_of_payment = $request->Date_of_payment;
         $post->Balance = $request->balance_pending;
-        
-        $file=$request->receipt_added;
-        $filename=date('YmdHi').$file->getClientOriginalName();
-        $file->move(public_path('public/receipts'),$filename);
-        $post->reciept=$filename; 
+        $post->Phonenumber = $Phonenumber;
+        $post->amount_in_words = $request->amount_in_words;
+        $post->reciept='-'; 
 
-        $save = $post->save();
+        $post->save();
+
+
+        $pdf = PDF::loadView('invoice_pdf',compact(['Amount','Balance','Phonenumber','amount_in_words']));
+        $filename = 'payment_reciepet' . time() . '.pdf';
+
+        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+
+        $post = new pdf_receipt();
+
+        $post->user_id=$user_id;
+        $post->receipt=$filename;       
+
+        $post->save();
+        
+        return redirect()->back();
+    
 
         $original_amount=buyer::where('id',$user_id)->value('amount_payed');
         $all_cash = $original_amount+$Amount;
@@ -1029,5 +1052,20 @@ class Master extends Controller
                                 
              $data = DB::table('plots')->where($whereConditions)->get();
              return response()->json($data);
+        }
+
+        // Generate Invoice and Agreement
+
+        public function generate_invoice()
+        {
+
+            $pdf = PDF::loadView('invoice_pdf');
+            return $pdf->download('techsolutionstuff.pdf');
+
+        }
+
+        public function show_invoice()
+        {
+            return view('invoice_pdf');
         }
 }

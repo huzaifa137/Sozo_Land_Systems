@@ -104,5 +104,6 @@ Route::get('get-input-option',[Master::class,'get_input_option'])->name('get-inp
 Route::get('/',[Master::class,'login']);
 Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
+Route::get('generate-invoice',[Master::class,'generate_invoice'])->name('generate-invoice');
 
-
+Route::get('show-invoice',[Master::class,'show_invoice'])->name('show-invoice');
