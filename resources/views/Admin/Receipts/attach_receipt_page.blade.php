@@ -40,7 +40,7 @@
         <!-- partial:../../partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="{{route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -64,7 +64,7 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Agreement :</h4>
+                    <h4 class="card-title">Add receipt :</h4>
 
                     @include('sweetalert::alert')
 
@@ -74,59 +74,33 @@
 										</div>
 									@endif
 
-                  @if (Session::get('error'))
+                  @if (Session::get('failed'))
 										<div class="alert alert-danger">
-											{{Session::get('error')}}
+											{{Session::get('danger')}}
 										</div>
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-agreement')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" action="{{ route('attach-receipt-page')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 
                       <input type="hidden" name="user_id" value="{{$user_id}}">
-
-
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Amount paid</label>
-                            <div class="col-sm-9">
-                              <input type="number" name="amount_paid" id="amount_paid" class="form-control" required>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-md-2 col-form-label">Date:</label>
-                            <div class="col-sm-10">
-                              <input type="date" name="Date_of_payment" id="Date_of_payment" class="form-control" required>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <input type="hidden" name="user_email" value="{{$LoggedAdminInfo['email']}}">
+                      <input type="hidden" name="user_name" value="{{$LoggedAdminInfo['username']}}">
 
                       <div class="row">
-                        <!-- <div class="col-md-6">
+                      
+                        <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-md-5 col-form-label">Attach Reciept</label>
+                            <label class="col-sm-6 col-form-label">Upload receipt</label>
                             <div class="col-sm-12">
-                              <input type="file" name="reciept_added" id="reciept_added" class="form-control" required>
+                              <input type="file" name="agreement" id="agreement" class="form-control" required>
                             </div>
                           </div>
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-md-5 col-form-label">Attach Agreement</label>
-                              <div class="col-sm-12">
-                                <input type="file" name="agreement_added" id="agreement_added" class="form-control" required>
-                              </div>
-                            </div>
-                          </div> -->
                       </div>
+
               
                       <div class="row">
                         <div class="col-md-10">
@@ -139,8 +113,6 @@
                           </div>
                         </div>
                       </div>
-
-
 
                     </form>
                   </div>

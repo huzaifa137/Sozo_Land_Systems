@@ -164,7 +164,7 @@
                           <tr>
                             
                             <td>
-                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id}}" alt="" id="week_img">
+                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
                               <span class="ps-2">{{$all_sale->firstname}}</span>
                             </td>
 

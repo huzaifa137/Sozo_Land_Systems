@@ -85,10 +85,11 @@
 </div>
 <div class="add-detail mt-10">
     <div class="w-50 float-left mt-10" style="padding-top: 1rem;">
-        <p class="m-0 pt-5 text-bold w-100">Receipt Id - <span class="gray-color">#1</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Receipt Id - <span class="gray-color">#{{$receipt_no}}</span></p>
         <p class="m-0 pt-5 text-bold w-100">Receipt order - <span class="gray-color">AB123456A</span></p>
-        <p class="m-0 pt-5 text-bold w-100">Receipt Date - <span class="gray-color">22-01-2023</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Receipt Date - <span class="gray-color">{{$formattedDate}}</span></p>
     </div>
+    
     <div class="w-20 float-left logo mt-10">
         <img src="logo.jpg" alt="Logo" style="height: 6rem;padding-left:10rem;">
     </div>
@@ -103,18 +104,18 @@
         <tr>
             <td>
                 <div class="box-text">
-                    <p>Name:</p>
-                    <p>NIN :</p>
-                    <p>Gender:</p>                    
-                    <p>Date of birth : </p>
+                    <p>Name: {{$user_info->firstname}}  {{$user_info->lastname}}</p>
+                    <p>NIN :{{$user_info->NIN}}</p>
+                    <p>Gender: {{$user_info->gender}}</p>                    
+                    <p>Date of birth : {{$user_info->date_of_birth}}</p>
                 </div>
             </td>
             <td>
                 <div class="box-text">
                     <p>Name  : Sozo Properties</p>
-                    <p>Admin :</p>
-                    <p>Email :</p>                    
-                    <p>Date  : </p>
+                    <p>Admin : {{$user_name}}</p>
+                    <p>Email : {{$user_email}}</p>                    
+                    <p>Date  : {{$formattedDate}}</p>
                 </div>
             </td>
         </tr>
@@ -127,8 +128,8 @@
             <th class="w-50">Item purchased</th>
         </tr>
         <tr>
-            <td>Cash On Delivery </td>
-            <td>Free Shipping - Free Shipping</td>
+            <td>Cash </td>
+            <td>{{$user_info->plot_number}} , {{$user_info->estate}} , {{$user_info->width_1}},{{$user_info->width_2}},{{$user_info->height_1}},{{$user_info->height_2}},</td>
         </tr>
     </table>
 </div>
@@ -139,7 +140,7 @@
             <th class="w-100">Amount paid</th>
         </tr>
         <tr>
-            <td>Free Shipping - Free Shipping</td>
+            <td>{{$amount_in_words}}</td>
         </tr>
     </table>
 </div>
@@ -158,25 +159,25 @@
         </tr>
         <tr align="center">
             <td>M101</td>
-            <td>Andoid Smart Phone</td>
+            <td>{{$user_info->plot_number}} , {{$user_info->estate}}</td>
             <td>$500.2</td>
-            <td>3</td>
-            <td>$1500</td>
-            <td>$50</td>
-            <td>$1550.20</td>
+            <td>{{$Phonenumber}}</td>
+            <td>{{$Amount}}</td>
+            <td>{{$Balance}}</td>
+            <td>{{$Amount}}</td>
         </tr>
         <tr>
             <td colspan="7">
                 <div class="total-part">
                     <div class="total-left w-85 float-left" align="right">
                         <p>Sub Total</p>
-                        <p>Tax (18%)</p>
+                        <p>Tax (0%)</p>
                         <p>Total Payable</p>
                     </div>
                     <div class="total-right w-15 float-left text-bold" align="right">
-                        <p>$7600</p>
-                        <p>$400</p>
-                        <p>$8000.00</p>
+                        <p>{{$Amount}}</p>
+                        <p>$0</p>
+                        <p>{{$Amount}}</p>
                     </div>
                     <div style="clear: both;"></div>
                 </div> 

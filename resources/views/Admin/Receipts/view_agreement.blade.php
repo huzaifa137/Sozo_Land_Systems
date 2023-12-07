@@ -187,6 +187,7 @@
                                     </table>
                                   </div>
                                 </div>
+
                                 <div class="col-md-7">
                                   <div id="audience-map" class="vector-map">
                                     <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_front}}" alt="">
@@ -215,14 +216,21 @@
                                 </div>
                                 
                                 <div class="col-md-9" style="padding-left: 10rem">
-                                  @foreach ($user_reciepts as $user_reciept)
-                                  <br> 
-                                  <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->reciept}}" alt="">
-                                  </div>
-                                  @endforeach
 
-                                  @foreach ($user_agreements as $user_agreement)
+                                <!-- @foreach ($user_reciepts as $key => $user_receipt)
+                                <a href="{{url('/download',$user_receipt->receipt)}}" class="btn btn-dark-gray">Download receipt {{$key+1}}</a> 
+                                @endforeach -->
+
+                                @foreach ($user_reciepts as $key => $user_receipt)
+                                <img style="width: 100%; " src="{{'/public/receipts/'.$user_receipt->receipt}}" alt="">
+                                @endforeach
+
+                
+                                </div>
+
+                                <div class="col-md-9" style="padding-left: 10rem">
+
+                                @foreach ($user_agreements as $user_agreement)
                                   <br> 
                                   <div id="audience-map" class="vector-map">
                                     <img style="width: 100%; height:100%" src="{{'/public/agreements/'.$user_agreement->agreement}}" alt="">

@@ -86,6 +86,9 @@
                       <p class="card-description">Enter the Following Information:</p>
 
                       <input type="hidden" name="user_id" value="{{$user_id}}">
+                      <input type="hidden" name="user_email" value="{{$LoggedAdminInfo['email']}}">
+                      <input type="hidden" name="user_name" value="{{$LoggedAdminInfo['username']}}">
+                      
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
@@ -107,14 +110,6 @@
                       </div>
 
                       <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-md-5 col-form-label">Attach Reciept</label>
-                            <div class="col-sm-12">
-                              <input type="file" name="receipt_added" id="receipt_added" class="form-control" required>
-                            </div>
-                          </div>
-                        </div>
 
 
                         <div class="col-md-6">
@@ -122,6 +117,29 @@
                             <label class="col-sm-3 col-form-label">Balance</label>
                             <div class="col-sm-12">
                               <input type="number" name="balance_pending" id="balance_pending" class="form-control" required>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-md-5 col-form-label">Phonenumber</label>
+                            <div class="col-sm-12">
+                              <input type="number" name="phone_number"  class="form-control" required>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+
+                      <div class="row">
+                      
+                        <div class="col-md-12">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Amount in words</label>
+                            <div class="col-sm-12">
+                              <input type="text" name="amount_in_words" class="form-control" required>
                             </div>
                           </div>
                         </div>

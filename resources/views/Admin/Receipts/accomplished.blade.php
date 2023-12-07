@@ -98,17 +98,15 @@
                                                       <th> Amount Payed </th>
                                                       <th> Status </th>
                                                       <th style="text-align: center"> Reciepts </th>
-                                                      {{-- <th> Make Agreement</th> --}}
+                                                      <th>Agreement</th>
                                                     </tr>
                                                   </thead>
                                                   <tbody>
                                                     @foreach ($fully_paid as $key => $item)
         
                                                     <tr>
-                                                        
                                                         <td>{{$key+1}}</td>
                                                       <td>
-                                                        {{-- <img src="assets/images/faces/face1.jpg" alt="image" /> --}}
                                                         <span >{{$item->firstname}} {{$item->lastname}}</span>
                                                       </td>
                                                       <td> {{$item->NIN}}  </td>
@@ -122,6 +120,10 @@
 
                                                         <td><a href="{{'view-agreement/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
+                                                        
+
+                                                        <td><a href="{{'attach-agreement/'.$item->id}}" class="btn btn-outline-primary btn-icon-text">
+                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> upload</a> </td>
                                                         </tr>
                                                     <tr>
 

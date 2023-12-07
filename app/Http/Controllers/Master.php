@@ -11,6 +11,7 @@ use App\Models\house;
 use App\Models\resale;
 use App\Models\reciept;
 use App\Models\agreement;
+use App\Models\pdf_agreements;
 use App\Models\pdf_receipt;
 use Illuminate\Support\Facades\Hash;
 use Alert;
@@ -554,7 +555,7 @@ class Master extends Controller
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
         $user_information = DB::table('buyers')->where('id','=',$id)->get();
-        $user_reciepts = DB::table('reciepts')->where('user_id','=',$id)->get();
+        $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
 
         return view('Admin.Receipts.view_receipts',$data,compact(['user_information','user_reciepts']));
     }
@@ -571,14 +572,33 @@ class Master extends Controller
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
         $user_information = DB::table('buyers')->where('id','=',$id)->get();
-        $user_reciepts = DB::table('reciepts')->where('user_id','=',$id)->get();
-        $user_agreements = DB::table('agreements')->where('user_id','=',$id)->get();
+        $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+        $user_agreements = DB::table('pdf_agreements')->where('user_id','=',$id)->get();
 
         return view('Admin.Receipts.view_agreement',$data,compact(['user_information','user_reciepts','user_agreements']));
     }
 
+
     public function store_new_receipt(Request $request)
     {
+
+        $user_email = $request->user_email;
+        $user_name = $request->user_name;
+        $user_id = $request->user_id;
+
+        $user_email = $request->user_email;
+        $user_name = $request->user_name;
+        $Phonenumber = $request->phone_number;
+        $amount_in_words = $request->amount_in_words;
+        $Amount = $request->amount_paid;
+
+
+        $user_info =buyer::where('id',$user_id)->first();
+        $receipt_no = rand(10000,50000);
+
+        $currentDate = Carbon::now();
+        $formattedDate = $currentDate->format('Y/m/d');
+        
 
         $user_id = $request->user_id;
         $amount_paid = $request->amount_paid;
@@ -586,17 +606,25 @@ class Master extends Controller
 
         $post = new reciept();
 
-        $file=$request->receipt_added;
-        $filename=date('YmdHi').$file->getClientOriginalName();
-        $file->move(public_path('public/receipts'),$filename);
-        $post->reciept=$filename; 
-        
+        $post->reciept='-'; 
         $post->user_id = $request->user_id;
         $post->Amount = $request->amount_paid;
         $post->Date_of_payment = $request->Date_of_payment;
         $post->Balance = $request->balance_pending;
+        $post->Phonenumber = $Phonenumber;
+        $post->amount_in_words = $request->amount_in_words;
+        $post->save();
 
-        $save = $post->save();
+        $pdf = PDF::loadView('invoice_pdf',compact(['user_email','user_name','formattedDate','receipt_no','Amount','Balance','Phonenumber','amount_in_words','user_info']));
+        $filename = 'payment_reciepet' . time() . '.pdf';
+        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+
+        $post = new pdf_receipt();
+
+        $post->user_id=$user_id;
+        $post->receipt=$filename;
+
+        $post->save();  
 
         $original_amount=buyer::where('id',$user_id)->value('amount_payed');
 
@@ -607,10 +635,8 @@ class Master extends Controller
                                                 'balance'=>$Balance
                                                         ]);
 
-        if($save)
-        {
-            return redirect('pending-buyers')->with('success','Reciept has been recorded successfully');
-        }
+           return $pdf->stream($filename);                                                
+        
     }
 
     public function add_first_reciept($id){
@@ -623,6 +649,8 @@ class Master extends Controller
 
     public function store_first_receipt(Request $request)
     {
+        $user_email = $request->user_email;
+        $user_name = $request->user_name;
 
         $user_id = $request->user_id;
         $Amount = $request->amount_paid;
@@ -630,8 +658,17 @@ class Master extends Controller
         $Phonenumber = $request->phone_number;
         $amount_in_words = $request->amount_in_words;
 
-        $user_info =buyer::where('id',$user_id)->get();
+        $user_info =buyer::where('id',$user_id)->first();
         $receipt_no = rand(10000,50000);
+
+        $currentDate = Carbon::now();
+        $formattedDate = $currentDate->format('Y/m/d');
+        
+        $pdf = PDF::loadView('invoice_pdf',compact(['user_email','user_name','formattedDate','receipt_no','Amount','Balance','Phonenumber','amount_in_words','user_info']));
+        $filename = 'payment_reciepet' . time() . '.pdf';
+
+        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+
         $post = new reciept();
 
         $post->user_id = $request->user_id;
@@ -640,25 +677,16 @@ class Master extends Controller
         $post->Balance = $request->balance_pending;
         $post->Phonenumber = $Phonenumber;
         $post->amount_in_words = $request->amount_in_words;
-        $post->reciept='-'; 
+        $post->reciept=$filename; 
 
         $post->save();
 
+        // $post = new pdf_receipt();
 
-        $pdf = PDF::loadView('invoice_pdf',compact(['Amount','Balance','Phonenumber','amount_in_words']));
-        $filename = 'payment_reciepet' . time() . '.pdf';
+        // $post->user_id=$user_id;
+        // $post->receipt=$filename;       
 
-        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
-
-        $post = new pdf_receipt();
-
-        $post->user_id=$user_id;
-        $post->receipt=$filename;       
-
-        $post->save();
-        
-        return redirect()->back();
-    
+        // $post->save();    
 
         $original_amount=buyer::where('id',$user_id)->value('amount_payed');
         $all_cash = $original_amount+$Amount;
@@ -678,6 +706,7 @@ class Master extends Controller
                         
         DB::table('plots')->where($whereConditions)->update(['status' => 'Underpayment',]);
             
+        return $pdf->stream($filename);
 
         if($update_buyer_amount)
         {
@@ -695,7 +724,7 @@ class Master extends Controller
 
         $estate_name =buyer::where('id',$user_id)->value('estate');
         $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
-
+        
         $user_amount_paid = $request->amount_paid;
         $all_cash = $original_amount+$user_amount_paid;
 
@@ -704,7 +733,7 @@ class Master extends Controller
             {
                 return back()->with('error','This amount paid is not enough to take this plot in this estate');
             }
-           
+
        
         $user_id = $request->user_id;
         $reciepts = $request->reciept_added;
@@ -714,21 +743,26 @@ class Master extends Controller
 
         $balance = 0;
 
+        $original_amount=buyer::where('id',$user_id)->value('amount_payed');
+        $all_cash = $original_amount+$user_amount_paid;
+
+         // Document formulation
+
+        $user_info =buyer::where('id',$user_id)->first();
+
+        $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info','all_cash','Date_of_payment']));
+        $filename = 'payment_agreement' . time() . '.pdf';
+
+        $pdf->save(storage_path("app/public/agreements/{$filename}"));
+
+
         $post = new agreement();
 
         $post->user_id = $request->user_id;
         $post->Amount_paid = $request->amount_paid;
         $post->Date_of_payment = $request->Date_of_payment;
-
-        $file=$request->reciept_added;
-        $filename=date('YmdHi').$file->getClientOriginalName();
-        $file->move(public_path('public/receipts'),$filename);
-        $user_receipt =$filename; 
-        $post->reciept=$filename; 
-
-        $file=$request->agreement_added;
-        $filename=date('YmdHi').$file->getClientOriginalName();
-        $file->move(public_path('public/agreements'),$filename);
+        $user_receipt ='-'; 
+        $post->reciept= '-'; 
         $post->agreement=$filename; 
 
         $original_amount=buyer::where('id',$user_id)->value('amount_payed');
@@ -737,8 +771,8 @@ class Master extends Controller
         $save = $post->save();
 
         $update_buyer_agreement = buyer::where('id',$user_id)->update(['next_installment_pay'=>"Fully payed",
-                                                            'reciepts'=>$reciepts,
-                                                            'agreement'=>$agreement_reciept,
+                                                            'reciepts'=> '-',
+                                                            'agreement'=> '-',
                                                             'amount_payed'=> $all_cash,
                                                             'balance'=>$balance]);
 
@@ -752,8 +786,10 @@ class Master extends Controller
 
         DB::table('plots')->where($whereConditions)->update(['status' => 'Fully payed',]);
 
-        DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment) values (?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment]);
+        DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment,Phonenumber,amount_in_words) values (?,?,?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment,'-','-']);
+
         
+        return $pdf->stream($filename);
         
         if($save)
         {
@@ -1067,5 +1103,72 @@ class Master extends Controller
         public function show_invoice()
         {
             return view('invoice_pdf');
+        }
+
+        public function attach_agreement_view($id){
+
+            $user_id = $id;
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+            return view('Admin.Receipts.attach_agreement_page',$data , compact(['user_id']));
+        }
+
+        public function store_agreement_new(Request $request)
+        {
+
+        $post  = new pdf_agreements;
+
+        $post->user_id = $request->user_id;
+
+        $file=$request->agreement;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/agreements'),$filename);
+        $post->agreement=$filename; 
+
+        $post->save();
+
+        return redirect('accomplished')->with('success','Agreement has been uploaded successfully');
+        }
+
+
+        public function attach_receipt_view($id){
+
+            $user_id = $id;
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+            return view('Admin.Receipts.attach_receipt_page',$data , compact(['user_id']));
+        }
+
+        public function store_attach_receipt_new(Request $request)
+        {
+
+        $post  = new pdf_receipt;
+
+        $post->user_id = $request->user_id;
+
+        $file=$request->agreement;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/receipts'),$filename);
+        $post->receipt=$filename; 
+
+        $post->save();
+
+        return redirect('pending-buyers')->with('success','Receipt has been uploaded successfully');
+        }
+
+
+
+        public function download_agreement_receipt(Request $request,$Book_pdf)
+        {
+
+            $filePath = 'pdf_receipts/'.$Book_pdf;
+
+            if (Storage::exists($filePath)) {
+                return response()->download(storage_path($filePath));
+            } else {
+                abort(404, 'File not found');
+            }
+
+            // return response()->download(storage_path('public/agreements//'.$Book_pdf));
         }
 }

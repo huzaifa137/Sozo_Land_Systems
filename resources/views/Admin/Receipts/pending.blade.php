@@ -121,11 +121,14 @@
                                                       </td>
 
                                                         <td><a href="{{'add-reciept/'.$item->id}}" class="btn btn-outline-primary btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Add reciept </a> </td>
+                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Make reciept </a> </td>
 
                                                         <td><a href="{{'view-reciept/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
                                                             
+
+                                                            <td><a href="{{'attach-receipt/'.$item->id}}" class="btn btn-outline-primary btn-primary-text">
+                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Upload receipt </a> </td>
 
                                                             <td><a href="{{'add-agreement/'.$item->id}}" class="btn btn-outline-success btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> Upload agreement </a> </td>

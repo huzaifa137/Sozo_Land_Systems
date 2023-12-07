@@ -70,6 +70,8 @@ Route::get('add-first-receipt/{id}',[Master::class,'add_first_reciept']);
 // Agreements
 Route::get('accomplished',[Master::class,'accomplished_buyers'])->name('accomplished');
 Route::get('view-agreement/{id}',[Master::class,'view_agreement'])->name('view-agreement');
+Route::get('download/{id}',[Master::class,'download_agreement_receipt']);
+
 
 // Sales
 
@@ -98,7 +100,14 @@ Route::post('store-resale-amount',[Master::class,'store_resale_amount'])->name('
 Route::get('get-second-option',[Master::class,'get_secound_option'])->name('get-second-option');
 Route::get('get-input-option',[Master::class,'get_input_option'])->name('get-input-option');
 
+Route::get('attach-agreement/{id}',[Master::class,'attach_agreement_view']);
+Route::post('attach-agreement-page',[Master::class,'store_agreement_new'])->name('attach-agreement-page');
+
+Route::get('attach-receipt/{id}',[Master::class,'attach_receipt_view']);
+Route::post('attach-receipt-page',[Master::class,'store_attach_receipt_new'])->name('attach-receipt-page');
+
 });
+
 
  
 Route::get('/',[Master::class,'login']);

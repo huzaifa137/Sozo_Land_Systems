@@ -86,6 +86,10 @@
                       <p class="card-description">Enter the Following Information:</p>
 
                       <input type="hidden" name="user_id" value="{{$user_id}}">
+                      <input type="hidden" name="user_email" value="{{$LoggedAdminInfo['email']}}">
+                      <input type="hidden" name="user_name" value="{{$LoggedAdminInfo['username']}}">
+
+
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
@@ -134,7 +138,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Amount in words</label>
                             <div class="col-sm-12">
-                              <input type="number" name="amount_in_words" class="form-control" required>
+                              <input type="text" name="amount_in_words" class="form-control" required>
                             </div>
                           </div>
                         </div>
