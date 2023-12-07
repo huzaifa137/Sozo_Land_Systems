@@ -106,13 +106,22 @@ Route::post('attach-agreement-page',[Master::class,'store_agreement_new'])->name
 Route::get('attach-receipt/{id}',[Master::class,'attach_receipt_view']);
 Route::post('attach-receipt-page',[Master::class,'store_attach_receipt_new'])->name('attach-receipt-page');
 
-});
-
-
- 
-Route::get('/',[Master::class,'login']);
 Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
 Route::get('generate-invoice',[Master::class,'generate_invoice'])->name('generate-invoice');
 
 Route::get('show-invoice',[Master::class,'show_invoice'])->name('show-invoice');
+
+// Expenditures
+
+Route::get('add-expenditure',[Master::class,'add_expenditure'])->name('add-expenditure');
+Route::post('store-expenditure',[Master::class,'store_expenditure'])->name('store-expenditure');
+
+
+Route::get('expense-today',[Master::class,'today_expense'])->name('expense_today');
+
+});
+
+
+ 
+Route::get('/',[Master::class,'login']);

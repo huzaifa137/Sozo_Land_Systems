@@ -77,15 +77,14 @@
             </div>
 
 
-
             <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$count_estates}}</h3>
+                          <h3 class="mb-0">{{$totalAmount}}/=</h3>
                         </div>
                       </div>
                       <div class="col-3">
@@ -94,17 +93,19 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Estates</h6>
+                    <h6 class="text-muted font-weight-normal">Total Income on Expenditures today</h6>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+
+              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$number_plots}}</h3>
+                          <h3 class="mb-0">{{$totalExpenditure}}</h3>
+                          <!-- {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p> --}} -->
                         </div>
                       </div>
                       <div class="col-3">
@@ -113,65 +114,35 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Plots</h6>
+                    <h6 class="text-muted font-weight-normal">Number of expenditures done</h6>
                   </div>
                 </div>
               </div>
-              
-              
-              
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <a href="{{ route('add-estate')}}" style="text-decoration: none;color:white;">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h4 style="text-align: center">Create a new Estate</h4>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-plus icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                  </div>
-                </div>
-              </div>
-            
 
+            
             </div>
 
             <div class="row ">
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">All Estates </h4>
+                    <h4 class="card-title">Sozo Properties Expenditures today </h4>
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
                           <tr>
-                            <th>No</th>
-                            <th> Estate Name</th>
-                            <th> Estate Price </th>
-                            <th> Location </th>
-                            <th> Number of plots </th>
+                            <th> Expenditure Service </th>
+                            <th> Amount </th>
                           </tr>
                         </thead>
                         <tbody>
-                        
-                      @foreach ($estates as $key => $item)
-                        
-                        <tr>
-                          <td>{{$key+1}}</td>
-                            <td> {{$item->estate_name}} </td>
-                            <td> {{$item->estate_price}} </td>
-                            <td> {{$item->location}} </td>
-                            <td> {{$item->number_of_plots}} </td>
+                            @foreach ($totalExpenditureAll as $all_sale)
+                          <tr>
+                            <td> {{$all_sale->service}}  </td>
+                            <td> {{$all_sale->amount}} </td>
                           </tr>
-                          @endforeach    
+                          @endforeach
+                         
                         </tbody>
                       </table>
                     </div>

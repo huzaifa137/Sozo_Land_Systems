@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/assets/images/favicon.png" />
+
   </head>
   <body>
     <div class="container-scroller">
@@ -52,7 +53,7 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo-mini" href="{{route('admin-dashboard')}}"><img src="/assets/images/logo-mini.svg" alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -60,7 +61,7 @@
             </button>
             
            @include('includes.TopNav')
-
+           
 
             <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
               <span class="mdi mdi-format-line-spacing"></span>
@@ -70,111 +71,89 @@
         <!-- partial -->
         <div class="main-panel">
           <div class="content-wrapper">
-            <div class="row">
-              <div class="col-12 grid-margin stretch-card">
-                
-              </div>
-            </div>
-
-
-
-            <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$count_estates}}</h3>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Total Estates</h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$number_plots}}</h3>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Total Plots</h6>
-                  </div>
-                </div>
-              </div>
-              
-              
-              
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <a href="{{ route('add-estate')}}" style="text-decoration: none;color:white;">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h4 style="text-align: center">Create a new Estate</h4>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-plus icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                  </div>
-                </div>
-              </div>
-            
-
-            </div>
 
             <div class="row ">
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">All Estates </h4>
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th> Estate Name</th>
-                            <th> Estate Price </th>
-                            <th> Location </th>
-                            <th> Number of plots </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        
-                      @foreach ($estates as $key => $item)
-                        
-                        <tr>
-                          <td>{{$key+1}}</td>
-                            <td> {{$item->estate_name}} </td>
-                            <td> {{$item->estate_price}} </td>
-                            <td> {{$item->location}} </td>
-                            <td> {{$item->number_of_plots}} </td>
-                          </tr>
-                          @endforeach    
-                        </tbody>
-                      </table>
-                    </div>
+                    <h4 class="card-title">Add Expense</h4>
+
+                    <form  action="{{ route('store-expenditure')}}" method="POST">
+                      @csrf
+                      <p class="card-description">Enter below Information :</p>
+
+                  @if (Session::get('success'))
+                  <div class="alert alert-success">
+                    {{Session::get('success')}}
+                  </div>
+                  @endif
+
+                  @if (Session::get('error'))
+                  <div class="alert alert-danger">
+                    {{Session::get('error')}}
+                  </div>
+                  @endif
+
+
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Expense Service</label>
+                            <div class="col-sm-12">
+                              <div class="col-sm-12">
+                              <input type="text" name="expense" id="expense" class="form-control" placeholder="Expense service" required>                                 
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4" id="plot_estate_field">
+                          <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Amount</label>
+                            <div class="col-sm-12">
+                              <div class="col-sm-12">
+                                <input type="number" name="amount" id="amount" class="form-control" placeholder="Amount for expense" required>                                 
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- <div class="col-md-4" id="land_estate_field" style="display: none">
+                          <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Land Estate</label>
+                            <div class="col-sm-12">
+                              <div class="col-sm-12">
+                                <input type="text" name="land_estate" id="land_estate" class="form-control" placeholder="Enter plot no" >
+                              </div>
+                            </div>
+                          </div>
+                        </div> -->
+
+                        <!-- <div class="col-md-4">
+                          <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Plot no</label>
+                            <div class="col-sm-12">
+                              <div class="col-sm-12">
+                                <input type="number" name="plot_no" id="plot_no" class="form-control" placeholder="Enter plot no" required>
+                              </div>
+                            </div>
+                          </div>
+                        </div> -->
+
+
+                        <div class="col-md-4">
+
+                        </div>
+
+
+                        <div class="col-md-1">
+                          <div class="form-group row">
+                            <!-- {{-- <input type="submit" value="Submit"> --}} -->
+                        <button type="submit" class="btn btn-primary" style="margin-left:1rem;">Search</button>
+                        </div>
+                      </div>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -196,6 +175,32 @@
       </div>
       <!-- page-body-wrapper ends -->
     </div>
+
+    <script type="text/javascript"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+  
+    <script>
+  
+      $(document).ready(function () {
+        $("#land_plot").change(function () {
+  
+          var land_plot = $(this).val();
+  
+          if (land_plot == 'House') {
+            $('#land_estate_field').show();
+            $('#plot_estate_field').hide();
+          }
+          else
+          {
+            $('#land_estate_field').hide();
+            $('#plot_estate_field').show();
+
+          }
+          
+        });
+      });
+      </script>
+
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>

@@ -206,7 +206,7 @@
                                   @foreach ($user_reciepts as $user_reciept)
                                   <br> 
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->reciept}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->receipt}}" alt="">
                                   </div>
                                   @endforeach
                                 </div>

@@ -11,6 +11,7 @@ use App\Models\house;
 use App\Models\resale;
 use App\Models\reciept;
 use App\Models\agreement;
+use App\Models\expenditure;
 use App\Models\pdf_agreements;
 use App\Models\pdf_receipt;
 use Illuminate\Support\Facades\Hash;
@@ -236,8 +237,14 @@ class Master extends Controller
     // ESTATES FUNCTIONS
     public function estates(){
 
+        $estates = Estate::all();
+
+        $count_estates = Estate::all()->count();
+        $number_plots = Estate::all()->sum('number_of_plots');
+
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
-         return view('Admin.estates',$data);
+
+        return view('Admin.estates',$data , compact(['estates','count_estates','number_plots']));
     }
 
     public function add_estate(){
@@ -985,7 +992,7 @@ class Master extends Controller
                  
                  $id = $result->id;
                  $user_information = DB::table('buyers')->where('id','=',$id)->get();
-                 $user_reciepts = DB::table('reciepts')->where('user_id','=',$id)->get();
+                 $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
                  $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
                  return view('Admin.Resale.resale',$data , compact(['user_information','user_reciepts','id']));
@@ -1168,7 +1175,48 @@ class Master extends Controller
             } else {
                 abort(404, 'File not found');
             }
-
             // return response()->download(storage_path('public/agreements//'.$Book_pdf));
+        }
+
+        public function add_expenditure()
+        {
+
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+            return view('Admin.Expenditure.add_expenditure', $data);
+        }
+
+        public function store_expenditure(Request $request)
+        {
+
+            $post = new expenditure;
+
+            $post->service = $request->expense;
+            $post->amount = $request->amount;
+
+            $save = $post->save();
+
+            if($save)
+            {
+                return redirect()->back()->with('success','Expense has been recorded successfully');
+            }
+            return $request->all();
+        }
+
+        public function today_expense()
+        {
+
+                    // $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        $currentDate = Carbon::today();
+        $totalExpenditureAll = expenditure::whereDate('created_at', $currentDate)->get();
+        
+        $totalAmount = expenditure::whereDate('created_at', $currentDate)->sum('amount');
+        
+        $totalExpenditure = expenditure::whereDate('created_at', $currentDate)->count();
+
+        return view('Admin.Expenditure.today_expenditure',$data , compact(['totalExpenditureAll','totalAmount','totalExpenditure']));
         }
 }
