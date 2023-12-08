@@ -124,7 +124,7 @@
       <div class="collapse" id="ui-expenditure">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('add-expenditure')}}">Add Expenditure</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{{ route('payment-reminder')}}">Today's Expenditures</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('expense-today')}}">Today's Expenditures</a></li>
           <!-- <li class="nav-item"> <a class="nav-link" href="{{ route('payment-reminder')}}">All Expenditures</a></li> -->
         </ul>
       </div>

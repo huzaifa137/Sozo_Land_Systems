@@ -355,6 +355,7 @@
                                                             <div class="col-sm-9">
 
                                                                 <select id="plot_number" class="form-control">
+                                                                    <option value="">---Select Plot ---</option>
 
 
                                                                 </select>
@@ -582,51 +583,24 @@
 
             $("#plot_number").change(function () {
 
-                var value = $(this).val();
+                var selectedValue = $(this).val();
 
                 $.ajax({
-                    url: '/get-input-option',
-                    type: 'GET',
-                    data: {
-                        value: value
-                    },
-                    success: function (data) {
-                      
-                      var postsContainer = $('#plot_width1');
-                       postsContainer.empty();
-
-                        $('#plot_width1').empty(); 
-                        $('#plot_width2').empty(); 
-                        $('#plot_height1').empty(); 
-                        $('#plot_height2').empty(); 
-
-                        $.each(data, function (key, post) {
-                          postsContainer.append(post.width_1);
-                        // $('#plot_width2').append(post.width_2); 
-                        // $('#plot_height1').append(post.height_1); 
-                        // $('#plot_height2').append(post.height_2); 
-                });
-
-
-                      //   $.each(data, function(index, item) {
-                      //  var input = $('<input></input>').attr('plot_width1', item.width_1).val(item.width_1);
-                      //  var input = $('<input></input>').attr('plot_width1', item.width_2).val(item.width_2);
-                      //  var input = $('<input></input>').attr('plot_width1', item.height_1).val(item.height_1);
-                      //  var input = $('<input></input>').attr('plot_width1', item.height_2).val(item.height_2);
-                      //   $('#plot_width1').append(input);
-                      //   $('#plot_width2').append(input);
-                      //   $('#plot_height1').append(input);
-                      //   $('#plot_height2').append(input);
-                      // });
-
-
-
-                    },
-                    error: function (data) {
-                        $('body').html(data.responseText);
-                    }
-                });
-              });
+                type: 'GET',
+                url: '/get-input-option',
+                data: { selectedValue: selectedValue },
+                success: function(response) {
+                    $('#plot_width1').val(response.width_1);
+                    $('#plot_width2').val(response.width_2);
+                    $('#plot_height1').val(response.height_1);
+                    $('#plot_height2').val(response.height_2);
+                    $('#location_plot').val(response.location);                    
+                },
+                error: function (data) {
+                            $('body').html(data.responseText);
+                        }
+            });    
+        });
            
 
             $("#payment_method").change(function () {

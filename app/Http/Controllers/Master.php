@@ -520,12 +520,14 @@ class Master extends Controller
     public function pending_buyers()
     {
 
+        $records = Estate::all();
+
         $not_fully_paid = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")
                                              ->where('reciepts','!=',"0")->get();
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-        return view('Admin.Receipts.pending',$data,compact(['not_fully_paid']));
+        return view('Admin.Receipts.pending',$data,compact(['not_fully_paid','records']));
     }
 
     public function pending_receipts()
@@ -613,7 +615,11 @@ class Master extends Controller
 
         $post = new reciept();
 
-        $post->reciept='-'; 
+        $pdf = PDF::loadView('invoice_pdf',compact(['user_email','user_name','formattedDate','receipt_no','Amount','Balance','Phonenumber','amount_in_words','user_info']));
+        $filename = 'payment_reciepet' . time() . '.pdf';
+        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+
+        $post->reciept=$filename; 
         $post->user_id = $request->user_id;
         $post->Amount = $request->amount_paid;
         $post->Date_of_payment = $request->Date_of_payment;
@@ -622,16 +628,6 @@ class Master extends Controller
         $post->amount_in_words = $request->amount_in_words;
         $post->save();
 
-        $pdf = PDF::loadView('invoice_pdf',compact(['user_email','user_name','formattedDate','receipt_no','Amount','Balance','Phonenumber','amount_in_words','user_info']));
-        $filename = 'payment_reciepet' . time() . '.pdf';
-        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
-
-        $post = new pdf_receipt();
-
-        $post->user_id=$user_id;
-        $post->receipt=$filename;
-
-        $post->save();  
 
         $original_amount=buyer::where('id',$user_id)->value('amount_payed');
 
@@ -969,8 +965,10 @@ class Master extends Controller
             }
             else
             {
-                $user_id = $result->id;
-                return back()->with('success','Data has been found');
+                 $user_id = $result->id;
+                 $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                 $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+                 $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
             }
         }
         else
@@ -996,6 +994,69 @@ class Master extends Controller
                  $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
                  return view('Admin.Resale.resale',$data , compact(['user_information','user_reciepts','id']));
+
+             }
+        }
+          
+    }
+
+
+    public function search_plot_land_db(Request $request)
+    {
+
+        $status = $request->land_plot;
+        $plot_no = $request->plot_no;
+        
+
+        if($status == 'House')
+        {
+            $land_estate = $request->land_estate;
+            $result = DB::table('buyers')
+                                  ->where('purchase_type', $status,)
+                                  ->where('estate', $land_estate,)
+                                  ->where('plot_number',$plot_no)
+                                  ->first();
+
+
+
+            if(!$result)
+            {
+                return back()->with('error','No House has been found with provided information');
+            }
+            else
+            {
+                $user_id = $result->id;
+
+                 $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                 $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+                 $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+                 return view('Admin.Search.underpayment',$data , compact(['user_information','user_reciepts','id']));
+            }
+        }
+        else
+        {
+
+            $land_estate = $request->estate;
+            $result = DB::table('buyers')
+                                  ->where('purchase_type', $status,)
+                                  ->where('estate', $land_estate,)
+                                  ->where('plot_number',$plot_no)
+                                  ->first();
+
+             if(!$result)
+             {
+                 return back()->with('error','No Plot has been found with provided information');
+             }
+             else
+             {
+                 
+                 $id = $result->id;
+                 $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                 $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+                 $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+                 return view('Admin.Search.underpayment',$data , compact(['user_information','user_reciepts','id']));
 
              }
         }
@@ -1087,14 +1148,26 @@ class Master extends Controller
 
         public function get_input_option(Request $request)
         {
-            $info = $request->input('value');
+            $info = $request->input('selectedValue');
 
-           
             $whereConditions = ['plot_number' => $info,
                                 'status' => "Not taken"];
                                 
-             $data = DB::table('plots')->where($whereConditions)->get();
-             return response()->json($data);
+             $width_1 = DB::table('plots')->where($whereConditions)->value('width_1');
+             $width_2 = DB::table('plots')->where($whereConditions)->value('width_2');
+             $height_1 = DB::table('plots')->where($whereConditions)->value('height_1');
+             $height_2 = DB::table('plots')->where($whereConditions)->value('height_2');
+             $location = DB::table('plots')->where($whereConditions)->value('location');
+
+
+            return response()->json([
+                "status"=>TRUE,
+                "width_1"=>$width_1,
+                "width_2"=>$width_2,
+                "height_1"=>$height_1,
+                "height_2"=>$height_2,
+                "location"=>$location,
+            ]);
         }
 
         // Generate Invoice and Agreement
@@ -1205,9 +1278,7 @@ class Master extends Controller
 
         public function today_expense()
         {
-
-                    // $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
-
+            
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
         $currentDate = Carbon::today();

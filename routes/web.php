@@ -89,6 +89,8 @@ Route::post('store-update-payment',[Master::class,'store_update_payment_reminder
 
 Route::get('search-land',[Master::class,'search_plot'])->name('search-land');
 Route::post('search-land-db',[Master::class,'search_land_db'])->name('search-land-db');
+Route::post('search-plot-land-db',[Master::class,'search_plot_land_db'])->name('search-plot-land-db');
+
 
 Route::get('search-land',[Master::class,'search_plot'])->name('search-land');
 Route::get('resale',[Master::class,'resale'])->name('resale');
@@ -106,8 +108,6 @@ Route::post('attach-agreement-page',[Master::class,'store_agreement_new'])->name
 Route::get('attach-receipt/{id}',[Master::class,'attach_receipt_view']);
 Route::post('attach-receipt-page',[Master::class,'store_attach_receipt_new'])->name('attach-receipt-page');
 
-Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
-
 Route::get('generate-invoice',[Master::class,'generate_invoice'])->name('generate-invoice');
 
 Route::get('show-invoice',[Master::class,'show_invoice'])->name('show-invoice');
@@ -118,10 +118,11 @@ Route::get('add-expenditure',[Master::class,'add_expenditure'])->name('add-expen
 Route::post('store-expenditure',[Master::class,'store_expenditure'])->name('store-expenditure');
 
 
-Route::get('expense-today',[Master::class,'today_expense'])->name('expense_today');
+Route::get('expense-today',[Master::class,'today_expense'])->name('expense-today');
 
 });
 
 
  
 Route::get('/',[Master::class,'login']);
+Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
