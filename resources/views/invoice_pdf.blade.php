@@ -99,7 +99,7 @@
     <table class="table w-100 mt-10">
         <tr>
             <th class="w-50">Buyer</th>
-            <th class="w-50">Seller</th>
+            <th class="w-50">On behalf of Sozo Properties</th>
         </tr>
         <tr>
             <td>
@@ -184,5 +184,8 @@
             </td>
         </tr>
     </table>
+
+    <p style="font-weight: bold;text-align:center;">Beyond this balance payment date we put the item back on market</p>
+    <p style="font-style: italic;text-align:center;">Item returnable in the first two days of purchase not returnable thereafter</p>
 </div>
 </html>

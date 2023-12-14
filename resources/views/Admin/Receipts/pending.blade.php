@@ -156,7 +156,7 @@
                     <h4 class="card-title">Under payment Payments :</h4>
 
                     @include('sweetalert::alert')
-
+{{-- 
                     @if (Session::get('success'))
 										<div class="alert alert-success">
 											{{Session::get('success')}}
@@ -167,7 +167,7 @@
 										<div class="alert alert-danger">
 											{{Session::get('danger')}}
 										</div>
-									@endif
+									@endif --}}
 
                                     <div class="row ">
                                         <div class="col-12 grid-margin">

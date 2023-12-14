@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('estates', function (Blueprint $table) {
+        Schema::create('expenditure_lists', function (Blueprint $table) {
             $table->id();
-            $table->text('estate_name');
-            $table->text('estate_price');
-            $table->text('location');
-            $table->text('number_of_plots');
-            $table->text('estate_pdf');
+            $table->text('expense_name');
+            $table->text('amount');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('estates');
+        Schema::dropIfExists('expenditure_lists');
     }
 };

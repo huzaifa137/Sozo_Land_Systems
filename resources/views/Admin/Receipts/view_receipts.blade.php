@@ -182,6 +182,11 @@
                                           @endif
                                         </tr>
 
+                                        <tr>
+                                          <td class="text-info">Phone number</td>
+                                          <td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>
+                                        </tr>
+
                                       </tbody>
                                     </table>
                                   </div>
@@ -214,13 +219,25 @@
                                 </div>
                                 
                                 <div class="col-md-9" style="padding-left: 10rem">
-                                  @foreach ($user_reciepts as $user_reciept)
-                                  <br> 
-                                  <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->receipt}}" alt="">
-                                  </div>
+
+                                  @foreach ($user_reciepts as $key => $user_receipt)
+                                  <br> <br>
+                                  <img style="width: 100%; " src="{{'/public/receipts/'.$user_receipt->receipt}}" alt="">
                                   @endforeach
-                                </div>
+  
+                                  </div>
+
+                                  <br> <br> 
+                                  <div class="col-md-9" style="padding-left: 10rem">
+
+                                    @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
+
+                                    <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
+                                    <br>
+                                    
+                                    @endforeach
+    
+                                    </div>
                              
                               </div>
                             </div>

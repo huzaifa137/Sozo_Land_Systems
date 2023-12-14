@@ -23,6 +23,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
   </head>
+
+  <style>
+    #user_agreement
+    {
+      display: flex;
+            text-align: right;
+            align-items: right;
+            justify-items: right;
+            justify-content: right;
+    }
+  </style>
   <body>
     <div class="container-scroller">
       <!-- partial:../../partials/_sidebar.html -->
@@ -182,6 +193,11 @@
                                           @endif
                                         </tr>
 
+                                        <tr>
+                                          <td class="text-info">Phone number</td>
+                                          <td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>
+                                        </tr>
+
                                         
                                       </tbody>
                                     </table>
@@ -217,27 +233,45 @@
                                 
                                 <div class="col-md-9" style="padding-left: 10rem">
 
-                                <!-- @foreach ($user_reciepts as $key => $user_receipt)
-                                <a href="{{url('/download',$user_receipt->receipt)}}" class="btn btn-dark-gray">Download receipt {{$key+1}}</a> 
-                                @endforeach -->
-
                                 @foreach ($user_reciepts as $key => $user_receipt)
+                                <br> <br>
                                 <img style="width: 100%; " src="{{'/public/receipts/'.$user_receipt->receipt}}" alt="">
                                 @endforeach
-
-                
                                 </div>
 
                                 <div class="col-md-9" style="padding-left: 10rem">
-
-                                @foreach ($user_agreements as $user_agreement)
-                                  <br> 
-                                  <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @foreach ($user_agreements as $user_agreement)
+                                      <br> <br>
+                                      <img style="width: 100%; " src="{{'/public/agreements/'.$user_agreement->agreement}}" alt="">
+                                      @endforeach
                                   </div>
-                                  @endforeach
 
-                                </div>
+                                  <br> <br> 
+
+                                  <div class="col-md-9 d-block" style="padding-left: 10rem">
+                                    <h4>User Receipts</h4>
+
+                                    @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
+
+                                    <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
+                                    <br>
+                                    
+                                    @endforeach
+    
+                                    <section class="d-inline"  style="padding-left: 10rem;" >
+                                      <h4>User Agreement</h4>
+  
+                                      @foreach ($user_agreements_pdf as $key => $user_agreement_pdf)
+  
+                                      <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
+                                      <br>
+                                      
+                                      @endforeach
+      
+                                      </section>
+                                    </div>
+
+                                    
                              
                               </div>
                             </div>

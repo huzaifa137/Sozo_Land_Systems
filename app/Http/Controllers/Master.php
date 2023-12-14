@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Writer\HTML;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -144,8 +145,8 @@ class Master extends Controller
 
         $estates = Estate::all();
 
-        $plots = DB::table('plots')->where('status','=',"Not taken")->get();
-
+        $plots = DB::table('plots')->where('status','!=',"Fully payed")->get();
+        
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
         return view('Admin.buyer',$data,compact(['estates','plots']));
@@ -173,9 +174,15 @@ class Master extends Controller
         $filename=date('YmdHi').$file->getClientOriginalName();
         $file->move(public_path('public/national_id'),$filename);
         $post->national_id_back=$filename; 
+
+        $file=$request->profile_pic;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('public/profile_pic'),$filename);
+        $post->profile_pic=$filename; 
         
         $post->card_number= $request->card_number;
         $post->land_poster= $request->land_poster;
+        $post->phonenumber= $request->phonenumber;
         $post->method_payment= $request->payment_method;
         $post->purchase_type= $request->purchase_type;
         $post->estate= $request->estate;
@@ -193,16 +200,6 @@ class Master extends Controller
         $post->reciepts= $request->receipt_img;
         $post->agreement = $request->agreement;
         $post->date_sold = $formattedDate;
-
-        // $file=$request->receipt_img;
-        // $filename=date('YmdHi').$file->getClientOriginalName();
-        // $file->move(public_path('public/receipts'),$filename);
-        // $post->reciepts=$filename; 
-
-        // $file=$request->agreement;
-        // $filename=date('YmdHi').$file->getClientOriginalName();
-        // $file->move(public_path('public/agreements'),$filename);
-        // $post->agreement=$filename;
 
         $post->next_installment_pay= $request->next_installment_pay;
         
@@ -256,12 +253,19 @@ class Master extends Controller
     public function store_estate(Request $request){
 
 
-        $post = new Estate;
+       $post = new Estate;
 
        $post->estate_name = $request->estate_name;
        $post->location = $request->location;
        $post->estate_price = $request->estate_price;
        $post->number_of_plots = $request->number_of_plots;
+
+       $file=$request->estate_pdf;
+       $filename=date('YmdHi').'.'.$file->getClientOriginalExtension();
+       $file->move('estate_pdf',$filename);
+       $post->estate_pdf=$filename;
+
+
        $post->save();
         
     //    Alert::success('Estate added', 'Congurations on adding a new Estate');
@@ -565,16 +569,37 @@ class Master extends Controller
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
         $user_information = DB::table('buyers')->where('id','=',$id)->get();
         $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+        $user_reciepts_pdf = DB::table('reciepts')->where('user_id','=',$id)->get();
 
-        return view('Admin.Receipts.view_receipts',$data,compact(['user_information','user_reciepts']));
+
+        return view('Admin.Receipts.view_receipts',$data,compact(['user_information','user_reciepts','user_reciepts_pdf']));
     }
 
     public function add_agreement($id){
 
         $user_id = $id;
-        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        
+        $estate = DB::table('buyers')->where('id','=',$id)->value('estate');
+        $plot_no = DB::table('buyers')->where('id','=',$id)->value('plot_number');
 
-        return view('Admin.Receipts.add_agreement',$data,compact(['user_id']));
+        $check_plot =  DB::table('plots')->where('estate','=',$estate)
+                                         ->where('plot_number','=',$plot_no)->value('status');
+
+
+        if($check_plot == 'Fully payed')
+        {
+
+            $estates = estate::all();
+
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+            return view('Admin.Receipts.full_paid_plot',$data,compact(['user_id','plot_no','estate','estates']));
+        }
+        else
+        {
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+            return view('Admin.Receipts.add_agreement',$data,compact(['user_id']));
+
+        }        
     }
 
     public function view_agreement($id){
@@ -583,8 +608,11 @@ class Master extends Controller
         $user_information = DB::table('buyers')->where('id','=',$id)->get();
         $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
         $user_agreements = DB::table('pdf_agreements')->where('user_id','=',$id)->get();
+        $user_reciepts_pdf = DB::table('reciepts')->where('user_id','=',$id)->get();
+        $user_agreements_pdf = DB::table('agreements')->where('user_id','=',$id)->get();
 
-        return view('Admin.Receipts.view_agreement',$data,compact(['user_information','user_reciepts','user_agreements']));
+
+        return view('Admin.Receipts.view_agreement',$data,compact(['user_information','user_reciepts','user_agreements','user_reciepts_pdf','user_agreements_pdf']));
     }
 
 
@@ -707,7 +735,12 @@ class Master extends Controller
         $whereConditions = ['estate' => $estate_no_no,
                             'plot_number' => $plot_no_no];
                         
-        DB::table('plots')->where($whereConditions)->update(['status' => 'Underpayment',]);
+         $plot_status = DB::table('plots')->where($whereConditions)->value('status');
+        
+        if($plot_status == "Not taken")
+        {
+            $plot_status = DB::table('plots')->where($whereConditions)->update(['status' => 'Underpayment',]);
+        }
             
         return $pdf->stream($filename);
 
@@ -722,6 +755,9 @@ class Master extends Controller
     public function store_agreement(Request $request)
     {
 
+        $amount_in_words = $request->amount_in_words;
+        dd($amount_in_words);
+        
         $user_id = $request->user_id;
         $original_amount =buyer::where('id',$user_id)->value('amount_payed');
 
@@ -773,13 +809,14 @@ class Master extends Controller
         
         $save = $post->save();
 
+         // Update buyer records
+
         $update_buyer_agreement = buyer::where('id',$user_id)->update(['next_installment_pay'=>"Fully payed",
                                                             'reciepts'=> '-',
                                                             'agreement'=> '-',
                                                             'amount_payed'=> $all_cash,
                                                             'balance'=>$balance]);
 
-         // Update First reciept records
 
          $estate_no_no=buyer::where('id',$user_id)->value('estate');
          $plot_no_no = buyer::where('id',$user_id)->value('plot_number');
@@ -799,6 +836,106 @@ class Master extends Controller
             return redirect('pending-buyers')->with('success','Agreement has been recorded and plot been sold successfully');
         }
     }
+
+    public function store_agreement_new_plot(Request $request){
+
+        
+
+        
+        $user_id = $request->user_id;
+        $original_amount =buyer::where('id',$user_id)->value('amount_payed');
+
+        $estate_name =buyer::where('id',$user_id)->value('estate');
+        $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
+        
+        $user_amount_paid = $request->amount_paid;
+        $all_cash = $original_amount+$user_amount_paid;
+
+            if($all_cash < $estate_price)
+            {
+                return back()->with('error','This amount paid is not enough to take this plot in this estate');
+            }
+
+       
+        $user_id = $request->user_id;
+        $reciepts = $request->reciept_added;
+        $agreement_reciept = $request->agreement_added;
+        $user_amount_paid = $request->amount_paid;
+        $Date_of_payment = $request->Date_of_payment;
+
+        $balance = 0;
+
+        $estate_update = $request->Estate_plot;
+        $width_update1 = $request->plot_width1;
+        $width_update2 = $request->plot_width2;
+        $height_update1 = $request->plot_height1;
+        $height_update2 = $request->plot_height2;
+        $location = $request->location_plot;
+        $plot_numb = $request->plot_number;
+
+
+        $info_update = buyer::where('id',$user_id)->update(['estate'=>$estate_update,
+                                                            'width_1'=> $width_update1,
+                                                            'width_2'=> $width_update2,
+                                                            'height_1'=> $height_update1,
+                                                            'height_2'=> $height_update2,
+                                                            'location'=> $location,
+                                                            'plot_number'=> $plot_numb,
+                                                                    ]);
+
+
+         // Document formulation
+
+        $user_info =buyer::where('id',$user_id)->first();
+
+        $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info','all_cash','Date_of_payment']));
+        $filename = 'payment_agreement' . time() . '.pdf';
+
+        $pdf->save(storage_path("app/public/agreements/{$filename}"));
+
+        $post = new agreement();
+
+        $post->user_id = $request->user_id;
+        $post->Amount_paid = $request->amount_paid;
+        $post->Date_of_payment = $request->Date_of_payment;
+        $user_receipt ='-'; 
+        $post->reciept= '-'; 
+        $post->agreement=$filename; 
+
+        $original_amount=buyer::where('id',$user_id)->value('amount_payed');
+        $all_cash = $original_amount+$user_amount_paid;
+        
+        $save = $post->save();
+
+         // Update buyer records
+
+        $update_buyer_agreement = buyer::where('id',$user_id)->update(['next_installment_pay'=>"Fully payed",
+                                                            'reciepts'=> '-',
+                                                            'agreement'=> '-',
+                                                            'amount_payed'=> $all_cash,
+                                                            'balance'=>$balance]);
+
+
+         $estate_no_no=buyer::where('id',$user_id)->value('estate');
+         $plot_no_no = buyer::where('id',$user_id)->value('plot_number');
+ 
+         $whereConditions = ['estate' => $estate_no_no,
+                             'plot_number' => $plot_no_no];
+
+        DB::table('plots')->where($whereConditions)->update(['status' => 'Fully payed',]);
+
+        DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment,Phonenumber,amount_in_words) values (?,?,?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment,'-','-']);
+
+        
+        return $pdf->stream($filename);
+        
+        if($save)
+        {
+            return redirect('pending-buyers')->with('success','Agreement has been recorded and plot been sold successfully');
+        }
+
+    }
+
 
     // SALES AND ACCOUNTING
 
@@ -894,9 +1031,11 @@ class Master extends Controller
 
              $formattedDate = $currentDate->format('Y/m/d');
              $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
+             $records_count = buyer::whereDate('next_installment_pay', $formattedDate)->count();
+
              $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-             return view('Admin.Sales.payment_reminders',$data, ['records' => $records]);
+             return view('Admin.Sales.payment_reminders',$data, compact(['records_count','records']));
     }
 
     public function update_payment_reminder($id)
@@ -1139,9 +1278,11 @@ class Master extends Controller
         {
             $info = $request->input('value');
 
-            $whereConditions = ['estate' => $info,
-                                'status' => "Not taken"];
-             $data = DB::table('plots')->where($whereConditions)->get();
+            $whereConditions = ['estate' => $info];                             
+
+             $data = DB::table('plots')->where($whereConditions)
+                                        ->where('status','!=','Fully payed')
+                                        ->get();
 
             return response()->json($data);
         }
@@ -1150,15 +1291,16 @@ class Master extends Controller
         {
             $info = $request->input('selectedValue');
 
-            $whereConditions = ['plot_number' => $info,
-                                'status' => "Not taken"];
+            $whereConditions = ['plot_number' => $info];
+                               
                                 
-             $width_1 = DB::table('plots')->where($whereConditions)->value('width_1');
-             $width_2 = DB::table('plots')->where($whereConditions)->value('width_2');
-             $height_1 = DB::table('plots')->where($whereConditions)->value('height_1');
-             $height_2 = DB::table('plots')->where($whereConditions)->value('height_2');
-             $location = DB::table('plots')->where($whereConditions)->value('location');
+             $width_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_1');
+             $width_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_2');
+             $height_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_1');
+             $height_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_2');
+             $location = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('location');
 
+             
 
             return response()->json([
                 "status"=>TRUE,
@@ -1248,7 +1390,18 @@ class Master extends Controller
             } else {
                 abort(404, 'File not found');
             }
-            // return response()->download(storage_path('public/agreements//'.$Book_pdf));
+        }
+
+        public function download_receipt_payment($filename)
+        {
+
+            $pdf = reciept::where('reciept', $filename)->firstOrFail();
+
+            return Response($pdf->content, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);
+
         }
 
         public function add_expenditure()
@@ -1264,6 +1417,9 @@ class Master extends Controller
 
             $post = new expenditure;
 
+            $receipt_no = rand(10000,50000);
+
+            
             $post->service = $request->expense;
             $post->amount = $request->amount;
 

@@ -64,6 +64,7 @@ Route::get('view-receipt-records',[Master::class,'view_receipt'])->name('view-re
 Route::post('store-new-receipt',[Master::class,'store_new_receipt'])->name('store-new-receipt');
 Route::post('store-first-receipt',[Master::class,'store_first_receipt'])->name('store-first-receipt');
 Route::post('store-agreement',[Master::class,'store_agreement'])->name('store-agreement');
+Route::post('store-agreement-new-plot',[Master::class,'store_agreement_new_plot'])->name('store-agreement-new-plot');
 
 Route::get('add-first-receipt/{id}',[Master::class,'add_first_reciept']);
 
@@ -71,7 +72,7 @@ Route::get('add-first-receipt/{id}',[Master::class,'add_first_reciept']);
 Route::get('accomplished',[Master::class,'accomplished_buyers'])->name('accomplished');
 Route::get('view-agreement/{id}',[Master::class,'view_agreement'])->name('view-agreement');
 Route::get('download/{id}',[Master::class,'download_agreement_receipt']);
-
+Route::get('download_receipt/{id}',[Master::class,'download_receipt_payment']);
 
 // Sales
 

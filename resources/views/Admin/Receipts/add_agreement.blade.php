@@ -109,23 +109,15 @@
                       </div>
 
                       <div class="row">
-                        <!-- <div class="col-md-6">
+                        <div class="col-md-12">
                           <div class="form-group row">
-                            <label class="col-md-5 col-form-label">Attach Reciept</label>
-                            <div class="col-sm-12">
-                              <input type="file" name="reciept_added" id="reciept_added" class="form-control" required>
+                            <label class="col-sm-6 col-form-label">Amount in words</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="amount_in_words" id="amount_in_words" class="form-control" required>
                             </div>
                           </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                              <label class="col-md-5 col-form-label">Attach Agreement</label>
-                              <div class="col-sm-12">
-                                <input type="file" name="agreement_added" id="agreement_added" class="form-control" required>
-                              </div>
-                            </div>
-                          </div> -->
                       </div>
               
                       <div class="row">

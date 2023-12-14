@@ -20,8 +20,10 @@ return new class extends Migration
             $table->text('NIN');
             $table->text('national_id_front');
             $table->text('national_id_back');
+            $table->text('profile_pic');
             $table->text('card_number');
             $table->text('land_poster');
+            $table->text('phonenumber');
             $table->text('method_payment');
             $table->text('purchase_type');
             $table->text('estate');

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('expenditures', function (Blueprint $table) {
             $table->id();
+            $table->text('random_numb');
             $table->text('service');
-            $table->text('amount');
+            $table->text('Amount');
             $table->timestamps();
         });
     }

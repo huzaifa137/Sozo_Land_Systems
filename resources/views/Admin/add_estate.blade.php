@@ -125,6 +125,16 @@
                             </div>
                           </div>
                         </div>
+
+
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Estate pdf :</label>
+                            <div class="col-sm-9">
+                              <input type="file" name="estate_pdf" id="estate_pdf" class="form-control" required>
+                            </div>
+                          </div>
+                        </div>
                         
                       </div>
                       

@@ -198,6 +198,28 @@
 
                                             <div class="col-md-6">
                                                 <div class="form-group row">
+                                                    <label class="col-sm-3 col-form-label">Profile Image</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="file" name="profile_pic" id="profile_pic"
+                                                            class="form-control" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-3 col-form-label mt-2">Phone number</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" name="phonenumber" id="phonenumber"
+                                                        class="form-control" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
                                                     <label class="col-sm-3 col-form-label mt-2">Land Poster</label>
                                                     <div class="col-sm-9">
                                                         <select name="land_poster" id="land_poster" class="form-control"
@@ -208,7 +230,6 @@
                                                         </select>
                                                     </div>
                                                 </div>
-
                                             </div>
 
 
@@ -634,6 +655,8 @@
             $('#submit_click').click(function () {
 
                 var firstname = $('#firstname').val();
+                var profile_pic = $('#profile_pic')[0].files[0];
+                var phonenumber = $('#phonenumber').val();
                 var lastname = $('#lastname').val();
                 var gender = $('#gender').val();
                 var date_of_birth = $('#date_of_birth').val();
@@ -692,6 +715,8 @@
                     var form_data = new FormData();
 
                     form_data.append('firstname', firstname);
+                    form_data.append('profile_pic', profile_pic);
+                    form_data.append('phonenumber', phonenumber);
                     form_data.append('lastname', lastname);
                     form_data.append('gender', gender);
                     form_data.append('date_of_birth', date_of_birth);
@@ -753,6 +778,14 @@
 
                     if (!firstname) {
                         errors.push("First name is required.");
+                    }
+
+                    if (!profile_pic) {
+                        errors.push("Profile Image field is required.");
+                    }
+
+                    if (!phonenumber) {
+                        errors.push("Phone number is required.");
                     }
 
                     if (!lastname) {
