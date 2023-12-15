@@ -13,6 +13,7 @@ use App\Models\reciept;
 use App\Models\agreement;
 use App\Models\expenditure;
 use App\Models\pdf_agreements;
+use App\Models\expenditure_service;
 use App\Models\pdf_receipt;
 use Illuminate\Support\Facades\Hash;
 use Alert;
@@ -756,7 +757,6 @@ class Master extends Controller
     {
 
         $amount_in_words = $request->amount_in_words;
-        dd($amount_in_words);
         
         $user_id = $request->user_id;
         $original_amount =buyer::where('id',$user_id)->value('amount_payed');
@@ -789,7 +789,14 @@ class Master extends Controller
 
         $user_info =buyer::where('id',$user_id)->first();
 
-        $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info','all_cash','Date_of_payment']));
+
+        $day = $user_info->created_at->day;
+        $month = $user_info->created_at->month;
+        $year = $user_info->created_at->year;
+
+
+        $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info',
+        'all_cash','Date_of_payment','day','month','year','amount_in_words']));
         $filename = 'payment_agreement' . time() . '.pdf';
 
         $pdf->save(storage_path("app/public/agreements/{$filename}"));
@@ -926,7 +933,8 @@ class Master extends Controller
 
         DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment,Phonenumber,amount_in_words) values (?,?,?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment,'-','-']);
 
-        
+        $profile_pic=buyer::where('id',$user_id)->value('profile_pic');
+
         return $pdf->stream($filename);
         
         if($save)
@@ -1415,21 +1423,32 @@ class Master extends Controller
         public function store_expenditure(Request $request)
         {
 
-            $post = new expenditure;
-
-            $receipt_no = rand(10000,50000);
-
+            $random_numb = rand(10000,50000);
             
-            $post->service = $request->expense;
-            $post->amount = $request->amount;
+            $total_amount = $request->total_amount;
+            $expenditure_name = $request->expenditure_name;
 
-            $save = $post->save();
+                $post = new expenditure;
 
-            if($save)
-            {
-                return redirect()->back()->with('success','Expense has been recorded successfully');
+                $post->random_numb = $random_numb;
+                $post->service = $expenditure_name;
+                $post->amount = $total_amount;
+
+                $post->save();
+
+            $dynamicInputs = $request->input('dynamic_inputs', []);
+
+            foreach ($dynamicInputs as $value) {
+                
+                $post = new expenditure_service;
+
+                $post->random_number = $random_numb;
+                $post->all_services = $value;
+
+                $post->save();
             }
-            return $request->all();
+
+            return back()->with('success','Expenditure has been added successfully');
         }
 
         public function today_expense()
@@ -1439,11 +1458,14 @@ class Master extends Controller
 
         $currentDate = Carbon::today();
         $totalExpenditureAll = expenditure::whereDate('created_at', $currentDate)->get();
+        $totalExpenditureServices = expenditure_service::whereDate('created_at', $currentDate)->get();
+
+        $totalExpenditureServices = $totalExpenditureServices->groupBy('random_number');
         
         $totalAmount = expenditure::whereDate('created_at', $currentDate)->sum('amount');
         
         $totalExpenditure = expenditure::whereDate('created_at', $currentDate)->count();
 
-        return view('Admin.Expenditure.today_expenditure',$data , compact(['totalExpenditureAll','totalAmount','totalExpenditure']));
+        return view('Admin.Expenditure.today_expenditure',$data , compact(['totalExpenditureAll','totalAmount','totalExpenditure','totalExpenditureServices']));
         }
 }

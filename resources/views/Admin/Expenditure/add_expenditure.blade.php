@@ -76,13 +76,12 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Add Expense</h4>
+                    <h4 class="card-title">Add Expenditure</h4>
 
-                    <form  action="{{ route('store-expenditure')}}" method="POST">
+                    <form action="{{ route('store-expenditure')}}" method="post">
                       @csrf
-                      <p class="card-description">Enter below Information :</p>
 
-                  @if (Session::get('success'))
+                      @if (Session::get('success'))
                   <div class="alert alert-success">
                     {{Session::get('success')}}
                   </div>
@@ -94,66 +93,43 @@
                   </div>
                   @endif
 
+                  <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Expenditure Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="expenditure_name" id=""
+                                    class="form-control" required>
+                            </div>
+                        </div>
 
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Total Amount </label>
+                          <div class="col-sm-9">
+                              <input type="text" name="total_amount" id=""
+                                  class="form-control" required>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                        
+                    </div>
+                </div>
+                  
                       <div class="row">
-                        <div class="col-md-4">
-                          <div class="form-group row">
-                            <label class="col-sm-6 col-form-label">Expense Service</label>
-                            <div class="col-sm-12">
-                              <div class="col-sm-12">
-                              <input type="text" name="expense" id="expense" class="form-control" placeholder="Expense service" required>                                 
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-md-4" id="plot_estate_field">
-                          <div class="form-group row">
-                            <label class="col-sm-6 col-form-label">Amount</label>
-                            <div class="col-sm-12">
-                              <div class="col-sm-12">
-                                <input type="number" name="amount" id="amount" class="form-control" placeholder="Amount for expense" required>                                 
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- <div class="col-md-4" id="land_estate_field" style="display: none">
-                          <div class="form-group row">
-                            <label class="col-sm-6 col-form-label">Land Estate</label>
-                            <div class="col-sm-12">
-                              <div class="col-sm-12">
-                                <input type="text" name="land_estate" id="land_estate" class="form-control" placeholder="Enter plot no" >
-                              </div>
-                            </div>
-                          </div>
-                        </div> -->
-
-                        <!-- <div class="col-md-4">
-                          <div class="form-group row">
-                            <label class="col-sm-6 col-form-label">Plot no</label>
-                            <div class="col-sm-12">
-                              <div class="col-sm-12">
-                                <input type="number" name="plot_no" id="plot_no" class="form-control" placeholder="Enter plot no" required>
-                              </div>
-                            </div>
-                          </div>
-                        </div> -->
-
-
-                        <div class="col-md-4">
-
-                        </div>
-
-
-                        <div class="col-md-1">
-                          <div class="form-group row">
-                            <!-- {{-- <input type="submit" value="Submit"> --}} -->
-                        <button type="submit" class="btn btn-primary" style="margin-left:1rem;">Search</button>
+                        <div class="col-md-6" id="dynamic-inputs-container">
+             
                         </div>
                       </div>
-                      </div>
-                    </form>
+                  
+                      <br>
+                      <button class="btn btn-primary" type="button" onclick="addInputBox()">Add Expenditure Expense</button>
+
+                      <button class="btn btn-success" type="submit">Save Expenditure</button>
+
+                  </form>
+
+
                   </div>
                 </div>
               </div>
@@ -181,25 +157,38 @@
   
     <script>
   
-      $(document).ready(function () {
-        $("#land_plot").change(function () {
-  
-          var land_plot = $(this).val();
-  
-          if (land_plot == 'House') {
-            $('#land_estate_field').show();
-            $('#plot_estate_field').hide();
-          }
-          else
-          {
-            $('#land_estate_field').hide();
-            $('#plot_estate_field').show();
+  function addInputBox() {
 
-          }
-          
-        });
-      });
-      </script>
+    var input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'dynamic_inputs[]'; // Use an array to handle multiple dynamic inputs
+        input.className = 'form-control';
+        input.placeholder = 'Enter reason for exependiture with amount'
+
+        // Create a new div to contain the input and a remove button
+        var container = document.createElement('div');
+
+        // Create a remove button to remove the input box
+        var removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove';
+        removeButton.type = 'button';
+        // removeButton.className = 'btn btn-primary';
+
+        removeButton.onclick = function () {
+            container.remove();
+        };
+
+        // Append the input and remove button to the container
+        container.appendChild(input);
+        container.appendChild(removeButton);
+
+        // Append the container to the dynamic-inputs-container
+        document.getElementById('dynamic-inputs-container').appendChild(container);
+
+
+  }
+
+    </script>
 
     <!-- container-scroller -->
     <!-- plugins:js -->

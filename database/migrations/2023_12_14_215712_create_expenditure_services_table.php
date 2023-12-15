@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenditure_lists', function (Blueprint $table) {
+        Schema::create('expenditure_services', function (Blueprint $table) {
             $table->id();
-            $table->text('expense_name');
-            $table->text('amount');
+            $table->text('random_number');
+            $table->text('all_services');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expenditure_lists');
+        Schema::dropIfExists('expenditure_services');
     }
 };

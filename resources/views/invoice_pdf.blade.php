@@ -129,7 +129,7 @@
         </tr>
         <tr>
             <td>Cash </td>
-            <td>{{$user_info->plot_number}} , {{$user_info->estate}} , {{$user_info->width_1}},{{$user_info->width_2}},{{$user_info->height_1}},{{$user_info->height_2}},</td>
+            <td> <span style="font-weight: bold">Plot number</span> {{$user_info->plot_number}} , <span style="font-weight: bold">Estate</span> {{$user_info->estate}} , {{$user_info->width_1}},{{$user_info->width_2}},{{$user_info->height_1}},{{$user_info->height_2}},</td>
         </tr>
     </table>
 </div>

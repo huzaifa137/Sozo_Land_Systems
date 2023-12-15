@@ -126,20 +126,30 @@
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Sozo Properties Expenditures today </h4>
+                    <h4 class="card-title">Expenditures Today </h4>
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
                           <tr>
                             <th> Expenditure Service </th>
                             <th> Amount </th>
+                            <th>Services</th>
                           </tr>
                         </thead>
                         <tbody>
                             @foreach ($totalExpenditureAll as $all_sale)
                           <tr>
                             <td> {{$all_sale->service}}  </td>
-                            <td> {{$all_sale->amount}} </td>
+                            <td> {{$all_sale->Amount}} </td>
+                            <td>
+                              @if(isset($totalExpenditureServices[$all_sale->random_numb]))
+                              <ul>
+                                  @foreach($totalExpenditureServices[$all_sale->random_numb] as $item)
+                                      <li>{{ $item->all_services }}</li>
+                                  @endforeach
+                              </ul>
+                              @endif
+                            </td>
                           </tr>
                           @endforeach
                          
