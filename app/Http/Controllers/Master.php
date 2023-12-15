@@ -44,6 +44,7 @@ class Master extends Controller
         $request->validate([
             'username'=>'required',
             'email'=>'required|email',
+            'admin_category'=>'required',
             'password'=>'required',
             'confirm_password'=>'required',
         ]);
@@ -59,6 +60,7 @@ class Master extends Controller
         $register_admin->username = $request->username;
         $register_admin->email = $request->email;
         $register_admin->password = Hash::make($request->password);
+        $register_admin->admin_category = $request->admin_category;
 
         $save = $register_admin->save();
             
@@ -214,7 +216,7 @@ class Master extends Controller
     }
 
 
-    public function Edit_sale($id)
+    public function edit_sales($id)
     {
         return buyer::find($id);
     }

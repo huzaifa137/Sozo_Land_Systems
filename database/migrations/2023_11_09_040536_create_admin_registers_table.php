@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('username');
             $table->text('email');
             $table->text('password');
+            $table->text('admin_category');
             $table->timestamps();
         });
     }

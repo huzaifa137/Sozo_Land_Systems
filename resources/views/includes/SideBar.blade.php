@@ -8,7 +8,7 @@
           </div>
           <div class="profile-name">
             <h5 class="mb-0 font-weight-normal">{{$LoggedAdminInfo['username']}}</h5>
-            <span>Super Admin</span>
+            <span>{{$LoggedAdminInfo['admin_category']}}</span>
           </div>
         </div>
         <a href="#" id="profile-dropdown" data-bs-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>

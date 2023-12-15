@@ -125,5 +125,14 @@ Route::get('expense-today',[Master::class,'today_expense'])->name('expense-today
 
 
  
-Route::get('/',[Master::class,'login']);
+Route::get('/',[Master::class,'login'])->name('/');
 Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
+
+
+// Example in your routes/web.php file
+
+Route::middleware(['SuperAdminMiddleware'])->group(function () {
+
+    Route::get('/edit/{id}', [Master::class,'edit_sales'])->middleware('can:edit,buyer');
+    Route::delete('/delete/{id}', [Master::class,'delete_sale'])->middleware('can:delete,buyer');
+});

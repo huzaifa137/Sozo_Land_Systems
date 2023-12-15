@@ -52,6 +52,16 @@
                             </div>
 
                             <div class="mb-3 col-md-12">
+                                <label>Admin Category<span class="text-danger">*</span></label>
+                                <select class="form-control" name="admin_category" id="" required>
+                                    <option value="">--Select System Admin Category----</option>
+                                    <option value="SuperAdmin">1.Super Admin</option>
+                                    <option value="Admin">2. Admin</option>
+                                </select>
+                                <span class="text-danger">@error('email'){{$message}}@enderror</span>
+                            </div>
+
+                            <div class="mb-3 col-md-12">
                                 <label>Password<span class="text-danger">*</span></label>
                                 <input type="password" name="password" id="password" class="form-control" placeholder="Enter Password" required>
                                 <span class="text-danger">@error('password'){{$message}}@enderror</span>
