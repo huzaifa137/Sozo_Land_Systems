@@ -66,7 +66,7 @@
 
     <section><div class="img_class">
         
-                <img src="{{'/public/profile_pic/'.$user_info->profile_pic}}"  />
+                <img src="{{'/public/profile_pic/'.$profile_pic}}"  />
 
     </div>
         <center>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\AdminRegister;
 use App\Models\buyer;
 use App\Models\Estate;
@@ -24,7 +25,7 @@ use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Writer\HTML;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
-
+use App\Image;
 
 class Master extends Controller
 {
@@ -218,13 +219,49 @@ class Master extends Controller
 
     public function edit_sales($id)
     {
-        return buyer::find($id);
+         $info =  buyer::find($id);
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+        return view('Admin.Edit.buyer_edit',$data,compact(['info']));
     }
+
+    public function edit_user_info(Request $request){
+
+
+        $post = buyer::find($request->id);
+
+        $post->firstname= $request->firstname;
+        $post->lastname= $request->lastname;
+        $post->gender= $request->gender;
+        $post->date_of_birth= $request->date_of_birth;
+        $post->NIN= $request->NIN;
+        $post->phonenumber= $request->phonenumber;
+        $post->card_number= $request->card_number;
+        $post->purchase_type= $request->purchase_type;
+
+        $save=$post->save();
+
+        if($save)
+        {
+            return back()->with('success','Information has been updated successfully');
+        }
+        else
+        {
+            return back()->with('error','Error while trying to update data');
+        }
+    }
+
  
-    public function delete_sale($id)
-    {
-        return buyer::find($id);
-    }
+    // public function delete_sale($id)
+    // {
+    //     $data =  buyer::find($id);
+
+    //     $data->delete();
+
+    //     return back()->with('sucess','Data has been deleted successfully');
+
+    // }
 
     public function view_specific_sale($id)
     {
@@ -274,6 +311,27 @@ class Master extends Controller
     //    Alert::success('Estate added', 'Congurations on adding a new Estate');
 
        return back()->with('success','Congurations on adding a new Estate');
+    }
+
+    public function view_estate($id)
+    {
+
+        $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+        
+        $specific_estate = Estate::find($id);
+
+        $estate_name = $specific_estate->estate_name;
+
+        $count_estates_fully = DB::table('buyers')
+                    ->where('estate','=',$estate_name)
+                    ->where('next_installment_pay','=',"Fully payed")->count();
+
+
+        $count_estates_not_fully = DB::table('buyers')
+                        ->where('estate','!=',$estate_name)
+                        ->where('next_installment_pay','!=',"Fully payed")->count();
+
+        return view('Admin.view_specific_estate',$data , compact(['specific_estate','count_estates_fully','count_estates_not_fully']));
     }
 
     public function plots(){
@@ -669,7 +727,9 @@ class Master extends Controller
                                                 'balance'=>$Balance
                                                         ]);
 
-           return $pdf->stream($filename);                                                
+        //    return $pdf->stream($filename);               
+        return $pdf->download($filename);                                                
+                                 
         
     }
 
@@ -745,7 +805,9 @@ class Master extends Controller
             $plot_status = DB::table('plots')->where($whereConditions)->update(['status' => 'Underpayment',]);
         }
             
-        return $pdf->stream($filename);
+        // return $pdf->stream($filename);
+
+        return $pdf->download($filename);
 
         if($update_buyer_amount)
         {
@@ -758,6 +820,7 @@ class Master extends Controller
     public function store_agreement(Request $request)
     {
 
+        
         $amount_in_words = $request->amount_in_words;
         
         $user_id = $request->user_id;
@@ -791,6 +854,10 @@ class Master extends Controller
 
         $user_info =buyer::where('id',$user_id)->first();
 
+        $profile_pic =buyer::where('id',$user_id)->value('profile_pic');
+
+        $profile_pic  = public_path('profile_pic/'.$profile_pic);
+
 
         $day = $user_info->created_at->day;
         $month = $user_info->created_at->month;
@@ -798,7 +865,10 @@ class Master extends Controller
 
 
         $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info',
-        'all_cash','Date_of_payment','day','month','year','amount_in_words']));
+        'all_cash','Date_of_payment','day','month','year','amount_in_words','profile_pic']));
+
+
+
         $filename = 'payment_agreement' . time() . '.pdf';
 
         $pdf->save(storage_path("app/public/agreements/{$filename}"));
@@ -838,17 +908,18 @@ class Master extends Controller
         DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment,Phonenumber,amount_in_words) values (?,?,?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment,'-','-']);
 
         
-        return $pdf->stream($filename);
+        // return $pdf->stream($filename);
+
+        return $pdf->download($filename);
+
         
         if($save)
         {
             return redirect('pending-buyers')->with('success','Agreement has been recorded and plot been sold successfully');
         }
-    }
+    }   
 
     public function store_agreement_new_plot(Request $request){
-
-        
 
         
         $user_id = $request->user_id;
@@ -937,7 +1008,10 @@ class Master extends Controller
 
         $profile_pic=buyer::where('id',$user_id)->value('profile_pic');
 
-        return $pdf->stream($filename);
+        // return $pdf->stream($filename);
+
+        return $pdf->download($filename);
+
         
         if($save)
         {
@@ -1093,42 +1167,71 @@ class Master extends Controller
     public function search_land_db(Request $request)
     {
 
-        $status = $request->land_plot;
-        $plot_no = $request->plot_no;
         
+        
+        $firstname = $request->firstname;
+        $lastname = $request->lastname;
+        $NIN = $request->NIN;
+        $date_of_birth = $request->date_of_birth;
 
-        if($status == 'House')
+        $estate = $request->estate;
+        $land_plot = $request->land_plot;
+        
+        if($firstname != null)
         {
-            $land_estate = $request->land_estate;
+            
             $result = DB::table('buyers')
-                                  ->where('purchase_type', $status,)
-                                  ->where('estate', $land_estate,)
-                                  ->where('plot_number',$plot_no)
-                                  ->first();
+                        ->where('firstname', $firstname,)
+                        ->where('lastname', $lastname,)
+                        ->first();
 
-
-
-            if(!$result)
-            {
-                return back()->with('error','No House has been found with provided information');
-            }
-            else
-            {
-                 $user_id = $result->id;
-                 $user_information = DB::table('buyers')->where('id','=',$id)->get();
-                 $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
-                 $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
-            }
+                        if(!$result)
+                            {
+                                return back()->with('error','No record has been found with provided information');
+                            }
+                            else
+                            {
+            
+                                $id = $result->id;
+                                $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                                $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+                                $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+            
+                                 return view('Admin.Resale.show_info',$data , compact(['user_information','user_reciepts','id']));
+            
+                            }
         }
-        else
+        else if($NIN != null)
         {
 
-            $land_estate = $request->estate;
             $result = DB::table('buyers')
-                                  ->where('purchase_type', $status,)
-                                  ->where('estate', $land_estate,)
-                                  ->where('plot_number',$plot_no)
+                        ->where('NIN', $NIN,)
+                        ->first();
+
+                        if(!$result)
+                            {
+                                return back()->with('error','No record has been found with provided information');
+                            }
+                            else
+                            {
+            
+                                $id = $result->id;
+                                $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                                $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+                                $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+            
+                                 return view('Admin.Resale.show_info',$data , compact(['user_information','user_reciepts','id']));
+            
+                            }
+        }
+        else if($estate != null)
+        {
+
+            $result = DB::table('buyers')
+                                  ->where('estate', $estate,)
+                                  ->where('plot_number', $land_plot,)
                                   ->first();
+
 
              if(!$result)
              {
@@ -1136,17 +1239,40 @@ class Master extends Controller
              }
              else
              {
-                 
+
                  $id = $result->id;
                  $user_information = DB::table('buyers')->where('id','=',$id)->get();
                  $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
                  $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
-                 return view('Admin.Resale.resale',$data , compact(['user_information','user_reciepts','id']));
+                  return view('Admin.Resale.show_info',$data , compact(['user_information','user_reciepts','id']));
 
              }
         }
-          
+        else if($date_of_birth != null)
+        {
+
+            $result = DB::table('buyers')
+            ->where('date_of_birth', $date_of_birth,)
+            ->first();
+
+                if(!$result)
+                {
+                return back()->with('error','No Plot has been found with provided information');
+                }
+
+                else
+                {
+
+                    $id = $result->id;
+                    $user_information = DB::table('buyers')->where('id','=',$id)->get();
+                    $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
+                    $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+                     return view('Admin.Resale.show_info',$data , compact(['user_information','user_reciepts','id']));
+
+                }
+        }
     }
 
 
@@ -1405,12 +1531,35 @@ class Master extends Controller
         public function download_receipt_payment($filename)
         {
 
-            $pdf = reciept::where('reciept', $filename)->firstOrFail();
 
-            return Response($pdf->content, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $filename . '"',
-            ]);
+            $filename = str_replace('.pdf', '', $filename);
+
+            // dd($filename);
+            // $pdf = reciept::where('reciept', $filename)->value('reciept');
+            // return response()->download(public_path('pdf_receipts/'.$filename));
+
+            // $filePath = storage_path('app/pdf_receipts/' . $filename);
+
+            $filePath = public_path('pdf_receipts/' . $filename);
+
+
+            return response()->download($filePath, Str::slug($filename))
+                        ->withHeaders([
+                            'Content-Type' => 'application/pdf',
+                            'Content-Disposition' => 'inline; filename="' . Str::slug($filename) . '"',
+                        ]);
+
+            // dd($pdf);
+
+            // $pdf =  storage_path('public/pdf_receipts/'.$pdf);
+
+            // return $pdf->download($filename);   
+            
+            // return $pdf->stream('resume.pdf');
+
+
+            return response()->download(public_path('pdf_receipts/'.$pdf));
+
 
         }
 
@@ -1424,12 +1573,31 @@ class Master extends Controller
 
         public function store_expenditure(Request $request)
         {
-
-            $random_numb = rand(10000,50000);
-            
+            $added_amount = 0;
             $total_amount = $request->total_amount;
             $expenditure_name = $request->expenditure_name;
 
+            $dynamicInputsAmounts = $request->input('dynamic_inputs2', []);
+
+            foreach ($dynamicInputsAmounts as $value) {
+                $added_amount+=$value;
+            }
+
+            if($added_amount > $total_amount)
+            {
+                return back()->with('error','Added amount is greater than total amount submitted');
+            }
+            else if($added_amount < $total_amount)
+            {
+                return back()->with('error','Added amount is less than total amount submitted');
+            }
+            else if($added_amount != $total_amount){
+
+                return back()->with('error','Invalid amount and total expenses provided');
+
+            }
+            $random_numb = rand(10000,50000);
+            
                 $post = new expenditure;
 
                 $post->random_numb = $random_numb;
@@ -1470,4 +1638,55 @@ class Master extends Controller
 
         return view('Admin.Expenditure.today_expenditure',$data , compact(['totalExpenditureAll','totalAmount','totalExpenditure','totalExpenditureServices']));
         }
+
+        // SEARCH MODULE 
+
+
+        public function search_module()
+        {
+
+            $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
+
+            $records = Estate::all();
+
+            return view('Admin.Search.search_module',$data, compact(['records']));
+        }
+
+        public function index() 
+        {
+
+        $data = [
+            'imagePath'    => public_path('img/logo.jpg'),
+            'name'         => 'John Doe',
+            'address'      => 'USA',
+            'mobileNumber' => '000000000',
+            'email'        => 'john.doe@email.com'
+        ];
+
+
+        $pdf = PDF::loadView('resume', $data);
+        return $pdf->stream('resume.pdf');
+    }
+
+    public function download_national_id(Request $request,$id){
+
+        $user_id =  $id;
+        
+        $user_info =buyer::where('id',$user_id)->first();
+        $national_id_front =buyer::where('id',$user_id)->value('national_id_front');
+        $national_id_back =buyer::where('id',$user_id)->value('national_id_back');
+        
+        $national_id_front  = public_path('public/national_id/'.$national_id_front);
+        $national_id_back  = public_path('public/national_id/'.$national_id_back);
+
+
+            $national_id_front    = $national_id_front;
+            $national_id_back     = $national_id_back;
+        
+
+        $pdf = PDF::loadView('national_id',compact(['national_id_front','national_id_back']));
+
+        return $pdf->download('national_id.pdf');
+        
+    }
 }

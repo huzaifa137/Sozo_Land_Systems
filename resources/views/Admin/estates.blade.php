@@ -158,6 +158,7 @@
                             <th> Estate Price </th>
                             <th> Location </th>
                             <th> Number of plots </th>
+                            <th>View Estate</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -170,6 +171,8 @@
                             <td> {{$item->estate_price}} </td>
                             <td> {{$item->location}} </td>
                             <td> {{$item->number_of_plots}} </td>
+                            <td><a href="{{'view-estate/'.$item->id}}"><i class="btn btn-success">View Estate</i></a></td>
+                            {{-- <td><a href="{{'delete/'.$info->id}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this case ?')"><i class="la la-trash-o"></i></a></td> --}}
                           </tr>
                           @endforeach    
                         </tbody>

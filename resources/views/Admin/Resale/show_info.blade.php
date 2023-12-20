@@ -87,6 +87,7 @@
                               <h4 class="card-title text-primary">Customer Information</h4>
                               @foreach ($user_information as $data)
                               <div class="row">
+                                <input type="hidden" name="id" value="{{$data->id}}">
                                 <div class="col-md-5">
                                   <div class="table-responsive">
                                     <table class="table">
@@ -113,16 +114,6 @@
                                           <td class="text-info">NIN</td>
                                           <td class="text-right font-weight-medium"> {{$data->NIN}} </td>
                                         </tr>
-
-                                        {{-- <tr>
-                                          <td class="text-info">Card Number</td>
-                                          <td class="text-right font-weight-medium"> {{$data->card_number}} </td>
-                                        </tr>
-
-                                        <tr>
-                                          <td class="text-info">Payment Method</td>
-                                          <td class="text-right font-weight-medium"> {{$data->method_payment}} </td>
-                                        </tr> --}}
 
                                         <tr>
                                           <td class="text-info">Estate</td>
@@ -182,10 +173,7 @@
                                           @endif
                                         </tr>
 
-                                        <tr>
-                                          <td class="text-info">Phone number</td>
-                                          <td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>
-                                        </tr>
+                                        <input type="hidden" name="status" id="status" value="{{$data->next_installment_pay}}">
 
                                       </tbody>
                                     </table>
@@ -209,52 +197,26 @@
                                   <div class="table-responsive">
                                     <table class="table">
                                       <tbody>
-
-
-                                       
                                       </tbody>
-                                      
                                     </table>
                                   </div>
                                 </div>
                                 
                                 <div class="col-md-9" style="padding-left: 10rem">
-
-                                  @foreach ($user_reciepts as $key => $user_receipt)
-                                  <br> <br>
-                                  <img style="width: 100%; " src="{{'/public/receipts/'.$user_receipt->receipt}}" alt="">
+                                  @foreach ($user_reciepts as $user_reciept)
+                                  <br> 
+                                  <div id="audience-map" class="vector-map">
+                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->receipt}}" alt="">
+                                  </div>
                                   @endforeach
-  
-                                  </div>
-
-                                  <br> <br> 
-                                  <div class="col-md-9" style="padding-left: 10rem">
-
-                                    {{-- @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
-
-                                    <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
-                                    <br>
-                                    
-                                    @endforeach --}}
-    
-                                    </div>
-
-                                    <br>
-
-                                  <div class="col-md-9" style="padding-left: 10rem">
-                                    <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
-                                  </div>
-                             
+                                </div>
                               </div>
+                              {{-- <a href="{{'resale-amount/'.$data->id}}" class="btn btn-primary" id="Resale">Resale</a> --}}
                             </div>
-                            
-                          </div>
                         </div>
                       </div>
-
-                
                   </div>
-              
+                  </div>
               </div>
             </div>
           </div>
@@ -277,9 +239,24 @@
     <script type="text/javascript"></script>
     <script src="/assets/js/jquery.min.js"></script>
 
-  <script>
-
-  </script>
+    <script>
+  
+      $(document).ready(function () {
+       
+  
+          var land_plot = $("#status").val();
+        
+          if (land_plot == 'Resold') {
+            $('#Resale').hide();
+          }
+          else
+          {
+            $('#Resale').show();
+          }
+          
+        });
+      
+      </script>
 
 
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>

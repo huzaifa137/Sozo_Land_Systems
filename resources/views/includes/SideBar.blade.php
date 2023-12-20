@@ -130,4 +130,19 @@
       </div>
     </li>
 
+
+    <li class="nav-item menu-items">
+      <a class="nav-link " data-bs-toggle="collapse" href="#ui-search-module" aria-expanded="false" aria-controls="ui-basic">
+        <span class="menu-icon">
+          <i class="mdi mdi-animation"></i>
+        </span>
+        <span class="menu-title">Search</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-search-module">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="{{ route('search-module')}}">Search</a></li>
+        </ul>
+      </div>
+    </li>
   </ul>

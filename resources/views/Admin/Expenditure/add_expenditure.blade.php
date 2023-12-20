@@ -165,6 +165,13 @@
         input.className = 'form-control';
         input.placeholder = 'Enter reason for exependiture with amount'
 
+         // Create the second input box
+    var input2 = document.createElement('input');
+        input2.type = 'text';
+        input2.name = 'dynamic_inputs2[]'; // Use an array to handle multiple dynamic inputs
+        input2.className = 'form-control';
+        input2.placeholder = 'Enter amount'
+
         // Create a new div to contain the input and a remove button
         var container = document.createElement('div');
 
@@ -172,19 +179,21 @@
         var removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
         removeButton.type = 'button';
-        // removeButton.className = 'btn btn-primary';
 
+
+        // removeButton.className = 'btn btn-primary';
         removeButton.onclick = function () {
             container.remove();
         };
 
         // Append the input and remove button to the container
         container.appendChild(input);
+        container.appendChild(document.createElement('br')); // Add a line break for separation
+        container.appendChild(input2);
         container.appendChild(removeButton);
 
         // Append the container to the dynamic-inputs-container
         document.getElementById('dynamic-inputs-container').appendChild(container);
-
 
   }
 

@@ -85,8 +85,8 @@
 </div>
 <div class="add-detail mt-10">
     <div class="w-50 float-left mt-10" style="padding-top: 1rem;">
-        <br> 
         <p class="m-0 pt-5 text-bold w-100">Receipt Id - <span class="gray-color">#{{$receipt_no}}</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Receipt order - <span class="gray-color">AB123456A</span></p>
         <p class="m-0 pt-5 text-bold w-100">Receipt Date - <span class="gray-color">{{$formattedDate}}</span></p>
     </div>
     
@@ -106,12 +106,14 @@
                 <div class="box-text">
                     <p>Name: {{$user_info->firstname}}  {{$user_info->lastname}}</p>
                     <p>NIN :{{$user_info->NIN}}</p>
+                    <p>Gender: {{$user_info->gender}}</p>                    
                     <p>Date of birth : {{$user_info->date_of_birth}}</p>
                 </div>
             </td>
             <td>
                 <div class="box-text">
-                    <p>Name  : {{$user_info->firstname}}  {{$user_info->lastname}}</p>
+                    <p>Name  : Sozo Properties</p>
+                    <p>Admin : {{$user_name}}</p>
                     <p>Email : {{$user_email}}</p>                    
                     <p>Date  : {{$formattedDate}}</p>
                 </div>
@@ -123,12 +125,11 @@
     <table class="table w-100 mt-10">
         <tr>
             <th class="w-50">Payment Method</th>
-            <th class="w-50">Reason for payment</th>
+            <th class="w-50">Item purchased</th>
         </tr>
         <tr>
-            <td style="text-align: center;">Cash </td>
-            <td style="text-align: center;">Deposit</td>
-            {{-- <td> <span style="font-weight: bold">Plot number</span> {{$user_info->plot_number}} , <span style="font-weight: bold">Estate</span> {{$user_info->estate}} , {{$user_info->width_1}},{{$user_info->width_2}},{{$user_info->height_1}},{{$user_info->height_2}},</td> --}}
+            <td>Cash </td>
+            <td> <span style="font-weight: bold">Plot number</span> {{$user_info->plot_number}} , <span style="font-weight: bold">Estate</span> {{$user_info->estate}} , {{$user_info->width_1}},{{$user_info->width_2}},{{$user_info->height_1}},{{$user_info->height_2}},</td>
         </tr>
     </table>
 </div>

@@ -71,6 +71,20 @@
                         </div>
                     </div>
 
+                    @if (Session::get('error'))
+                           <div class="alert alert-danger">
+                            {{Session::get('error')}}
+                           </div>
+                        @endif
+
+
+                        @if (Session::get('success'))
+                        <div class="alert alert-success">
+                         {{Session::get('success')}}
+                        </div>
+                     @endif
+
+
                     <div class="row">
                         <div class="col-sm-4 grid-margin">
                             <div class="card">
@@ -335,7 +349,7 @@
                                                     <th> Amount paid </th>
                                                     <th> Balance </th>
                                                     <th> View </th>
-                                                    <th colspan="3" style="text-align: center;">Action</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -366,10 +380,10 @@
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
                                                         </td>
 
-                                                        <td><a href="{{ 'delete/' . $all_sale->id }}"
+                                                        {{-- <td><a href="{{ 'delete/' . $all_sale->id }}"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
-                                                        </td>
+                                                        </td> --}}
                                                 @endforeach
 
                                                 </tr>

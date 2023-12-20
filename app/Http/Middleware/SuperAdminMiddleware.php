@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Middleware;
+// namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+// use Closure;
+// use Illuminate\Http\Request;
+// use Symfony\Component\HttpFoundation\Response;
 
+  /**
 class SuperAdminMiddleware
 {
-    /**
+  
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+    
     public function handle(Request $request, Closure $next): Response
     {
 
@@ -21,13 +22,14 @@ class SuperAdminMiddleware
             $username = session('username');
             $role = session('admin_category');
 
+            dd($role);
             // You can also add the username and role to the request for later use in controllers
             $request->merge(['username' => $username, 'role' => $role]);
 
             // Perform checks based on username and role
             if ($role === 'Admin') {
 
-                return redirect()->back()->with('error', 'Only Super Admins can perform this action.');
+                return redirect()->route('admin-dashboard')->with('error', 'Only Super Admins can perform this action.');
 
             }
              elseif ($role === 'SuperAdmin')
@@ -38,7 +40,10 @@ class SuperAdminMiddleware
             }
         }
 
+        return redirect()->route('admin-dashboard')->with('error', 'Only Super Admins can perform this action.');
+
         // If there is no session username or role, you can redirect or perform other actions
-        return redirect()->route('/')->with('error', 'You must be logged in to access this resource.');
+        // return redirect()->route('/')->with('error', 'You must be logged in to access this resource.');
     }
 }
+ */

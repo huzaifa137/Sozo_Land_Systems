@@ -17,7 +17,6 @@ use App\Http\Controllers\Master;
 
 Route::group(['middleware'=>['AdminAuth']], function(){
 
-Route::get('admin-register',[Master::class,'register'])->name('admin-register');
 Route::post('admin-registration',[Master::class,'admin_register_data'])->name('admin-registration');
 
 Route::get('admin-dashboard',[Master::class,'dashboard'])->name('admin-dashboard');
@@ -37,6 +36,7 @@ Route::get('view_specific_sale/{id}',[Master::class,'view_specific_sale']);
 Route::get('estates',[Master::class,'estates'])->name('estates');
 Route::get('plots',[Master::class,'plots'])->name('plots');
 Route::get('add-estate',[Master::class,'add_estate'])->name('add-estate');
+Route::get('view-estate/{id}',[Master::class,'view_estate']);
 
 
 Route::post('send-estate-data',[Master::class,'store_estate'])->name('send-estate-data');
@@ -73,6 +73,8 @@ Route::get('accomplished',[Master::class,'accomplished_buyers'])->name('accompli
 Route::get('view-agreement/{id}',[Master::class,'view_agreement'])->name('view-agreement');
 Route::get('download/{id}',[Master::class,'download_agreement_receipt']);
 Route::get('download_receipt/{id}',[Master::class,'download_receipt_payment']);
+
+Route::get('download_national/{id}',[Master::class,'download_national_id']);
 
 // Sales
 
@@ -118,9 +120,12 @@ Route::get('show-invoice',[Master::class,'show_invoice'])->name('show-invoice');
 Route::get('add-expenditure',[Master::class,'add_expenditure'])->name('add-expenditure');
 Route::post('store-expenditure',[Master::class,'store_expenditure'])->name('store-expenditure');
 
-
 Route::get('expense-today',[Master::class,'today_expense'])->name('expense-today');
 
+
+// Search Module 
+
+Route::get('search-module',[Master::class,'search_module'])->name('search-module');
 });
 
 
@@ -131,8 +136,21 @@ Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
 // Example in your routes/web.php file
 
-Route::middleware(['SuperAdminMiddleware'])->group(function () {
+// Route::middleware(['SuperAdminMiddleware'])->group(function () {
 
-    Route::get('/edit/{id}', [Master::class,'edit_sales'])->middleware('can:edit,buyer');
-    Route::delete('/delete/{id}', [Master::class,'delete_sale'])->middleware('can:delete,buyer');
-});
+    // Route::get('admin-register',[Master::class,'register'])->name('admin-register');
+    // Route::get('/edit/{id}', [Master::class,'edit_sales'])->middleware('can:edit,buyer');
+    // Route::get('/delete/{id}', [Master::class,'delete_sale'])->middleware('can:delete,buyer');
+    
+// });
+
+// Edit logic 
+
+    Route::get('admin-register',[Master::class,'register'])->name('admin-register');
+    Route::get('/edit/{id}', [Master::class,'edit_sales']);
+    Route::get('/delete/{id}', [Master::class,'delete_sale']);
+
+    Route::post('edit-user-info',[Master::class,'edit_user_info'])->name('edit-user-info');
+    
+Route::get('/resume', [Master::class, 'index']);
+
