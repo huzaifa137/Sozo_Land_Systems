@@ -260,6 +260,25 @@
                         </div>
                       </div>
 
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Profile pic</label>
+                          <div class="col-sm-9">
+                            <input type="file" name="profile_pic" id="profile_pic" class="form-control"
+                              required>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label mt-2">Phone number</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="phonenumber" id="phonenumber"
+                                class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
 
                       <div class="col-md-6">
                         <div class="form-group row">
@@ -411,7 +430,10 @@
         if (land_status == "Fully_taken") {
 
           var firstname = $('#firstname').val();
+          var phonenumber = $('#phonenumber').val();
+
           var lastname = $('#lastname').val();
+          var profile_pic = $('#profile_pic')[0].files[0];
           var amount_paid = $('#amount_paid').val();
           var date_sold = $('#date_sold').val();
           var agreement_added = $("#agreement_added")[0].files[0];
@@ -422,6 +444,8 @@
         }
         else if (land_status == "Under_payment") {
           var firstname = $('#firstname').val();
+          var profile_pic = $('#profile_pic')[0].files[0];
+          var phonenumber = $('#phonenumber').val();
           var lastname = $('#lastname').val();
           var amount_paid = $('#amount_paid').val();
           var date_sold = $('#date_sold').val();
@@ -462,6 +486,8 @@
           form_data.append('land_status', land_status);
           form_data.append('firstname', firstname);
           form_data.append('lastname', lastname);
+          form_data.append('phonenumber', phonenumber);
+          form_data.append('profile_pic', profile_pic);
           form_data.append('amount_paid', amount_paid);
           form_data.append('date_sold', date_sold);
           form_data.append('balance', balance);
@@ -564,6 +590,14 @@
                       errors.push("Lastname field is required.");
                   }
 
+                  if (!profile_pic) {
+                      errors.push("Profile picture field is required.");
+                  }
+
+                  if (!phonenumber) {
+                      errors.push("phone number field is required.");
+                  }
+                  
               if (!amount_paid) {
                   errors.push("Amount paid field is required.");
               }
@@ -598,6 +632,14 @@
 
               if (!lastname) {
                       errors.push("Lastname field is required.");
+                  }
+
+                  if (!profile_pic) {
+                      errors.push("Profile picture field is required.");
+                  }
+
+                  if (!phonenumber) {
+                      errors.push("phone number field is required.");
                   }
 
               if (!amount_paid) {

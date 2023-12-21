@@ -181,7 +181,7 @@ class Master extends Controller
 
         $file=$request->profile_pic;
         $filename=date('YmdHi').$file->getClientOriginalName();
-        $file->move(public_path('public/profile_pic'),$filename);
+        $file->move(public_path('profile_pic'),$filename);
         $post->profile_pic=$filename; 
         
         $post->card_number= $request->card_number;
@@ -408,6 +408,9 @@ class Master extends Controller
         $post->date_of_birth= "-";
         $post->NIN= "-";
 
+        $post->phonenumber= $request->phonenumber;
+
+
         $file=$request->agreement_added;
         $filename1=date('YmdHi').$file->getClientOriginalName();
         $file->move(public_path('public/agreements'),$filename1);
@@ -423,6 +426,10 @@ class Master extends Controller
         $file->move(public_path('public/national_id'),$filename);
         $post->national_id_back=$filename; 
 
+        $file=$request->profile_pic;
+        $filename=date('YmdHi').$file->getClientOriginalName();
+        $file->move(public_path('profile_pic'),$filename);
+        $post->profile_pic=$filename; 
 
         $post->card_number= "-";
         $post->land_poster= "Paid";
@@ -473,6 +480,8 @@ class Master extends Controller
 
             $post->firstname= $request->firstname;
             $post->lastname= $request->lastname;
+            $post->phonenumber= $request->phonenumber;
+
             $post->gender= "-";
             $post->date_of_birth= "-";
             $post->NIN= "-";
@@ -488,6 +497,11 @@ class Master extends Controller
             $file->move(public_path('public/national_id'),$filename);
             $post->national_id_back=$filename; 
             
+            $file=$request->profile_pic;
+            $filename=date('YmdHi').$file->getClientOriginalName();
+            $file->move(public_path('profile_pic'),$filename);
+            $post->profile_pic=$filename; 
+
             $post->card_number= "-";
             $post->land_poster= "Paid";
             $post->method_payment= "paying_in_installments";
@@ -820,7 +834,7 @@ class Master extends Controller
     public function store_agreement(Request $request)
     {
 
-        
+
         $amount_in_words = $request->amount_in_words;
         
         $user_id = $request->user_id;
@@ -857,6 +871,8 @@ class Master extends Controller
         $profile_pic =buyer::where('id',$user_id)->value('profile_pic');
 
         $profile_pic  = public_path('profile_pic/'.$profile_pic);
+
+        // dd($user_info);
 
 
         $day = $user_info->created_at->day;
@@ -921,6 +937,7 @@ class Master extends Controller
 
     public function store_agreement_new_plot(Request $request){
 
+        $amount_in_words = $request->amount_in_words;
         
         $user_id = $request->user_id;
         $original_amount =buyer::where('id',$user_id)->value('amount_payed');
@@ -967,8 +984,19 @@ class Master extends Controller
          // Document formulation
 
         $user_info =buyer::where('id',$user_id)->first();
+        $profile_pic =buyer::where('id',$user_id)->value('profile_pic');
+        $profile_pic  = public_path('profile_pic/'.$profile_pic);   
+                                                                    
+        $day = $user_info->created_at->day;
+        $month = $user_info->created_at->month;
+        $year = $user_info->created_at->year;
 
-        $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info','all_cash','Date_of_payment']));
+
+        $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info',
+        'all_cash','Date_of_payment','day','month','year','amount_in_words','profile_pic']));
+
+
+        // $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info','all_cash','Date_of_payment']));
         $filename = 'payment_agreement' . time() . '.pdf';
 
         $pdf->save(storage_path("app/public/agreements/{$filename}"));

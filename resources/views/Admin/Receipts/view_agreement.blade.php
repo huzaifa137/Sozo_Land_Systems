@@ -249,7 +249,7 @@
                                   <br> <br> 
 
                                   <div class="col-md-9 d-block" style="padding-left: 10rem">
-                                    <h4>User Receipts</h4>
+                                    {{-- <h4>User Receipts</h4>
 
                                     @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
 
@@ -268,9 +268,14 @@
                                       
                                       @endforeach
       
-                                      </section>
+                                      </section> --}}
                                     </div>
 
+                                    <br>
+
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                    <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
+                                  </div>
                                     
                              
                               </div>

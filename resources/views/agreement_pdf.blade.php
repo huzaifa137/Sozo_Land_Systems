@@ -64,9 +64,10 @@
 </head>
 <body>
 
-    <section><div class="img_class">
+    <section>
+        <div class="img_class">
         
-                <img src="{{'/public/profile_pic/'.$profile_pic}}"  />
+                <img src="{{$profile_pic}}"  />
 
     </div>
         <center>
@@ -183,14 +184,14 @@
     </div>
 </section>
 
-    <center>
+    {{-- <center>
     <div class="col-md-12">
         <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$user_info->national_id_front}}" alt="">
     
         <img style="width: 100%; height:25%" src="{{'/public/national_id/'.$user_info->national_id_back}}" alt="">
 
     </div>
-    </center>
+    </center> --}}
 
 <!-- <footer>
     <p>&copy; 2023 Sozo Land. All rights reserved.</p>

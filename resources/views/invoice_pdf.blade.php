@@ -148,18 +148,12 @@
 <div class="table-section bill-tbl w-100 mt-10">
     <table class="table w-100 mt-10">
         <tr>
-            <th class="w-50">Id</th>
-            <th class="w-50">Land/Plot Name</th>
-            <th class="w-50">Sale Price</th>
             <th class="w-50">Phone number</th>
             <th class="w-50">Amount paid</th>
             <th class="w-50">Balance</th>
             <th class="w-50">Grand Total</th>
         </tr>
         <tr align="center">
-            <td>M101</td>
-            <td>{{$user_info->plot_number}} , {{$user_info->estate}}</td>
-            <td>$500.2</td>
             <td>{{$Phonenumber}}</td>
             <td>{{$Amount}}</td>
             <td>{{$Balance}}</td>
@@ -169,14 +163,10 @@
             <td colspan="7">
                 <div class="total-part">
                     <div class="total-left w-85 float-left" align="right">
-                        <p>Sub Total</p>
-                        <p>Tax (0%)</p>
-                        <p>Total Payable</p>
+                        <p>Total Paid</p>
                     </div>
                     <div class="total-right w-15 float-left text-bold" align="right">
-                        <p>{{$Amount}}</p>
-                        <p>$0</p>
-                        <p>{{$Amount}}</p>
+                        <p>{{$Amount}}/=</p>
                     </div>
                     <div style="clear: both;"></div>
                 </div> 

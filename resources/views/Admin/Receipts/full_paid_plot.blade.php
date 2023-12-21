@@ -211,6 +211,18 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                  <div class="form-group row">
+                                                    <label class="col-sm-6 col-form-label">Amount in words</label>
+                                                    <div class="col-sm-9">
+                                                      <input type="text" name="amount_in_words" id="amount_in_words" class="form-control" required>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                        
+                                              </div>
                                         </div>
 
                                         <div class="row">
