@@ -44,6 +44,8 @@ class Master extends Controller
 
         $request->validate([
             'username'=>'required',
+            'firstname'=>'required',
+            'lastname'=>'required',
             'email'=>'required|email',
             'admin_category'=>'required',
             'password'=>'required',
@@ -59,6 +61,8 @@ class Master extends Controller
         $register_admin =  new AdminRegister;
 
         $register_admin->username = $request->username;
+        $register_admin->firstname = $request->firstname;
+        $register_admin->lastname = $request->lastname;
         $register_admin->email = $request->email;
         $register_admin->password = Hash::make($request->password);
         $register_admin->admin_category = $request->admin_category;
@@ -301,6 +305,7 @@ class Master extends Controller
        $post->number_of_plots = $request->number_of_plots;
 
        $file=$request->estate_pdf;
+
        $filename=date('YmdHi').'.'.$file->getClientOriginalExtension();
        $file->move('estate_pdf',$filename);
        $post->estate_pdf=$filename;
@@ -311,6 +316,20 @@ class Master extends Controller
     //    Alert::success('Estate added', 'Congurations on adding a new Estate');
 
        return back()->with('success','Congurations on adding a new Estate');
+    }
+
+    public function download_estate($id)
+    {
+
+        $estate_name = buyer::where('id',$id)->value('estate');
+
+        $estate_record = estate::where('estate_name',$estate_name)->value('estate_pdf');
+
+        return response()->download(public_path('estate_pdf/'.$estate_record));
+
+
+        // return $estate_record;
+
     }
 
     public function view_estate($id)
@@ -519,6 +538,19 @@ class Master extends Controller
             $post->amount_payed = $request->amount_paid;
             $post->reciepts = '0';
     
+            $post->save();
+
+            $post = new plot;
+
+            $post->estate = $request->Estate;
+            $post->plot_number = $request->plot_number;
+            $post->location = $request->location;
+            $post->width_1= $request->width1;
+            $post->width_2= $request->width2;
+            $post->height_1= $request->height1;
+            $post->height_2= $request->height2;
+            $post->status = "Not taken";
+
             $post->save();
 
             return response()->json([

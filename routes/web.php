@@ -37,6 +37,7 @@ Route::get('estates',[Master::class,'estates'])->name('estates');
 Route::get('plots',[Master::class,'plots'])->name('plots');
 Route::get('add-estate',[Master::class,'add_estate'])->name('add-estate');
 Route::get('view-estate/{id}',[Master::class,'view_estate']);
+Route::get('download-estate/{id}',[Master::class,'download_estate']);
 
 
 Route::post('send-estate-data',[Master::class,'store_estate'])->name('send-estate-data');

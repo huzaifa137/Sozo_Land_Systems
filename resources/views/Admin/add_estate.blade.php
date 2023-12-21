@@ -82,7 +82,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('send-estate-data')}}" method="POST">
+                    <form class="form-sample" action="{{ route('send-estate-data')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter new Estate Information:</p>
 

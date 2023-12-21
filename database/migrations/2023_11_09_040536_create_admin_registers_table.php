@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('admin_registers', function (Blueprint $table) {
             $table->id();
             $table->text('username');
+            $table->text('firstname');
+            $table->text('lastname');
             $table->text('email');
             $table->text('password');
             $table->text('admin_category');

@@ -44,6 +44,18 @@
                             </div>
 
 
+                            <div class="mb-3 col-md-6">
+                                <label>Firstname<span class="text-danger">*</span></label>
+                                <input type="text" name="firstname" id="firstname" class="form-control" placeholder="Enter Firstname" value="{{old('username')}}" required>
+                                <span class="text-danger">@error('firstname'){{$message}}@enderror</span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label>Lastname<span class="text-danger">*</span></label>
+                                <input type="text" name="lastname" id="lastname" class="form-control" placeholder="Enter Lastname" value="{{old('username')}}" required>
+                                <span class="text-danger">@error('lastname'){{$message}}@enderror</span>
+                            </div>
+
 
                             <div class="mb-3 col-md-12">
                                 <label>Email<span class="text-danger">*</span></label>

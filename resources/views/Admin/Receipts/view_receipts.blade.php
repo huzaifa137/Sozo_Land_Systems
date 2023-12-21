@@ -244,6 +244,10 @@
                                   <div class="col-md-9" style="padding-left: 10rem">
                                     <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
                                   </div>
+
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                    <a href="{{url('/download-estate',$data->id)}}">Download Sketch Estate</a>
+                                  </div>
                              
                               </div>
                             </div>
