@@ -81,7 +81,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('attach-receipt-page')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myForm" action="{{ route('attach-receipt-page')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 
@@ -95,7 +95,8 @@
                           <div class="form-group row">
                             <label class="col-sm-6 col-form-label">Upload receipt</label>
                             <div class="col-sm-12">
-                              <input type="file" name="agreement" id="agreement" class="form-control" required>
+                              <input type="file" name="receipt" id="receipt" class="form-control" required>
+                              <span class="text-danger">@error('receipt'){{ $message }}@enderror</span>
                             </div>
                           </div>
                         </div>
@@ -108,7 +109,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit" class="btn btn-primary">Save</button>
+                              <button type="submit" onclick="disableButton()" class="btn btn-primary">Save</button>
                             </div>
                           </div>
                         </div>
@@ -139,9 +140,17 @@
     <script type="text/javascript"></script>
     <script src="/assets/js/jquery.min.js"></script>
 
-  <script>
+    <script>
+
+function disableButton() {
+        
+        document.getElementById('myForm').submit();
+        document.querySelector('button[type="submit"]').disabled = true;
+        
+    }
 
   </script>
+
 
 
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>

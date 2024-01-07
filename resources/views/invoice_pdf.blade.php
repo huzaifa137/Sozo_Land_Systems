@@ -111,7 +111,8 @@
             </td>
             <td>
                 <div class="box-text">
-                    <p>Name  : {{$LoggedAdminInfo['firstname']}} {{$LoggedAdminInfo['lastname']}}</p>
+                    <p>Name: {{$user_info->firstname}}  {{$user_info->lastname}}</p>
+                    {{-- <p>Name  : {{$LoggedAdminInfo['firstname']}} {{$LoggedAdminInfo['lastname']}}</p> --}}
                     <p>Email : {{$user_email}}</p>                    
                     <p>Date  : {{$formattedDate}}</p>
                 </div>

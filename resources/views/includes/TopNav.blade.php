@@ -4,7 +4,8 @@
       <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
         <h6 class="p-3 mb-0" style="text-align: center">Sozo Properties</h6>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item preview-item" href="{{route('admin-register')}}">
+
+        <a class="dropdown-item preview-item" href="{{'admin-register/'.$LoggedAdminInfo['id'] }}">
           <div class="preview-thumbnail">
             <div class="preview-icon bg-dark rounded-circle">
               <i class="mdi mdi-plus text-primary"></i>
@@ -15,7 +16,7 @@
           </div>
         </a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item preview-item">
+        {{-- <a class="dropdown-item preview-item">
           <div class="preview-thumbnail">
             <div class="preview-icon bg-dark rounded-circle">
               <i class="mdi mdi-eye text-info"></i>
@@ -24,7 +25,7 @@
           <div class="preview-item-content">
             <p class="preview-subject ellipsis mb-1">View All Admins</p>
           </div>
-        </a>
+        </a> --}}
     </li>
     
     

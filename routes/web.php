@@ -134,6 +134,7 @@ Route::get('search-module',[Master::class,'search_module'])->name('search-module
 Route::get('/',[Master::class,'login'])->name('/');
 Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
+Route::get('reload-captcha',[Master::class,'reload_captcha']);
 
 // Example in your routes/web.php file
 
@@ -147,11 +148,10 @@ Route::post('admin-send',[Master::class,'admin_check'])->name('admin-send');
 
 // Edit logic 
 
-    Route::get('admin-register',[Master::class,'register'])->name('admin-register');
-    Route::get('/edit/{id}', [Master::class,'edit_sales']);
+    Route::get('admin-register/{id}',[Master::class,'register']);
+    Route::get('/edit/{id}/{user_id}', [Master::class,'edit_sales']);
     Route::get('/delete/{id}', [Master::class,'delete_sale']);
 
     Route::post('edit-user-info',[Master::class,'edit_user_info'])->name('edit-user-info');
     
 Route::get('/resume', [Master::class, 'index']);
-

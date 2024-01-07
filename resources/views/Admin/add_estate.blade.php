@@ -82,7 +82,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('send-estate-data')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myForm" action="{{ route('send-estate-data')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter new Estate Information:</p>
 
@@ -91,7 +91,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Estate Name :</label>
                             <div class="col-sm-9">
-                              <input type="text" name="estate_name" id="estate_name" class="form-control" required>
+                              <input type="text" name="estate_name" id="estate_name" class="form-control" value="{{old('estate_name')}}" required>
+                              <span class="text-danger">@error('estate_name'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -100,7 +102,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Location :</label>
                             <div class="col-sm-9">
-                              <input type="text" name="location" id="location" class="form-control" required>
+                              <input type="text" name="location" id="location" class="form-control" value="{{old('location')}}" required>
+                              <span class="text-danger">@error('location'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -112,7 +116,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Number of plots :</label>
                             <div class="col-sm-9">
-                              <input type="number" name="number_of_plots" id="number_of_plots" class="form-control" required>
+                              <input type="number" name="number_of_plots" id="number_of_plots" class="form-control" value="{{old('number_of_plots')}}" required>
+                              <span class="text-danger">@error('number_of_plots'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -121,7 +127,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Estate Price :</label>
                             <div class="col-sm-9">
-                              <input type="text" name="estate_price" id="estate_price" class="form-control" required>
+                              <input type="text" name="estate_price" id="estate_price" class="form-control" value="{{old('estate_price')}}" required>
+                              <span class="text-danger">@error('estate_price'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -132,6 +140,8 @@
                             <label class="col-sm-3 col-form-label">Estate pdf :</label>
                             <div class="col-sm-9">
                               <input type="file" name="estate_pdf" id="estate_pdf" class="form-control" required>
+                              <span class="text-danger">@error('estate_pdf'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -144,7 +154,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit" class="btn btn-primary">Submit</button>
+                              <button type="submit" onclick="disableButton()" class="btn btn-primary">Submit</button>
                             </div>
                           </div>
                         </div>
@@ -217,6 +227,14 @@
 							});
 						});
 				});
+
+
+        function disableButton() {
+        
+        document.getElementById('myForm').submit();
+        document.querySelector('button[type="submit"]').disabled = true;
+        
+    }
 
   </script>
 

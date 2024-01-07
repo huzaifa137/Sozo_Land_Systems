@@ -84,6 +84,7 @@
                         </div>
                      @endif
 
+                        {{-- <input type="hidden" name="admin_category" value="{{$LoggedAdminInfo['admin_category']}}"> --}}
 
                     <div class="row">
                         <div class="col-sm-4 grid-margin">
@@ -375,10 +376,17 @@
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> View </a>
                                                         </td>
 
-                                                        <td><a href="{{ 'edit/' . $all_sale->id }}"
+                                                        {{-- <td><a href="{{ 'edit/' . $all_sale->id }}"
                                                                 class="btn btn-outline-warning btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
-                                                        </td>
+                                                        </td> --}}
+
+                                                        {{-- {{}} --}}
+
+                                                        <td><a href="{{ 'edit/'.$all_sale->id .'/'. $LoggedAdminInfo['id'] }}"
+                                                            class="btn btn-outline-warning btn-icon-text">
+                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
+                                                    </td>
 
                                                         {{-- <td><a href="{{ 'delete/' . $all_sale->id }}"
                                                                 class="btn btn-outline-danger btn-icon-text">

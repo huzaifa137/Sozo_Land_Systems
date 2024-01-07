@@ -11,7 +11,7 @@
 </head>
 <body>
     <div  style="display: flex;justify-content:center;align-content:center">
-      <a href="#"><img src="logo.png" alt="COMESA_logo" class="responsive"></a>  
+        <a href="#"><img src="logo.png" alt="COMESA_logo" class="responsive"></a>  
     </div>
    
     <div class="container">

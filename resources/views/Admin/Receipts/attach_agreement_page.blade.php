@@ -81,7 +81,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('attach-agreement-page')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myForm" action="{{ route('attach-agreement-page')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 
@@ -96,6 +96,8 @@
                             <label class="col-sm-6 col-form-label">Upload Agreement</label>
                             <div class="col-sm-12">
                               <input type="file" name="agreement" id="agreement" class="form-control" required>
+                              <span class="text-danger">@error('agreement'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -108,7 +110,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit" class="btn btn-primary">Save</button>
+                              <button type="submit" class="btn btn-primary" onclick="disableButton()">Save</button>
                             </div>
                           </div>
                         </div>
@@ -140,6 +142,14 @@
     <script src="/assets/js/jquery.min.js"></script>
 
   <script>
+
+    function disableButton() {
+        
+        document.getElementById('myForm').submit();
+        document.querySelector('button[type="submit"]').disabled = true;
+        
+    }
+
 
   </script>
 

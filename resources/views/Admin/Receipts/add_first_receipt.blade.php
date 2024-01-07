@@ -81,7 +81,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-first-receipt')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myForm" action="{{ route('store-first-receipt')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 
@@ -95,7 +95,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Amount paid</label>
                             <div class="col-sm-9">
-                              <input type="number" name="amount_paid" id="amount_paid" class="form-control" required>
+                              <input type="number" name="amount_paid" id="amount_paid" value="{{old('amount_paid')}}" class="form-control" required>
+                              <span class="text-danger">@error('amount_paid'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -104,7 +106,9 @@
                           <div class="form-group row">
                             <label class="col-md-2 col-form-label">Date:</label>
                             <div class="col-sm-10">
-                              <input type="date" name="Date_of_payment" id="Date_of_payment" class="form-control" required>
+                              <input type="date" name="Date_of_payment" id="Date_of_payment" value="{{old('Date_of_payment')}}" class="form-control" required>
+                              <span class="text-danger">@error('Date_of_payment'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -116,7 +120,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Balance</label>
                             <div class="col-sm-12">
-                              <input type="number" name="balance_pending" id="balance_pending" class="form-control" required>
+                              <input type="number" name="balance_pending" id="balance_pending" value="{{old('balance_pending')}}" class="form-control" required>
+                              <span class="text-danger">@error('balance_pending'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -125,7 +131,9 @@
                           <div class="form-group row">
                             <label class="col-md-5 col-form-label">Phonenumber</label>
                             <div class="col-sm-12">
-                              <input type="number" name="phone_number"  class="form-control" required>
+                              <input type="number" name="phone_number" value="{{old('phone_number')}}"  class="form-control" required>
+                              <span class="text-danger">@error('phone_number'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -138,7 +146,9 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Amount in words</label>
                             <div class="col-sm-12">
-                              <input type="text" name="amount_in_words" class="form-control" required>
+                              <input type="text" name="amount_in_words" class="form-control" value="{{old('amount_in_words')}}"  required>
+                              <span class="text-danger">@error('amount_in_words'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -151,7 +161,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit" class="btn btn-primary">Save</button>
+                              <button type="submit" onclick="disableButton()" class="btn btn-primary">Save</button>
                             </div>
                           </div>
                         </div>
@@ -185,6 +195,13 @@
     <script src="/assets/js/jquery.min.js"></script>
 
   <script>
+
+function disableButton() {
+        
+        document.getElementById('myForm').submit();
+        document.querySelector('button[type="submit"]').disabled = true;
+        
+    }
 
   </script>
 

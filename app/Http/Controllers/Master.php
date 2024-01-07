@@ -34,14 +34,33 @@ class Master extends Controller
         return view('Login.login');
     }
 
-    public function register(){
+    public function reload_captcha()
+    {
+
+        return response()->json(['captcha'=>captcha_img('flat')]);
+    }
+
+    public function register($id){
+
+        // return $id;
+
+        $admin_category = AdminRegister::where('id',$id)->value('admin_category');
+
+        if($admin_category == 'Admin')
+        {
+        return back()->with('error','Only Super Admins can Add more Admins');
+        }
+        else if($admin_category == null){
+
+        return back()->with('error','Only Super Admins can Add more Admins');
+        }
 
         return view('Login.register');
     }
 
     public function admin_register_data(Request $request)
     {
-
+        
         $request->validate([
             'username'=>'required',
             'firstname'=>'required',
@@ -86,6 +105,7 @@ class Master extends Controller
         $request->validate([
             'email'=>'required',
             'password'=>'required',
+            'captcha'=>'required|captcha',
         ]);
 
         $AdminEmail = AdminRegister::where('email','=',$request->email)->first();
@@ -221,8 +241,20 @@ class Master extends Controller
     }
 
 
-    public function edit_sales($id)
+    public function edit_sales(Request $request, $id,$user_id)
     {
+
+         $admin_category = AdminRegister::where('id',$user_id)->value('admin_category');
+
+         if($admin_category == 'Admin')
+         {
+            return back()->with('error','Only Super Admins can edit records');
+         }
+         else if($admin_category == null){
+
+            return back()->with('error','Only Super Admins can edit records');
+         }
+          
          $info =  buyer::find($id);
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
@@ -296,6 +328,13 @@ class Master extends Controller
 
     public function store_estate(Request $request){
 
+        $validate = $request->validate([
+            'estate_name'=>'required',
+            'location'=>'required',
+            'estate_price'=>'required',
+            'number_of_plots'=>'required',
+            'estate_pdf'=>'required',
+        ]);
 
        $post = new Estate;
 
@@ -633,8 +672,11 @@ class Master extends Controller
 
         $records = Estate::all();
 
+        // $not_fully_paid = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")
+        //                                      ->where('reciepts','!=',"0")->get();
+
         $not_fully_paid = DB::table('buyers')->where('next_installment_pay','!=',"Fully payed")
-                                             ->where('reciepts','!=',"0")->get();
+                                                                                ->get();
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
@@ -726,6 +768,14 @@ class Master extends Controller
     public function store_new_receipt(Request $request)
     {
 
+        $request->validate([
+            'amount_paid'=>'required',
+            'Date_of_payment'=>'required',
+            'balance_pending'=>'required',
+            'phone_number'=>'required',
+            'amount_in_words'=>'required',
+        ]);
+
         $user_email = $request->user_email;
         $user_name = $request->user_name;
         $user_id = $request->user_id;
@@ -776,7 +826,6 @@ class Master extends Controller
         //    return $pdf->stream($filename);               
         return $pdf->download($filename);                                                
                                  
-        
     }
 
     public function add_first_reciept($id){
@@ -789,8 +838,19 @@ class Master extends Controller
 
     public function store_first_receipt(Request $request)
     {
+
+        $request->validate([
+
+            'amount_paid'=>'required',
+            'Date_of_payment'=>'required',
+            'balance_pending'=>'required',
+            'phone_number'=>'required',
+            'amount_in_words'=>'required',
+        ]);
+
         $user_email = $request->user_email;
         $user_name = $request->user_name;
+
 
         $user_id = $request->user_id;
         $Amount = $request->amount_paid;
@@ -1227,8 +1287,6 @@ class Master extends Controller
     public function search_land_db(Request $request)
     {
 
-        
-        
         $firstname = $request->firstname;
         $lastname = $request->lastname;
         $NIN = $request->NIN;
@@ -1342,7 +1400,6 @@ class Master extends Controller
         $status = $request->land_plot;
         $plot_no = $request->plot_no;
         
-
         if($status == 'House')
         {
             $land_estate = $request->land_estate;
@@ -1373,11 +1430,15 @@ class Master extends Controller
         {
 
             $land_estate = $request->estate;
+
             $result = DB::table('buyers')
                                   ->where('purchase_type', $status,)
                                   ->where('estate', $land_estate,)
                                   ->where('plot_number',$plot_no)
                                   ->first();
+
+
+                           
 
              if(!$result)
              {
@@ -1386,6 +1447,9 @@ class Master extends Controller
              else
              {
                  
+                // dd("welcome Home");
+
+
                  $id = $result->id;
                  $user_information = DB::table('buyers')->where('id','=',$id)->get();
                  $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
@@ -1534,6 +1598,11 @@ class Master extends Controller
         public function store_agreement_new(Request $request)
         {
 
+            $request->validate([
+                'agreement'=>'required',
+            ]);
+
+
         $post  = new pdf_agreements;
 
         $post->user_id = $request->user_id;
@@ -1560,11 +1629,15 @@ class Master extends Controller
         public function store_attach_receipt_new(Request $request)
         {
 
+            $request->validate([
+                'receipt' => 'required',
+            ]);
+            
         $post  = new pdf_receipt;
 
         $post->user_id = $request->user_id;
 
-        $file=$request->agreement;
+        $file=$request->receipt;
         $filename=date('YmdHi').$file->getClientOriginalName();
         $file->move(public_path('public/receipts'),$filename);
         $post->receipt=$filename; 
@@ -1592,15 +1665,22 @@ class Master extends Controller
         {
 
 
-            $filename = str_replace('.pdf', '', $filename);
+            // $filename = str_replace('.pdf', '', $filename);
 
             // dd($filename);
             // $pdf = reciept::where('reciept', $filename)->value('reciept');
             // return response()->download(public_path('pdf_receipts/'.$filename));
 
-            // $filePath = storage_path('app/pdf_receipts/' . $filename);
+            // $filePath = storage_path('app/pdf_receipts/'. $filename);
 
-            $filePath = public_path('pdf_receipts/' . $filename);
+            // $filePath = public_path('pdf_receipts/' . $filename);
+
+            // dd($filePath);
+
+            return response()->download(storage_path('public/pdf_receipts/'.$filePath));
+
+
+            // return $pdf->download($filename);   
 
 
             return response()->download($filePath, Str::slug($filename))

@@ -106,7 +106,7 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Total Amount </label>
                           <div class="col-sm-9">
-                              <input type="text" name="total_amount" id=""
+                              <input type="number" name="total_amount" id=""
                                   class="form-control" required>
                           </div>
                       </div>
@@ -167,7 +167,7 @@
 
          // Create the second input box
     var input2 = document.createElement('input');
-        input2.type = 'text';
+        input2.type = 'number';
         input2.name = 'dynamic_inputs2[]'; // Use an array to handle multiple dynamic inputs
         input2.className = 'form-control';
         input2.placeholder = 'Enter amount'

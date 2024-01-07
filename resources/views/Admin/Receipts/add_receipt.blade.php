@@ -81,7 +81,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-new-receipt')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myform" action="{{ route('store-new-receipt')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 
@@ -95,6 +95,8 @@
                             <label class="col-sm-3 col-form-label">Amount paid</label>
                             <div class="col-sm-9">
                               <input type="number" name="amount_paid" id="amount_paid" class="form-control" required>
+                              <span class="text-danger">@error('amount_paid'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -104,6 +106,8 @@
                             <label class="col-md-2 col-form-label">Date:</label>
                             <div class="col-sm-10">
                               <input type="date" name="Date_of_payment" id="Date_of_payment" class="form-control" required>
+                              <span class="text-danger">@error('Date_of_payment'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -117,6 +121,8 @@
                             <label class="col-sm-3 col-form-label">Balance</label>
                             <div class="col-sm-12">
                               <input type="number" name="balance_pending" id="balance_pending" class="form-control" required>
+                              <span class="text-danger">@error('balance_pending'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -126,6 +132,8 @@
                             <label class="col-md-5 col-form-label">Phonenumber</label>
                             <div class="col-sm-12">
                               <input type="number" name="phone_number"  class="form-control" required>
+                              <span class="text-danger">@error('phone_number'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -140,6 +148,8 @@
                             <label class="col-sm-3 col-form-label">Amount in words</label>
                             <div class="col-sm-12">
                               <input type="text" name="amount_in_words" class="form-control" required>
+                              <span class="text-danger">@error('amount_in_words'){{ $message }}@enderror</span>
+
                             </div>
                           </div>
                         </div>
@@ -152,7 +162,7 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit" class="btn btn-primary">Save</button>
+                              <button type="submit" onclick="disableButton()" class="btn btn-primary">Save</button>
                             </div>
                           </div>
                         </div>
@@ -185,7 +195,14 @@
     <script type="text/javascript"></script>
     <script src="/assets/js/jquery.min.js"></script>
 
-  <script>
+    <script>
+
+function disableButton() {
+        
+        document.getElementById('myForm').submit();
+        document.querySelector('button[type="submit"]').disabled = true;
+        
+    }
 
   </script>
 

@@ -78,7 +78,7 @@
                   <div class="card-body">
                     <h4 class="card-title">Search Land or plot</h4>
 
-                    <form  action="{{ route('search-land-db')}}" method="POST">
+                    <form  action="{{ route('search-plot-land-db')}}" method="POST">
                       @csrf
                       <p class="card-description">Enter plot or house Information to be resold:</p>
 
