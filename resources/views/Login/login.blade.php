@@ -71,7 +71,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <button class="btn btn-primary float-end" id="supplier_login_in" style="height:1rem;">Login</button>
+                                <button class="btn btn-primary float-end" >Login</button>
                             </div>
                         </div>
                     </form>
