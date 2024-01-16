@@ -415,10 +415,18 @@ class Master extends Controller
         $status = $request->land_status;
         $estate_name = $request->Estate;
 
+        $user_amount_paid = $request->amount_paid;
+        
+        $plot_number = $request->plot_number;
         $no_of_plots =estate::where('estate_name',$estate_name)->value('number_of_plots');
         $count_estates = buyer::where('estate',$estate_name)->count();
+        
+        $user_amount_paid = $request->amount_paid;
+        $Date_of_payment = $request->date_sold;
 
         $plot_numb = $request->House_plot;
+
+        $plot_number = $request->plot_number;
 
         if($plot_numb == "Plot"){
             if($count_estates >= $no_of_plots){
@@ -458,6 +466,7 @@ class Master extends Controller
 
         if($status == "Fully_taken"){
 
+
         $post = new buyer;
 
         $post->firstname= $request->firstname;
@@ -468,11 +477,48 @@ class Master extends Controller
 
         $post->phonenumber= $request->phonenumber;
 
+        $mytime = now();
+        $random_number_reference = rand(10000, 99999);
+        $ref = $random_number_reference . '' . $mytime;
 
-        $file=$request->agreement_added;
-        $filename1=date('YmdHi').$file->getClientOriginalName();
-        $file->move(public_path('public/agreements'),$filename1);
-        $post->agreement=$filename1;
+        foreach ($request->file('files') as $key => $file) {
+
+            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $file->move('agreements', $filename);
+
+            if($key+1 > 1)
+            {
+            
+            $save = new agreement();
+
+            $save->user_id = $ref;
+            $save->Amount_paid = '-';
+            $save->Date_of_payment = '-';
+            $save->reciept='-';
+            $save->agreement=$filename;
+            $save->save();
+
+            }
+            else
+            {
+
+            $save = new agreement();
+            $save->user_id = $ref;
+            $save->Amount_paid = $user_amount_paid;
+            $save->Date_of_payment = $Date_of_payment;
+            $save->reciept='-';
+            $save->agreement=$filename;
+            $save->save();
+            }
+
+            
+        }
+        $post->agreement=$ref;
+
+        // $file=$request->agreement_added;
+        // $filename1=date('YmdHi').$file->getClientOriginalName();
+        // $file->move(public_path('public/agreements'),$filename1);
+        // $post->agreement=$filename1;
 
         $file=$request->national_id_front;
         $filename=date('YmdHi').$file->getClientOriginalName();
@@ -506,25 +552,7 @@ class Master extends Controller
         $post->amount_payed = $request->amount_paid;
 
         $post->save();
-        
-        $plot_number = $request->plot_number;
-        $user_id =buyer::where('plot_number',$plot_number)->value('id');
-        
-        $user_id = $user_id;
-        $reciepts = "-";
-        $agreement_reciept = $filename1; 
-        $user_amount_paid = $request->amount_paid;
-        $Date_of_payment = $request->date_sold;
          
-        $save = new agreement();
-
-        $save->user_id = $user_id;
-        $save->Amount_paid = $user_amount_paid;
-        $save->Date_of_payment = $Date_of_payment;
-        $save->reciept=$reciepts;
-        $save->agreement=$filename1;
-        $save->save();
-
        return response()->json([
         "status"=>TRUE,
         "message"=>"Congurations on adding a new Plot",
@@ -754,14 +782,17 @@ class Master extends Controller
     public function view_agreement($id){
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
-        $user_information = DB::table('buyers')->where('id','=',$id)->get();
+        $user_information = DB::table('buyers')->where('id','=',$id)->get();        
         $user_reciepts = DB::table('pdf_receipts')->where('user_id','=',$id)->get();
         $user_agreements = DB::table('pdf_agreements')->where('user_id','=',$id)->get();
         $user_reciepts_pdf = DB::table('reciepts')->where('user_id','=',$id)->get();
+
+        $agreement_reference_in_buyer = DB::table('buyers')->where('id','=',$id)->value('agreement');
+        $user_agreements_uploaded = DB::table('agreements')->where('user_id','=',$agreement_reference_in_buyer)->get();
         $user_agreements_pdf = DB::table('agreements')->where('user_id','=',$id)->get();
 
 
-        return view('Admin.Receipts.view_agreement',$data,compact(['user_information','user_reciepts','user_agreements','user_reciepts_pdf','user_agreements_pdf']));
+        return view('Admin.Receipts.view_agreement',$data,compact(['user_information','user_reciepts','user_agreements','user_reciepts_pdf','user_agreements_pdf','user_agreements_uploaded']));
     }
 
 

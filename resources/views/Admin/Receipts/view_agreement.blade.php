@@ -240,13 +240,22 @@
                                 </div>
 
                                 <div class="col-md-9" style="padding-left: 10rem">
-                                    @foreach ($user_agreements as $user_agreement)
-                                      <br> <br>
-                                      <img style="width: 100%; " src="{{'/public/agreements/'.$user_agreement->agreement}}" alt="">
-                                      @endforeach
-                                  </div>
+                                  @foreach ($user_agreements as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/public/public/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
 
-                                  <br> <br> 
+                                <br> <br> 
+
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements_uploaded as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
+
+                                <br> <br> 
 
                                   <div class="col-md-9 d-block" style="padding-left: 10rem">
                                     {{-- <h4>User Receipts</h4>

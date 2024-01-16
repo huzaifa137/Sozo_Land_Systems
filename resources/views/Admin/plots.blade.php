@@ -302,7 +302,8 @@
                         <div class="form-group row">
                           <label class="col-md-5 col-form-label">Attach Agreement</label>
                           <div class="col-sm-12">
-                            <input type="file" name="agreement_added" id="agreement_added" required>
+                            <input type="file" id="agreement_added" class="form-control" multiple>
+                            {{-- <input type="file" name="agreement_added" id="agreement_added" required> --}}
                           </div>
                         </div>
                       </div>
@@ -418,6 +419,7 @@
         var plot_number = $('#plot_number').val();
         var House_plot = $('#House_plot').val();
         var next_installment_date = $('#next_installment_date').val();
+        var files = $('#agreement_added')[0].files;
 
         if (House_plot == 'House') {
 
@@ -436,10 +438,13 @@
           var profile_pic = $('#profile_pic')[0].files[0];
           var amount_paid = $('#amount_paid').val();
           var date_sold = $('#date_sold').val();
-          var agreement_added = $("#agreement_added")[0].files[0];
           var balance = "0";
           var national_id_front = $("#national_id_front")[0].files[0];
           var national_id_back = $("#national_id_back")[0].files[0];
+          var files = $('#agreement_added')[0].files;
+
+          // var agreement_added = $("#agreement_added")[0].files[0];
+
 
         }
         else if (land_status == "Under_payment") {
@@ -494,9 +499,13 @@
           form_data.append('plot_number', plot_number);
           form_data.append('House_plot', House_plot);
           form_data.append('next_installment_date', next_installment_date);
-          form_data.append('agreement_added', agreement_added);
+          // form_data.append('agreement_added', agreement_added);
           form_data.append('national_id_front', national_id_front);
           form_data.append('national_id_back', national_id_back);
+
+          for (var i = 0; i < files.length; i++) {
+                     form_data.append('files[]', files[i]);
+                }
 
           $.ajax({
           type: "post",
@@ -606,7 +615,7 @@
                   errors.push("Date sold field is required.");
               }
 
-              if (!agreement_added) {
+              if (!files) {
                   errors.push("Agreement to be uploaded field is required.");
               }
 
