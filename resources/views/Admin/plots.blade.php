@@ -98,7 +98,7 @@
                   @endif
 
 
-                  <form class="form-sample" action="{{ route('send-plot-data')}}" method="POST"
+                  <form class="form-sample" id="my_form" action="{{ route('send-plot-data')}}" method="POST"
                     enctype="multipart/form-data">
                     @csrf
                     <p class="card-description">Enter Plot or House Information:</p>
@@ -303,7 +303,6 @@
                           <label class="col-md-5 col-form-label">Attach Agreement</label>
                           <div class="col-sm-12">
                             <input type="file" id="agreement_added" class="form-control" multiple>
-                            {{-- <input type="file" name="agreement_added" id="agreement_added" required> --}}
                           </div>
                         </div>
                       </div>
@@ -443,9 +442,7 @@
           var national_id_back = $("#national_id_back")[0].files[0];
           var files = $('#agreement_added')[0].files;
 
-          // var agreement_added = $("#agreement_added")[0].files[0];
-
-
+  
         }
         else if (land_status == "Under_payment") {
           var firstname = $('#firstname').val();
@@ -499,7 +496,6 @@
           form_data.append('plot_number', plot_number);
           form_data.append('House_plot', House_plot);
           form_data.append('next_installment_date', next_installment_date);
-          // form_data.append('agreement_added', agreement_added);
           form_data.append('national_id_front', national_id_front);
           form_data.append('national_id_back', national_id_back);
 
@@ -536,13 +532,13 @@
                 html: data.message,
                 color: '#FFF',
                 background: '#452e6f',
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  window.location.href = '/plots';
-                }
               });
             }
           },
+          complete: function() {
+                $('#my_form button').prop('disabled', false);
+                $('#my_form button').html('Submit');
+            },
           error: function (data) {
             $('body').html(data.responseText);
           }
@@ -615,10 +611,6 @@
                   errors.push("Date sold field is required.");
               }
 
-              if (!files) {
-                  errors.push("Agreement to be uploaded field is required.");
-              }
-
               if (!balance) {
                   errors.push("Balance field is required.");
               }
@@ -630,6 +622,7 @@
               if (!national_id_back) {
                   errors.push("National id Back field is required.");
               }
+
           }
 
 

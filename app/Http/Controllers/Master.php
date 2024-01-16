@@ -414,6 +414,21 @@ class Master extends Controller
 
         $status = $request->land_status;
         $estate_name = $request->Estate;
+        $plot_number = $request->plot_number;
+
+        $check_plot_availability = DB::table('buyers')
+                        ->where('estate','=',$estate_name)
+                        ->where('plot_number','=',$plot_number)->get();
+
+
+        if($check_plot_availability->isNotEmpty())
+        {
+            return response()->json([
+                "status"=>FALSE,
+                "message"=>"Plot being entered is already taken",
+              ]);
+        }
+
 
         $user_amount_paid = $request->amount_paid;
         
@@ -726,7 +741,12 @@ class Master extends Controller
     public function accomplished_buyers()
     {
         $fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")
-                                         ->where('reciepts','!=',"0")->get();
+                                         ->where('reciepts','!=',"0")
+                                         ->orderBy('created_at', 'desc')->get();
+
+        // $fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")
+        //                                  ->where('reciepts','!=',"0")
+        //                                  ->orderBy('created_at', 'desc')->get();
 
         $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
 
