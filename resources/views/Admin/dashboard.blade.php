@@ -395,10 +395,23 @@
                                                 @endforeach
 
                                                 </tr>
-
-
+            
                                             </tbody>
+                                            
                                         </table>
+
+                                        <br> <br>
+                                        <span>
+
+                                            {{ $all_sales->links() }}
+
+                                        </span>
+                                        
+                                        <style>
+                                            .w-5{
+                                                display: none;
+                                            }
+                                        </style>
                                     </div>
                                 </div>
                             </div>

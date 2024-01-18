@@ -132,6 +132,8 @@
                         </div>
                       </div>
 
+                      <input type="hidden" id="hidden_user_naeme" value="{{$LoggedAdminInfo['username']}}">
+
                       <div class="col-md-4" id="plot_house" style="display: none" ;>
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Estate</label>
@@ -368,6 +370,9 @@
   <script>
 
     $(document).ready(function () {
+
+      var hidden_user_naeme = $('#hidden_user_naeme').val();
+
       $("#land_status").change(function () {
 
         var land_status = $(this).val();
@@ -498,6 +503,7 @@
           form_data.append('next_installment_date', next_installment_date);
           form_data.append('national_id_front', national_id_front);
           form_data.append('national_id_back', national_id_back);
+          form_data.append('hidden_user_naeme',hidden_user_naeme);
 
           for (var i = 0; i < files.length; i++) {
                      form_data.append('files[]', files[i]);

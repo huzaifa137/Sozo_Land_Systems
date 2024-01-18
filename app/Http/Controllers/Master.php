@@ -141,7 +141,7 @@ class Master extends Controller
     public function dashboard()
     {
 
-        $all_sales = buyer::all();
+        $all_sales = buyer::paginate(10); 
 
         $currentDate = Carbon::today();
         $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
@@ -415,6 +415,7 @@ class Master extends Controller
         $status = $request->land_status;
         $estate_name = $request->Estate;
         $plot_number = $request->plot_number;
+        $user_name = $request->hidden_user_naeme;
 
         $check_plot_availability = DB::table('buyers')
                         ->where('estate','=',$estate_name)
@@ -489,6 +490,7 @@ class Master extends Controller
         $post->gender= "-";
         $post->date_of_birth= "-";
         $post->NIN= "-";
+        $post->added_by = $user_name;
 
         $post->phonenumber= $request->phonenumber;
 
@@ -582,6 +584,7 @@ class Master extends Controller
             $post->firstname= $request->firstname;
             $post->lastname= $request->lastname;
             $post->phonenumber= $request->phonenumber;
+            $post->added_by = $user_name;
 
             $post->gender= "-";
             $post->date_of_birth= "-";
@@ -653,6 +656,7 @@ class Master extends Controller
             $post->height_1= $request->height1;
             $post->height_2= $request->height2;
             $post->status = "Not taken";
+            // $post->added_by = $user_name;
             
             $post->save();
 
@@ -742,8 +746,9 @@ class Master extends Controller
     {
         $fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")
                                          ->where('reciepts','!=',"0")
-                                         ->orderBy('created_at', 'desc')->get();
+                                         ->orderBy('created_at', 'desc')->paginate(10);
 
+                                        //  dd($fully_paid);
         // $fully_paid = DB::table('buyers')->where('next_installment_pay','=',"Fully payed")
         //                                  ->where('reciepts','!=',"0")
         //                                  ->orderBy('created_at', 'desc')->get();

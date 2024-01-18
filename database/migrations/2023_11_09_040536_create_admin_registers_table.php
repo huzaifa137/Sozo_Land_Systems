@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('email');
             $table->text('password');
             $table->text('admin_category');
+            $table->text('added_by');
             $table->timestamps();
         });
     }

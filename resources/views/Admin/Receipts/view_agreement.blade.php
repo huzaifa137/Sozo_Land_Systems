@@ -198,6 +198,10 @@
                                           <td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>
                                         </tr>
 
+                                        <tr>
+                                          <td class="text-info">Added by :</td>
+                                          <td class="text-right font-weight-medium"> {{$data->added_by}} </td>
+                                        </tr>
                                         
                                       </tbody>
                                     </table>
