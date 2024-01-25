@@ -220,7 +220,7 @@
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> Upload receipt </a> </td>
 
                                                             <td><a href="{{'add-agreement/'.$item->id}}" class="btn btn-outline-success btn-icon-text">
-                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Upload agreement </a> </td>
+                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Make agreement </a> </td>
 
                                                         </tr>
                                                     <tr>

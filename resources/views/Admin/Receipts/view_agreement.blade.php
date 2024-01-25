@@ -246,7 +246,7 @@
                                 <div class="col-md-9" style="padding-left: 10rem">
                                   @foreach ($user_agreements as $user_agreement)
                                     <br> <br>
-                                    <img style="width: 100%; " src="{{'/public/public/agreements/'.$user_agreement->agreement}}" alt="">
+                                    <img style="width: 100%; " src="{{'/public/agreements/'.$user_agreement->agreement}}" alt="">
                                     @endforeach
                                 </div>
 

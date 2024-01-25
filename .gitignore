@@ -17,3 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/public/public/national_id/
+/public/public/receipts/
+/public/profile_pic/
+/public/estate_pdf/
+/public/public/agreements/

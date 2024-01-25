@@ -39,6 +39,8 @@ return new class extends Migration
             $table->text('next_installment_pay');
             $table->text('reciepts')->default('Pending');
             $table->text('agreement')->default('Pending');
+            $table->text('half_or_full');
+            $table->text('added_by');
             $table->timestamps();
         });
     }

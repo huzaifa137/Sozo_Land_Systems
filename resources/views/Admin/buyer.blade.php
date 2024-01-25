@@ -106,6 +106,7 @@
                                         @csrf
                                         <p class="card-description">Enter Customer Buyer Information:</p>
 
+                                        <input type="hidden" id="hidden_user_name" value="{{$LoggedAdminInfo['username']}}" >
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
@@ -227,6 +228,20 @@
                                                             <option value="">--- Poster Payment---</option>
                                                             <option value="Paid">Paid</option>
                                                             {{-- <option value="Not paid">Not paid</option> --}}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-3 col-form-label mt-2">Half or Full Plot</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="half_or_full" id="half_or_full" class="form-control"
+                                                            required>
+                                                            <option value="">--- Select Half or Full being sold---</option>
+                                                            <option value="0">Full Plot</option>
+                                                            <option value="1">Half Plot</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -654,6 +669,8 @@
 
             $('#submit_click').click(function () {
 
+                
+                var hidden_user_name = $('#hidden_user_name').val();
                 var firstname = $('#firstname').val();
                 var profile_pic = $('#profile_pic')[0].files[0];
                 var phonenumber = $('#phonenumber').val();
@@ -665,6 +682,7 @@
                 var national_id_back = $("#national_id_back")[0].files[0];
                 var card_number = $('#card_number').val();
                 var land_poster = $('#land_poster').val();
+                var half_or_full = $('#half_or_full').val();
                 var payment_method = $('#payment_method').val();
                 var purchase_type = $('#purchase_type').val();
 
@@ -714,6 +732,9 @@
 
                     var form_data = new FormData();
 
+                    // var  = $('#hidden_user_name').val();x
+
+                    form_data.append('hidden_user_name', hidden_user_name);
                     form_data.append('firstname', firstname);
                     form_data.append('profile_pic', profile_pic);
                     form_data.append('phonenumber', phonenumber);
@@ -725,6 +746,7 @@
                     form_data.append('national_id_back', national_id_back);
                     form_data.append('card_number', card_number);
                     form_data.append('land_poster', land_poster);
+                    form_data.append('half_or_full', half_or_full);
                     form_data.append('payment_method', payment_method);
                     form_data.append('purchase_type', purchase_type);
                     form_data.append('estate', estate);
@@ -818,6 +840,10 @@
 
                     if (!land_poster) {
                         errors.push("Land poster is required.");
+                    }
+
+                    if (!half_or_full) {
+                        errors.push("Half or Full plot choice is a required.");
                     }
 
                     if (!payment_method) {

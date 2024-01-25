@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('height_2');
             $table->text('status');
             $table->text('location');
+            $table->text('half_or_full');
+            $table->text('buyer_id')->default('0');
             $table->timestamps();
         });
     }

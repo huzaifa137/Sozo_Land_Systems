@@ -185,6 +185,9 @@ class Master extends Controller
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->format('Y/m/d');
 
+        // full_plot = 0;
+        // half plot = 1;
+
         $post = new buyer;
 
         $post->firstname= $request->firstname;
@@ -221,15 +224,15 @@ class Master extends Controller
         $post->height_1= $request->height_1;
         $post->height_2= $request->height_2;
 
-
         $post->plot_number= $request->plot_number;
         $post->amount_payed= $request->amount_payed;
         $post->balance= $request->balance;
         $post->reciepts= $request->receipt_img;
         $post->agreement = $request->agreement;
         $post->date_sold = $formattedDate;
-
+        $post->half_or_full= $request->half_or_full;
         $post->next_installment_pay= $request->next_installment_pay;
+        $post->added_by  = $request->hidden_user_name;
         
         $save = $post->save();
 
@@ -627,6 +630,7 @@ class Master extends Controller
 
             $post = new plot;
 
+            
             $post->estate = $request->Estate;
             $post->plot_number = $request->plot_number;
             $post->location = $request->location;
@@ -634,6 +638,7 @@ class Master extends Controller
             $post->width_2= $request->width2;
             $post->height_1= $request->height1;
             $post->height_2= $request->height2;
+            $post->half_or_full= "0";
             $post->status = "Not taken";
 
             $post->save();
@@ -656,6 +661,7 @@ class Master extends Controller
             $post->height_1= $request->height1;
             $post->height_2= $request->height2;
             $post->status = "Not taken";
+            $post->half_or_full= "0";
             // $post->added_by = $user_name;
             
             $post->save();
@@ -787,8 +793,10 @@ class Master extends Controller
         $check_plot =  DB::table('plots')->where('estate','=',$estate)
                                          ->where('plot_number','=',$plot_no)->value('status');
 
-
-        if($check_plot == 'Fully payed')
+        $check_half =  DB::table('plots')->where('estate','=',$estate)
+                                         ->where('plot_number','=',$plot_no)->value('half_or_full');
+        
+        if($check_plot == 'Fully payed' && $check_half == '0')
         {
 
             $estates = estate::all();
@@ -956,15 +964,28 @@ class Master extends Controller
 
         $estate_no_no=buyer::where('id',$user_id)->value('estate');
         $plot_no_no = buyer::where('id',$user_id)->value('plot_number');
+        $half_or_full_status = buyer::where('id',$user_id)->value('half_or_full');
+        $half_or_full_status_db = buyer::where('id',$user_id)->value('half_or_full');
+
 
         $whereConditions = ['estate' => $estate_no_no,
                             'plot_number' => $plot_no_no];
                         
          $plot_status = DB::table('plots')->where($whereConditions)->value('status');
+         $half_or_full_status = DB::table('plots')->where($whereConditions)->value('half_or_full');
+
+         if($half_or_full_status_db == '1' && $half_or_full_status != '1')
+         {
+            $plot_status = DB::table('plots')->where($whereConditions)
+                            ->update(['half_or_full' => $half_or_full_status_db,]);
+                                    
+         }
         
         if($plot_status == "Not taken")
         {
-            $plot_status = DB::table('plots')->where($whereConditions)->update(['status' => 'Underpayment',]);
+            $plot_status = DB::table('plots')->where($whereConditions)
+                                ->update(['status' => 'Underpayment',
+                                          ]);
         }
             
         // return $pdf->stream($filename);
@@ -982,11 +1003,12 @@ class Master extends Controller
     public function store_agreement(Request $request)
     {
 
-
         $amount_in_words = $request->amount_in_words;
         
         $user_id = $request->user_id;
         $original_amount =buyer::where('id',$user_id)->value('amount_payed');
+
+        $half_or_full =buyer::where('id',$user_id)->value('half_or_full');
 
         $estate_name =buyer::where('id',$user_id)->value('estate');
         $estate_price =estate::where('estate_name',$estate_name)->value('estate_price');
@@ -1020,8 +1042,6 @@ class Master extends Controller
 
         $profile_pic  = public_path('profile_pic/'.$profile_pic);
 
-        // dd($user_info);
-
 
         $day = $user_info->created_at->day;
         $month = $user_info->created_at->month;
@@ -1030,7 +1050,6 @@ class Master extends Controller
 
         $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info',
         'all_cash','Date_of_payment','day','month','year','amount_in_words','profile_pic']));
-
 
 
         $filename = 'payment_agreement' . time() . '.pdf';
@@ -1071,6 +1090,14 @@ class Master extends Controller
 
         DB::insert('insert into reciepts (user_id,amount,balance,reciept,Date_of_payment,Phonenumber,amount_in_words) values (?,?,?,?,?,?,?)', [$user_id,$balance,$user_amount_paid,$user_receipt,$Date_of_payment,'-','-']);
 
+        $half_plot_or_full_plot =plot::where($whereConditions)->value('half_or_full');
+        $full_payed_or_not =plot::where($whereConditions)->value('status');
+
+        if($half_plot_or_full_plot == '1' && $full_payed_or_not == "Fully payed")
+        {
+            DB::table('plots')->where($whereConditions)->update(['half_or_full' => '0',]);
+
+        }
         
         // return $pdf->stream($filename);
 
@@ -1084,6 +1111,8 @@ class Master extends Controller
     }   
 
     public function store_agreement_new_plot(Request $request){
+
+        dd("welcom Home");
 
         $amount_in_words = $request->amount_in_words;
         
@@ -1177,6 +1206,7 @@ class Master extends Controller
  
          $whereConditions = ['estate' => $estate_no_no,
                              'plot_number' => $plot_no_no];
+
 
         DB::table('plots')->where($whereConditions)->update(['status' => 'Fully payed',]);
 
@@ -1596,9 +1626,19 @@ class Master extends Controller
 
             $whereConditions = ['estate' => $info];                             
 
-             $data = DB::table('plots')->where($whereConditions)
+
+            $not_fully_paid = DB::table('plots')->where($whereConditions)
                                         ->where('status','!=','Fully payed')
                                         ->get();
+
+            $fully_paid_half = DB::table('plots')->where($whereConditions)
+                                        ->where('status','=','Fully payed')
+                                        ->where('half_or_full','=','1')
+                                        ->get();
+
+            $info = $not_fully_paid->merge($fully_paid_half);             
+
+            $data = $info->all();
 
             return response()->json($data);
         }
@@ -1610,13 +1650,17 @@ class Master extends Controller
             $whereConditions = ['plot_number' => $info];
                                
                                 
-             $width_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_1');
-             $width_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_2');
-             $height_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_1');
-             $height_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_2');
-             $location = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('location');
+            //  $width_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_1');
+            //  $width_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_2');
+            //  $height_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_1');
+            //  $height_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_2');
+            //  $location = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('location');
 
-             
+            $width_1 = DB::table('plots')->where($whereConditions)->value('width_1');
+            $width_2 = DB::table('plots')->where($whereConditions)->value('width_2');
+            $height_1 = DB::table('plots')->where($whereConditions)->value('height_1');
+            $height_2 = DB::table('plots')->where($whereConditions)->value('height_2');
+            $location = DB::table('plots')->where($whereConditions)->value('location');
 
             return response()->json([
                 "status"=>TRUE,
