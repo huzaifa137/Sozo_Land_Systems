@@ -1,80 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Sozo Admin Dashboard</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="/assets/vendors/jvectormap/jquery-jvectormap.css">
-    <link rel="stylesheet" href="/assets/vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="/assets/vendors/owl-carousel-2/owl.carousel.min.css">
-    <link rel="stylesheet" href="/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="/assets/images/favicon.png" />
-</head>
-
-<body>
-    <div class="container-scroller">
-        <div class="row p-0 m-0 proBanner" id="proBanner">
-            <div class="col-md-12 p-0 m-0">
-                <div class="card-body card-body-padding d-flex align-items-center justify-content-between">
-
-                    <div class="d-flex align-items-center justify-content-between">
-                        <a href="https://www.bootstrapdash.com/product/corona-free/"><i
-                                class="mdi mdi-home me-3 text-white"></i></a>
-                        <button id="bannerClose" class="btn border-0 p-0">
-                            <i class="mdi mdi-close text-white me-0"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- partial:partials/_sidebar.html -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
-            <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-                <a class="sidebar-brand brand-logo" href="{{ route('admin-dashboard') }}"><img
-                        src="/assets/images/logo.svg" alt="logo" /></a>
-                <a class="sidebar-brand brand-logo-mini" href="{{ route('admin-dashboard') }}"><img
-                        src="/assets/images/logo-mini.svg" alt="logo" /></a>
-            </div>
-
-            @include('includes.SideBar')
-
-        </nav>
-        <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-            <!-- partial:partials/_navbar.html -->
-            <nav class="navbar p-0 fixed-top d-flex flex-row">
-                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                    <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard') }}"><img
-                            src="/assets/images/logo-mini.svg" alt="logo" /></a>
-                </div>
-                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-                    <button class="navbar-toggler navbar-toggler align-self-center" type="button"
-                        data-toggle="minimize">
-                        <span class="mdi mdi-menu"></span>
-                    </button>
-
-                    @include('includes.TopNav')
-
-
-                    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-                        data-toggle="offcanvas">
-                        <span class="mdi mdi-format-line-spacing"></span>
-                    </button>
-                </div>
-            </nav>
+@include('includes.header')
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
@@ -86,28 +10,35 @@
 
 
 
+
                     <div class="row">
                         <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">{{ $specific_estate->number_of_plots }}</h3>
+                            <a href="{{ url('total-plots-in-estate/' . $estate_id) }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-9">
+                                                <div class="d-flex align-items-center align-self-start">
+                                                    <h3 class="mb-0">{{ $specific_estate->number_of_plots }}</h3>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                {{-- <div class="icon icon-box-success " style="">
+                                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
+                                                </div> --}}
                                             </div>
                                         </div>
-                                        <div class="col-3">
-                                            <div class="icon icon-box-success ">
-                                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                            </div>
-                                        </div>
+                                        <h6 class="text-muted font-weight-normal mt-3">Plots in {{$estate_name}} Estate</h6>
                                     </div>
-                                    <h6 class="text-muted font-weight-normal">Total Number of plots</h6>
-                                </div>
-                            </div>
+                            </a>
                         </div>
-                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                    </div>
+
+
+
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                             <div class="card">
+                                <a href="{{ url('total-fully-paid-plots-in-estate/' . $estate_id) }}">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-9">
@@ -116,96 +47,92 @@
                                             </div>
                                         </div>
                                         <div class="col-3">
-                                            <div class="icon icon-box-success">
+                                            {{-- <div class="icon icon-box-success">
                                                 <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
-                                    <h6 class="text-muted font-weight-normal">Total Plots fully paid in
+                                    <h6 class="text-muted font-weight-normal mt-3">Fully paid plots in
                                         {{ $specific_estate->estate_name }}</h6>
                                 </div>
-                            </div>
-                        </div>
-
-
-
-
-
-                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <a href="#" style="text-decoration: none;color:white;">
-                                        <div class="row">
-                                            <div class="col-9">
-                                                <div class="d-flex align-items-center align-self-start">
-                                                    <h3 class="mb-0">{{ $count_estates_fully }}</h3>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="icon icon-box-success">
-                                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <h6 class="text-muted font-weight-normal">Plots underpayment in
-                                        {{ $specific_estate->estate_name }}</h6>
-                                </div>
-                            </div>
-                        </div>
-
-
+                        </a>
                     </div>
-
-                    <div class="row ">
-                        <div class="col-12 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">All Estates </h4>
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th> Estate Name</th>
-                                                    <th> Estate Price </th>
-                                                    <th> Location </th>
-                                                    <th> Number of plots </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                <tr>
-                                                    <td> {{ $specific_estate->estate_name }} </td>
-                                                    <td> {{ $specific_estate->estate_price }} </td>
-                                                    <td> {{ $specific_estate->location }} </td>
-                                                    <td> {{ $specific_estate->number_of_plots }} </td>
-                                                </tr>
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
                 </div>
-                <!-- content-wrapper ends -->
-                <!-- partial:partials/_footer.html -->
-                <footer class="footer">
-                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
-                            SozoPropertiesLimited.com 2023</span>
-                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon
-                            <a href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
+
+
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                    <div class="card">
+                        <a href="{{ url('total-not-taken-plots-in-estate/' . $estate_id) }}">
+                        <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0">{{ $count_estates_not_fully }}</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        {{-- <div class="icon icon-box-success">
+                                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                                        </div> --}}
+                                    </div>
+                                </div>
+                            <h6 class="text-muted font-weight-normal mt-3">Not taken plots in
+                                {{ $specific_estate->estate_name }}</h6>
+                        </div>
                     </div>
-                </footer>
-                <!-- partial -->
+                </a>
+                </div>
             </div>
-            <!-- main-panel ends -->
+
+            <div class="row ">
+                <div class="col-12 grid-margin">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Estate Information</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th> Estate Name</th>
+                                            <th> Estate Price </th>
+                                            <th> Location </th>
+                                            <th> Number of plots </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td> {{ $specific_estate->estate_name }} </td>
+                                            <td> {{ $specific_estate->estate_price }} </td>
+                                            <td> {{ $specific_estate->location }} </td>
+                                            <td> {{ $specific_estate->number_of_plots }} </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
-        <!-- page-body-wrapper ends -->
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
+                    SozoPropertiesLimited.com 2023</span>
+                <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon
+                    <a href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
+            </div>
+        </footer>
+        <!-- partial -->
+    </div>
+    <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->

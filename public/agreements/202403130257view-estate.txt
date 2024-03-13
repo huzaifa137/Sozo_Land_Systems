@@ -1,0 +1,23 @@
+view-estate
+
+Total Number of plots
+Total Plots fully paid in
+Plots Not taken in
+
+1.Pagination list design
+2.Header and Footer general with favicon
+3.Remove House dropdown
+4.Admin name on the reciept 
+5.Agreement Full purchased Agreement is a required field. ===> show error
+6.Add a plot or a house drop down add new plot in the system.
+7.Next payment date for new buyer and existing buyer ===> date having 
+8.Darkmode and white mode impelementation.
+
+@include('includes.header')
+@include('includes.footer')
+
+==========================
+TESTING
+==========================
+1.Adding same plot in the estate
+2.

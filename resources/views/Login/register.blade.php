@@ -6,7 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{asset('bootstrap/css/bootstrap.min.css')}}">
     {{-- <link rel="stylesheet" href="/assets/css/style.css"> --}}
-    <link rel="stylesheet" href="/assets/images">
+    {{-- <link rel="stylesheet" href="/assets/images"> --}}
+    <link rel="shortcut icon" href="/img/favicon.jpg" />
+
     <title>..:: Admin - Register Portal ::..</title>
 </head>
 <body>

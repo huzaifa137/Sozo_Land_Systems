@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
     {{-- <link rel="stylesheet" href="/assets/css/style.css"> --}}
+    <link rel="shortcut icon" href="/img/favicon.jpg" />
     <title>..:: SOZO LAND SYSTEM LOGIN ::..</title>
 </head>
 

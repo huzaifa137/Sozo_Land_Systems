@@ -39,13 +39,15 @@ Route::get('add-estate',[Master::class,'add_estate'])->name('add-estate');
 Route::get('view-estate/{id}',[Master::class,'view_estate']);
 Route::get('download-estate/{id}',[Master::class,'download_estate']);
 
+Route::get('total-plots-in-estate/{id}',[Master::class,'all_plots_in_estate']);
+Route::get('total-fully-paid-plots-in-estate/{id}',[Master::class,'total_fully_paid_plots_in_estate']);
+Route::get('total-not-taken-plots-in-estate/{id}',[Master::class,'total_not_taken_plots_in_estate']);
 
 Route::post('send-estate-data',[Master::class,'store_estate'])->name('send-estate-data');
 Route::post('send-plot-data',[Master::class,'send_plot_estate'])->name('send-plot-data');
 // Houses Module
 
 Route::get('add-house',[Master::class,'add_house'])->name('add-house');
-
 Route::post('send-house-data',[Master::class,'send_house_data'])->name('send-house-data');
 
 
