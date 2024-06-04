@@ -25,7 +25,7 @@
 									@endif
 
 
-                    <form class="form-sample" id="myform" action="{{ route('store-new-receipt')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myForm" action="{{ route('store-new-receipt')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 

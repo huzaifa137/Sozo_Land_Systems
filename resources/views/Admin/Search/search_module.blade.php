@@ -82,7 +82,7 @@
                                                     <label class="col-sm-6 col-form-label">First name</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
-                                                            <input type="text" name="firstname" id="firstname"
+                                                            <input type="text" name="firstname" id=""
                                                             class="form-control" placeholder="Enter Firstname">
                                                         </div>
                                                     </div>

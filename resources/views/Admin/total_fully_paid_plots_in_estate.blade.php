@@ -57,6 +57,7 @@
                                             <th> height2 </th>
                                             <th> Location</th>
                                             <th>Plot Status</th>
+                                            <th>view estate pdf</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -73,6 +74,8 @@
                                             <td> {{ $data->height_2 }} </td>
                                             <td> {{ $data->location }} </td>
                                             <td> {{ $data->status}}</td>
+                                            <td> <a href="{{ url('view-estate-pdf/' . $data->id .'/'. $data->estate) }}">View estate</a></td>
+
                                         </tr>
 
                                         @endforeach
@@ -82,10 +85,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <div>
+                        <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="900px"></iframe>
+                    </div>
+
+
                 </div>
             </div>
-
-
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->

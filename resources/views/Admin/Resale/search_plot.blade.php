@@ -34,7 +34,7 @@
                               <div class="col-sm-12">
                                 <select name="land_plot" id="land_plot" class="form-control" required>
                                   <option value="">---choose---</option>
-                                  <option value="House">House</option>
+                                  {{-- <option value="House">House</option> --}}
                                   <option value="Plot">Plot</option>
                                 </select>
                               </div>

@@ -92,6 +92,7 @@
       <div class="collapse" id="ui-resales">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('search-land')}}">Resale</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market')}}">Back on market</a></li>
         </ul>
       </div>
     </li>

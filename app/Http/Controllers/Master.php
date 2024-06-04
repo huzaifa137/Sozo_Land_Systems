@@ -131,7 +131,7 @@ class Master extends Controller
     public function dashboard()
     {
 
-        $all_sales = buyer::paginate(10);
+        $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10);
 
         $currentDate = Carbon::today();
         $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
@@ -160,6 +160,12 @@ class Master extends Controller
 
     public function admin_buyer()
     {
+
+        $data = $this->user_right_info();
+
+        if ($data != "SuperAdmin") {
+            return redirect('admin-dashboard')->with('error', 'You dont have user rights to use this feature');
+        }
 
         $estates = Estate::all();
 
@@ -355,9 +361,9 @@ class Master extends Controller
 
         return response()->download(public_path('estate_pdf/' . $estate_record));
 
-        // return $estate_record;
-
     }
+
+    // Modified and Addded new code in the System.
 
     public function view_estate($id)
     {
@@ -368,6 +374,8 @@ class Master extends Controller
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
         $count_estates_fully = DB::table('plots')
             ->where('estate', '=', $estate_name)
             ->where('status', '=', "Fully payed")->count();
@@ -376,11 +384,161 @@ class Master extends Controller
             ->where('estate', '=', $estate_name)
             ->where('status', '!=', "Fully payed")->count();
 
-        return view('Admin.view_specific_estate', $data, compact(['specific_estate', 'count_estates_fully', 'count_estates_not_fully', 'estate_id', 'estate_name']));
+        // $plots = DB::table('plots')
+        //     ->select('plots.*', DB::raw('(SELECT COUNT(*) FROM plots WHERE plot_number LIKE "%h%") as total_count'))
+        //     ->where('plot_number', 'LIKE', '%h%')
+        //     ->orderBy('estate', 'asc')
+        //     ->get();
+
+        $total_half_plots = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->count();
+
+        return view('Admin.view_specific_estate', $data, compact(['specific_estate', 'count_estates_fully', 'total_half_plots',
+            'count_estates_not_fully', 'estate_id', 'estate_name']));
+    }
+
+    public function totalHalfPlots($id)
+    {
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $total_half_plots_count = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->count();
+
+        $total_estate_data = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->orderBy('plot_number', 'asc')
+            ->get();
+
+        $total_plots_fully_taken = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '0')
+            ->get();
+
+        $total_half_plots_not_fully_taken_count = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '1')
+            ->count();
+
+        $Fully_taken = [];
+
+        foreach ($total_plots_fully_taken as $key => $plot_one) {
+
+            $Fully_taken[] = $plot_one->plot_number;
+        }
+
+        $counted = array_count_values($Fully_taken);
+
+        $duplicates = array_filter($counted, function ($count) {
+            return $count > 1;
+        });
+
+        $TotalFullyPaidHalfs = array_keys($duplicates);
+        $TotalFullyPaidHalfsCount = count($duplicates);
+        $TotalFullyPaidHalfsCount *= 2;
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.all_halfs_data', $data, compact(['specific_estate', 'total_half_plots_count', 'estate_id',
+            'estate_name', 'total_estate_data', 'TotalFullyPaidHalfsCount', 'total_half_plots_not_fully_taken_count']));
+    }
+
+    public function fully_taken_half_plots($id)
+    {
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $total_half_plots_fully_taken_data = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '0')
+            ->get();
+
+            $total_half_plots_fully_taken_data_count = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '0')
+            ->count();
+
+        $Fully_taken = [];
+
+        foreach ($total_half_plots_fully_taken_data as $key => $plot_one) {
+
+            $Fully_taken[] = $plot_one->plot_number;
+        }
+
+        $counted = array_count_values($Fully_taken);
+
+        $duplicates = array_filter($counted, function ($count) {
+            return $count > 1;
+        });
+
+        $TotalFullyPaidHalfs = array_keys($duplicates);
+        $TotalFullyPaidHalfsCount = count($duplicates);
+        $TotalFullyPaidHalfsCount *= 2;
+
+        // Fetch records where plot_numbers match any value in the array
+
+        // dd($TotalFullyPaidHalfs);
+
+
+        $total_half_plots_fully_taken_data = DB::table('plots')
+            ->whereIn('plot_number', $TotalFullyPaidHalfs)
+            ->where('estate', $estate_name)
+            ->orderBy('plot_number','asc')
+            ->get();
+
+            // dd($total_half_plots_fully_taken_data);
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.total_half_plots_fully_taken_data', $data, compact(['total_half_plots_fully_taken_data', 'TotalFullyPaidHalfsCount', 'estate_name']));
+    }
+
+    public function fully_not_taken_half_plots($id)
+    {
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $not_taken_half_plots = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '1')
+            ->get();
+
+        $not_taken_half_plots_count = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '1')
+            ->count();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.not_taken_half_plots', $data, compact(['not_taken_half_plots', 'not_taken_half_plots_count', 'estate_name']));
+
     }
 
     public function plots()
     {
+
+        $data = $this->user_right_info();
+
+        if ($data != "SuperAdmin") {
+            return redirect('admin-dashboard')->with('error', 'You dont have user rights to use this feature');
+        }
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
@@ -416,6 +574,30 @@ class Master extends Controller
         $estate_existance = plot::where('estate', $estate_name)
             ->where('plot_number', '=', $plot_number)->count();
 
+            
+        $total_plots_fully_taken = DB::table('plots')
+        ->where('plot_number', 'LIKE', '%h%')
+        ->where('estate', '=', $estate_name)
+        ->where('half_or_full', '=', '0')
+        ->get();
+
+            $Fully_taken = [];
+
+            foreach ($total_plots_fully_taken as $key => $plot_one) {
+    
+                $Fully_taken[] = $plot_one->plot_number;
+            }
+    
+            $counted = array_count_values($Fully_taken);
+    
+            $duplicates = array_filter($counted, function ($count) {
+                return $count > 1;
+            });
+    
+            $TotalFullyPaidHalfs = array_keys($duplicates);
+            $TotalFullyPaidHalfsCount = count($duplicates);
+            
+
         if ($exceptional_status == "Yes") {
             $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
 
@@ -428,31 +610,31 @@ class Master extends Controller
             }
         }
 
-        if ($check_plot_availability->isNotEmpty()) {
-            return response()->json([
-                "status" => false,
-                "message" => "Plot being entered is already taken",
-            ]);
-        }
+        // if ($check_plot_availability->isNotEmpty()) {
+        //     return response()->json([
+        //         "status" => false,
+        //         "message" => "Plot being entered is already taken",
+        //     ]);
+        // }
 
-        if ($estate_existance > 0) {
-            return response()->json([
-                "status" => false,
-                "message" => "Plot has already been entered before !",
-            ]);
-    }
+        // if ($estate_existance > 0) {
+        //     return response()->json([
+        //         "status" => false,
+        //         "message" => "Plot has already been entered before !",
+        //     ]);
+        // }
 
         $user_amount_paid = $request->amount_paid;
 
         $plot_number = $request->plot_number;
         $no_of_plots = estate::where('estate_name', $estate_name)->value('number_of_plots');
-        $count_estates = buyer::where('estate', $estate_name)->count();
-
+        $count_estates = buyer::where('estate', $estate_name)
+                                ->where('plot_number','not like', '%HALF%')->count();
+                                
+                                
         $user_amount_paid = $request->amount_paid;
         $Date_of_payment = $request->date_sold;
-
         $plot_numb = $request->House_plot;
-
         $plot_number = $request->plot_number;
 
         if ($plot_numb == "Plot") {
@@ -466,7 +648,11 @@ class Master extends Controller
 
         if ($plot_numb == "Plot") {
             if ($status == "Not_taken") {
-                $count_estates = plot::where('estate', $estate_name)->count();
+
+                $count_estates = buyer::where('estate', $estate_name)
+                                    ->where('plot_number','not like', '%HALF%')->count();
+
+                $count_estates += $TotalFullyPaidHalfsCount;
                 if ($count_estates >= $no_of_plots) {
 
                     return response()->json([
@@ -583,6 +769,8 @@ class Master extends Controller
 
             $post->save();
 
+            $buyer_db_id = buyer::where('estate', $estate_name)
+                ->where('plot_number', $plot_number)->value('id');
             $post = new plot;
 
             $post->estate = $request->Estate;
@@ -592,13 +780,12 @@ class Master extends Controller
             $post->width_2 = $request->width2;
             $post->height_1 = $request->height1;
             $post->height_2 = $request->height2;
+            $post->buyer_id = $buyer_db_id;
             $post->status = "Fully payed";
             $post->exceptional_status = $exceptional_status;
             if ($exceptional_status == "Yes") {
-            $post->exceptional_amount = $exceptional_amount;
-            }
-            else
-            {
+                $post->exceptional_amount = $exceptional_amount;
+            } else {
                 $post->exceptional_amount = "0";
             }
 
@@ -659,6 +846,9 @@ class Master extends Controller
 
             $post->save();
 
+            $buyer_db_id = buyer::where('estate', $estate_name)
+                ->where('plot_number', $plot_number)->value('id');
+
             $post = new plot;
 
             $post->estate = $request->Estate;
@@ -668,12 +858,11 @@ class Master extends Controller
             $post->width_2 = $request->width2;
             $post->height_1 = $request->height1;
             $post->height_2 = $request->height2;
+            $post->buyer_id = $buyer_db_id;
             $post->exceptional_status = $exceptional_status;
             if ($exceptional_status == "Yes") {
-            $post->exceptional_amount = $exceptional_amount;
-            }
-            else
-            {
+                $post->exceptional_amount = $exceptional_amount;
+            } else {
                 $post->exceptional_amount = "0";
             }
             $post->half_or_full = "0";
@@ -696,16 +885,15 @@ class Master extends Controller
             $post->width_2 = $request->width2;
             $post->height_1 = $request->height1;
             $post->height_2 = $request->height2;
+            $post->buyer_id = '0';
             $post->exceptional_status = $exceptional_status;
             if ($exceptional_status == "Yes") {
-            $post->exceptional_amount = $exceptional_amount;
-            }
-            else
-            {
+                $post->exceptional_amount = $exceptional_amount;
+            } else {
                 $post->exceptional_amount = "0";
             }
             $post->status = "Not taken";
-            $post->half_or_full = "0";
+            $post->half_or_full = "1";
 
             $post->save();
 
@@ -816,15 +1004,76 @@ class Master extends Controller
         return view('Admin.Receipts.add_receipt', $data, compact(['user_id']));
     }
 
+    // public function view_reciept($id)
+    // {
+
+    //     $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+    //     $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+    //     $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+    //     $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+    //     return view('Admin.Receipts.view_receipts', $data, compact(['user_information', 'user_reciepts', 'user_reciepts_pdf']));
+    // }
+
     public function view_reciept($id)
     {
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
         $user_information = DB::table('buyers')->where('id', '=', $id)->get();
         $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+        $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
         $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
 
-        return view('Admin.Receipts.view_receipts', $data, compact(['user_information', 'user_reciepts', 'user_reciepts_pdf']));
+        $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+        $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+        $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+        return view('Admin.Receipts.view_receipts', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
+    }
+
+    public function view_reciept_info($plot_id, $estate)
+    {
+
+        $user_information = DB::table('buyers')->where('plot_number', '=', $plot_id)
+            ->where('estate', '=', $estate)->get();
+
+        $id = DB::table('buyers')->where('plot_number', '=', $plot_id)
+            ->where('estate', '=', $estate)->value('id');
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+        $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+        $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+
+        $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+        $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+        $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+        return view('Admin.Receipts.view_receipts', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
+    }
+
+
+    public function view_half_plot_info($user_id, $estate)
+    {
+
+        $buyer_id = DB::table('plots')->where('id', '=', $user_id)
+                                    ->where('estate', '=', $estate)->value('buyer_id');
+
+        $user_information = DB::table('buyers')->where('id', '=', $buyer_id)
+            ->where('estate', '=', $estate)->get();
+
+        $id = $buyer_id;
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+        $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+        $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+
+        $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+        $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+        $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+        return view('Admin.Receipts.view_receipts', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
     }
 
     public function add_agreement($id)
@@ -889,7 +1138,7 @@ class Master extends Controller
         $Amount = $request->amount_paid;
 
         $admin_user_spec_id = session('LoggedAdmin');
-        
+
         $admin_user_info = Adminregister::where('id', $admin_user_spec_id)->first();
         $user_info = buyer::where('id', $user_id)->first();
         $receipt_no = rand(10000, 50000);
@@ -903,7 +1152,7 @@ class Master extends Controller
 
         $post = new reciept();
 
-        $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber','admin_user_info','amount_in_words', 'user_info']));
+        $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'admin_user_info', 'amount_in_words', 'user_info']));
         $filename = 'payment_reciepet' . time() . '.pdf';
         $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
 
@@ -969,7 +1218,7 @@ class Master extends Controller
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->format('Y/m/d');
 
-        $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate','admin_user_info', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'amount_in_words', 'user_info']));
+        $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'admin_user_info', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'amount_in_words', 'user_info']));
         $filename = 'payment_reciepet' . time() . '.pdf';
 
         $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
@@ -1055,18 +1304,17 @@ class Master extends Controller
 
         $record_plot = buyer::where('id', $user_id)->value('plot_number');
         $exceptional_status = plot::where('plot_number', $record_plot)
-                                    ->where('estate','=',$estate_name)->value('exceptional_status');
+            ->where('estate', '=', $estate_name)->value('exceptional_status');
 
         if ($exceptional_status == "Yes") {
-           
+
             $exceptional_amount = plot::where('plot_number', $record_plot)
-                                    ->where('estate','=',$estate_name)->value('exceptional_amount');
+                ->where('estate', '=', $estate_name)->value('exceptional_amount');
 
             if ($all_cash < $exceptional_amount) {
                 return back()->with('error', 'Amount used to purchase this plot is less, this is an exceptional plot')->withInput();
             }
         }
-
 
         $user_id = $request->user_id;
         $reciepts = $request->reciept_added;
@@ -1287,7 +1535,8 @@ class Master extends Controller
     public function all_sales()
     {
 
-        $all_sales = buyer::all();
+        // $all_sales = buyer::all();
+        $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10);
 
         $totalAmount = buyer::sum('amount_payed');
         $plots_sold = DB::table('buyers')->where('next_installment_pay', "Fully payed")->count();
@@ -1402,25 +1651,39 @@ class Master extends Controller
         $estate = $request->estate;
         $land_plot = $request->land_plot;
 
-        if ($firstname != null) {
+        if ($firstname != null && $lastname == null) {
 
-            $result = DB::table('buyers')
-                ->where('firstname', $firstname, )
-                ->where('lastname', $lastname, )
-                ->first();
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $firstname . '%')->get();
 
-            if (!$result) {
-                return back()->with('error', 'No record has been found with provided information');
-            } else {
+            $mergedResults = $firstname->merge($lastname);
 
-                $id = $result->id;
-                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
-                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
-                $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id']));
+            return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
 
-            }
+        } elseif ($firstname == null && $lastname != null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $lastname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get();
+
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
+        }
+
+        if ($firstname != null && $lastname != null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get();
+            dd($firstname);
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
         } else if ($NIN != null) {
 
             $result = DB::table('buyers')
@@ -1436,7 +1699,16 @@ class Master extends Controller
                 $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
                 $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id']));
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+                $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+                $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+                $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+                $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
 
             }
         } else if ($estate != null) {
@@ -1455,7 +1727,16 @@ class Master extends Controller
                 $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
                 $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id']));
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+                $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+                $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+                $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+                $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
 
             }
         } else if ($date_of_birth != null) {
@@ -1473,7 +1754,16 @@ class Master extends Controller
                 $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
                 $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id']));
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+                $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+                $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+                $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+                $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
 
             }
         }
@@ -1500,6 +1790,7 @@ class Master extends Controller
 
                 $user_information = DB::table('buyers')->where('id', '=', $id)->get();
                 $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+
                 $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
                 return view('Admin.Search.underpayment', $data, compact(['user_information', 'user_reciepts', 'id']));
@@ -1527,14 +1818,17 @@ class Master extends Controller
 
             }
         }
-
     }
 
-    public function resale()
+    public function resale($id)
     {
+
+        $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+        $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Resale.resale', $data);
+        return view('Admin.Resale.resale', $data, compact(['user_information', 'user_reciepts']));
     }
 
     public function resale_amount($id)
@@ -1563,20 +1857,19 @@ class Master extends Controller
         $post->estate = $estate;
         $post->plot_number = $plot_no;
         $post->amount_resold = $amount_resold;
-
-        $file = $reciept;
-        $filename = date('YmdHi') . $file->getClientOriginalName();
-        $file->move(public_path('public/receipts'), $filename);
-        $post->reciept_resold = $filename;
+        $post->reciept_resold = '-';
+        $post->resell_category = $request->resell_category;
 
         $save = $post->save();
 
         $original_amount = buyer::where('id', $user_id)->value('amount_payed');
         $all_cash = $original_amount + $amount_resold;
 
+        $currentDate = Carbon::today();
+
         $update_buyer_amount = buyer::where('id', $user_id)
             ->update(['amount_payed' => $all_cash,
-                'next_installment_pay' => "Resold",
+                'next_installment_pay' => $currentDate,
             ]);
 
         $whereConditions = [
@@ -1901,13 +2194,17 @@ class Master extends Controller
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
-        $estate_data = plot::where('estate', $estate_name)->get();
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
+        $estate_data = plot::where('estate', $estate_name)
+            ->orderBy('plot_number', 'asc')
+            ->get();
 
         $count_estates_fully = DB::table('buyers')
             ->where('estate', '=', $estate_name)
             ->where('next_installment_pay', '=', "Fully payed")->count();
 
-        return view('Admin.total_plots_list_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data']));
+        return view('Admin.total_plots_list_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
 
     public function total_fully_paid_plots_in_estate($id)
@@ -1918,13 +2215,17 @@ class Master extends Controller
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
         $estate_data = plot::where('estate', $estate_name)
-            ->where('status', '=', 'Fully payed')->get();
+            ->where('status', '=', 'Fully payed')
+            ->orderBy('plot_number','asc')
+            ->get();
 
         $count_estates_fully = plot::where('estate', $estate_name)
             ->where('status', '=', 'Fully payed')->count();
 
-        return view('Admin.total_fully_paid_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data']));
+        return view('Admin.total_fully_paid_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
 
     public function total_not_taken_plots_in_estate($id)
@@ -1936,12 +2237,106 @@ class Master extends Controller
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
         $estate_data = plot::where('estate', $estate_name)
             ->where('status', '=', 'Not taken')->get();
 
         $count_estates_fully = plot::where('estate', $estate_name)
             ->where('status', '=', 'Not taken')->count();
 
-        return view('Admin.total_not_taken_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data']));
+        return view('Admin.total_not_taken_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
+
+    public function enter_saved_estate()
+    {
+        $estate_names = Estate::all()->pluck('estate_name');
+
+        foreach ($estate_names as $estate_name) {
+
+            $estate_records = buyer::where('estate', $estate_name)->get();
+
+            foreach ($estate_records as $estate_record) {
+
+                $estate_record_plot_number = buyer::where('id', $estate_record->id)->value('plot_number');
+
+                $existing_record = plot::where('plot_number', $estate_record_plot_number)
+                    ->where('estate', '=', $estate_name)->first();
+
+                if ($existing_record == null) {
+
+                    $post = new plot;
+
+                    $post->estate = $estate_name;
+                    $post->plot_number = $estate_record->plot_number;
+                    $post->location = $estate_record->location;
+                    $post->width_1 = $estate_record->width_1;
+                    $post->width_2 = $estate_record->width_2;
+                    $post->height_1 = $estate_record->height_1;
+                    $post->height_2 = $estate_record->height_2;
+                    $post->buyer_id = $estate_record->id;
+                    $post->status = $estate_record->next_installment_pay;
+                    $post->exceptional_status = "No";
+                    $post->exceptional_amount = "0";
+                    $post->half_or_full = "0";
+                    $post->save();
+
+                } else {
+                    continue;
+                }
+            }
+        }
+
+        dd('Data has been saved successfully in the db');
+    }
+
+    public function view_estate_pdf($id, $estate)
+    {
+
+        $estate_name = buyer::where('id', $id)->value('estate');
+        $estate_record = estate::where('estate_name', $estate)->value('estate_pdf');
+
+        return response()->download(public_path('estate_pdf/' . $estate_record));
+    }
+
+    public function back_on_market()
+    {
+
+        $count_resold_to_company = resale::where('resell_category', '=', 1)->count();
+        $count_sell_for_client = resale::where('resell_category', '=', 2)->count();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        return view('Admin.Resale.Backonmarket', $data, compact(['count_resold_to_company', 'count_sell_for_client']));
+
+    }
+
+    public function back_for_client_on_sale()
+    {
+
+        $sell_for_client = resale::where('resell_category', '=', 1)->get();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        return view('Admin.Resale.back_for_client_on_sale', $data, compact(['sell_for_client']));
+    }
+
+    public function back_for_company_on_sale()
+    {
+
+        $sell_for_client = resale::where('resell_category', '=', 2)->get();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        return view('Admin.Resale.back_for_company_on_sale', $data, compact(['sell_for_client']));
+    }
+
+    public function user_right_info()
+    {
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        $user_id = session('LoggedAdmin');
+
+        $user_category = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+
+        return $user_category;
+    }
+
 }

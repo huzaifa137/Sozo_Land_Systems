@@ -109,18 +109,49 @@
         <ol>
             <li><strong>SALE AND PURCHASE</strong></li>
              <br>
-            <p>IN CONSIDERATION of the sum of Ugx..... <span style="font-weight: bold">{{$user_info->amount_payed}}</span>....../=(Uganda Shillings)........... <span style="font-weight: bold"> {{$amount_in_words}}</span>..................... Only) to be paid by the Purchaser/s to the Vendor as hereinafter provided, the Vendor agrees to sell and convey to the Purchaser/s and the Purchaser/s agrees to buy and take from the Vendor part of /the said kibanja upon the terms and conditions herein contained.</p>
+            {{-- <p>IN CONSIDERATION of the sum of Ugx..... <span style="font-weight: bold">{{$user_info->amount_payed}}</span>....../=(Uganda Shillings)........... <span style="font-weight: bold"> {{$amount_in_words}}</span>..................... Only) to be paid by the Purchaser/s to the Vendor as hereinafter provided, the Vendor agrees to sell and convey to the Purchaser/s and the Purchaser/s agrees to buy and take from the Vendor part of /the said kibanja upon the terms and conditions herein contained.</p> --}}
 
+            <P>1.The Vendor agrees to sell and convey to the Purchaser/s and the Purchaser/s agrees to buy and take from the Vendor the said kibanja/bibanja upon the terms and conditions herein contained.</P>
             <!-- Add other content here -->
 
             <br>
-            <li><strong>PAYMENT OF THE CONSIDERATION</strong></li>
+
+            <li>CONSIDERATION</li>
+
+            <p>a)The Purchaser/s shall pay to the Vendor the entire purchase price indicated on the receipt of payment in cash upon signing this agreement, receipt of which the Vendor shall acknowledge by signing hereon and there shall be no further proof required to prove payment of the consideration herein.</p>
+
+            <p>b)	Upon payment of the entire purchase price by the purchaser to the vendor, the vendor will deliver possession of the kibanja to the Purchaser/s.</p>
+
+            <p>c)	The Purchaser/s shall have no the right to use the land/kibanja for anything, not even cultivation or fencing off unless and until she/he/they have/has paid the entire purchase price in full.</p>
+
+
+            {{-- <li><strong>PAYMENT OF THE CONSIDERATION</strong></li>
             <p>a) The Purchaser/s shall pay to the Vendor the sum of Ugx....<span style="font-weight: bold">{{$user_info->amount_payed}}</span>......../=(Uganda Shillings ............<span style="font-weight: bold">{{$amount_in_words}}</span>.............. Only) in cash upon signing this agreement, receipt of which the Vendor shall acknowledge by signing hereon and there shall be no further proof required to prove payment of the consideration herein.) </p>
             <p>b) The purchaser/s shall pay the balance of Ugx............................../= (Uganda Shillings........................... Only) shall be paid on or before the.............day of...........................20..................</p>
 
             <p>c) Upon payment of the entire purchase price by the purchaser to the vendor, the vendor will deliver possession of the kibanja to the Purchaser/s.</p>
             <p>d) The Purchaser/s shall have no right to use the land/kibanja for anything unless and until she/he/they have/has paid the entire purchase price in full.</p>
             <p>e) If the purchaser/s does not pay the balance by the............................day of.........................20................................., the vendor shall be at liberty to put back the property on market and shall be given alternative kibanja by the seller whose value is equivalent to the amount so far paid by the purchaser to the vendor.</p>
+            --}}
+                
+            <li><strong>3.	THE ESTATE CONSERVATION</strong></li>
+            <p>It is mutually agreed as follows;</p>
+
+            <p>a)	If there are trees and flowers along the roads in the estate, they shall not be cut down for beautification of the estate. </p>
+      
+            <p>b)	Plots after purchase shall not be further subdivided into smaller plots but maintained as………………………………………………………………………………………for uniformity and beauty.</p>
+            <p>c)	All construction in the estate shall be done in accordance with the Architectural plan developed by Sozo Property Consultants Limited Architects for particular land dimensions and estate. The purchaser shall be bound by the external plan of the house but will be allowed alter the interior plan through the Sozo Property Consultants Limited’s Architect at an extra cost that shall be met by the Purchaser.</p>
+            <p>d)	The Architectural plans in different plot dimensions has been shown to the purchaser prior to the signing of this agreement and the purchaser agrees to be bound by them.</p>
+            <p>e)	The colour of the Roof shall be ……………………………………………. for beauty and uniformity.</p>
+            <p>f)	All construction in the Estate shall ONLY be done by the Construction department of Sozo Property Consultants Limited to avoid tragedies that come along with using unprofessional builders in upcoming towns where genuine building material and security for material is scarce. The Purchaser shall meet the cost of the building plan, approval of the plan and construction and these shall not be included in the land purchase price.</p>
+            <p>g)	The cost of construction and cost of materials shall be subject to the prevailing market prices at the time of construction and may be varied by the seller from time to time.</p>
+            <p>h)	Until the Purchaser is ready to develop the kibanja/land purchased, he/she/they shall regularly weed the grass to avoid rodents such as snakes and he/she/they shall not keep open holes/pits on their plots to avoid accidents in the estate.</p>
+            <p>i)	The Purchaser by acceptance of this Agreement for her/him/themselves and its successors and assigns agree that the Property shall be used in accordance with the terms herein such as the type of house constructed thereon, the roofing, the construction company and such other terms as the seller may approve in writing. The Purchaser for itself/her/him/themselves, his/her/their successors and assigns does/do hereby agree that he/she/it shall not in the future install, construct or erect, or cause to be installed, constructed or erected any form of structure not in accordance with the terms of this agreement.</p>
+            <p>j)	Prior to the implementation of any alteration or demolition of the exterior of the Property, the Owner shall obtain the consent of Sozo Property Consultants Limited.</p>
+            <p>k)	The property purchased shall not be turned into a public worship place like; mosques, shrines or churches but may conduct private worship in doors. In addition, the plot shall not be turned into a burial ground, piggery and poultry farming nor be used for the cultivation of narcotics. The Purchaser may however use it for the cultivation of seasonal crops.</p>
+            <p>L)	If the Purchaser desires to resale the property to another person, such sale may be done through Sozo Property Consultants Limited at a commission of 15% of the resale value.</p> 
+        
+        
         </ol>
 
         <p><strong>IN WITNESS WHEREOF the parties hereto have executed/signed these presents the day, month, and year first above written.</strong></p>

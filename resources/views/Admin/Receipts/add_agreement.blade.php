@@ -25,7 +25,7 @@
 									@endif
 
 
-                    <form class="form-sample" action="{{ route('store-agreement')}}" method="POST" enctype="multipart/form-data">
+                    <form class="form-sample" id="myForm" action="{{ route('store-agreement')}}" method="POST" enctype="multipart/form-data">
                       @csrf
                       <p class="card-description">Enter the Following Information:</p>
 
@@ -61,7 +61,6 @@
                             </div>
                           </div>
                         </div>
-
                       </div>
               
                       <div class="row">
@@ -70,7 +69,10 @@
                           
                             <div class="col-sm-9">
                             
-                              <button type="submit" class="btn btn-primary">Save</button>
+                              {{-- <button type="submit" class="btn btn-primary">Save</button> --}}
+
+                              <button type="submit" onclick="disableButton()"
+                              class="btn btn-primary">Save</button>
                             </div>
                           </div>
                         </div>
@@ -85,6 +87,15 @@
             </div>
           </div>
 
+
+          <script>
+            function disableButton() {
+          
+                document.getElementById('myForm').submit();
+                document.querySelector('button[type="submit"]').disabled = true;
+          
+            }
+          </script>
 
 
            <footer class="footer">

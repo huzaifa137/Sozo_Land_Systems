@@ -74,19 +74,19 @@
                     </div>
 
                     @if (Session::get('error'))
-                           <div class="alert alert-danger">
-                            {{Session::get('error')}}
-                           </div>
-                        @endif
-
-
-                        @if (Session::get('success'))
-                        <div class="alert alert-success">
-                         {{Session::get('success')}}
+                        <div class="alert alert-danger">
+                            {{ Session::get('error') }}
                         </div>
-                     @endif
+                    @endif
 
-                        {{-- <input type="hidden" name="admin_category" value="{{$LoggedAdminInfo['admin_category']}}"> --}}
+
+                    @if (Session::get('success'))
+                        <div class="alert alert-success">
+                            {{ Session::get('success') }}
+                        </div>
+                    @endif
+
+                    {{-- <input type="hidden" name="admin_category" value="{{$LoggedAdminInfo['admin_category']}}"> --}}
 
                     <div class="row">
                         <div class="col-sm-4 grid-margin">
@@ -336,6 +336,13 @@
                         </div>
                     </div>
 
+
+                    <style>
+                        a{
+                            color: white;
+                        }
+                    </style>
+
                     <div class="row ">
                         <div class="col-12 grid-margin">
                             <div class="card">
@@ -360,22 +367,26 @@
                                                     <tr>
 
                                                         <td>
-                                                            <img style="width: 100%; height:100%"
-                                                                src="{{ '/public/national_id/' . $all_sale->national_id_front }}"
-                                                                alt="" id="week_img">
-                                                            <span class="ps-2">{{ $all_sale->firstname }}</span>
+                                                            <a href="{{ 'view-reciept/' . $all_sale->id }}">
+
+                                                                <img style="width: 100%; height:100%"
+                                                                    src="{{ '/public/national_id/' . $all_sale->national_id_front }}"
+                                                                    alt="" id="week_img">
+                                                                <span class="ps-2">{{ $all_sale->firstname }}</span>
+                                                            </a>
                                                         </td>
 
 
-                                                        <td> {{ $all_sale->estate }} </td>
-                                                        <td> {{ $all_sale->plot_number }} </td>
-                                                        <td> {{ $all_sale->method_payment }} </td>
-                                                        <td> {{ $all_sale->amount_payed }} </td>
-                                                        <td> {{ $all_sale->balance }} </td>
+                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}" > {{ $all_sale->estate }} </td></a>
+                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->plot_number }} </td></a>
+                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->method_payment }} </td></a>
+                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->amount_payed }} </td></a>
+                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->balance }} </td></a>
 
                                                         <td><a href="{{ 'view-reciept/' . $all_sale->id }}"
                                                                 class="btn btn-outline-success btn-icon-text">
-                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> View </a>
+                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> View
+                                                            </a>
                                                         </td>
 
                                                         {{-- <td><a href="{{ 'edit/' . $all_sale->id }}"
@@ -385,21 +396,23 @@
 
                                                         {{-- {{}} --}}
 
-                                                        <td><a href="{{ 'edit/'.$all_sale->id .'/'. $LoggedAdminInfo['id'] }}"
-                                                            class="btn btn-outline-warning btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
-                                                    </td>
+                                                        <td><a href="{{ 'edit/' . $all_sale->id . '/' . $LoggedAdminInfo['id'] }}"
+                                                                class="btn btn-outline-warning btn-icon-text">
+                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Edit
+                                                            </a>
+                                                        </td>
 
                                                         {{-- <td><a href="{{ 'delete/' . $all_sale->id }}"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
                                                         </td> --}}
+                                                    </tr>
                                                 @endforeach
 
-                                                </tr>
-            
+
+
                                             </tbody>
-                                            
+
                                         </table>
 
                                         <br> <br>
@@ -408,9 +421,9 @@
                                             {{ $all_sales->links() }}
 
                                         </span>
-                                        
+
                                         <style>
-                                            .w-5{
+                                            .w-5 {
                                                 display: none;
                                             }
                                         </style>
