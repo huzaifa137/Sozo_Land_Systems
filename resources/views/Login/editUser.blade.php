@@ -22,10 +22,10 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="signup-form">
-                    <form action="{{ route('admin-registration') }}" class="mt-5 border p-4 bg-light shadow"
+                    <form action="{{ route('store-user-record') }}" class="mt-5 border p-4 bg-light shadow"
                         method="POST">
                         @csrf
-                        <h2 class="mb-2 text-primary" style="text-align: center">SOZO LAND SYSTEMS <br> REGISTRATION
+                        <h2 class="mb-2 text-primary" style="text-align: center">EDIT USER INFORMATION
                         </h2>
 
                         @if (Session::get('success'))
@@ -43,10 +43,13 @@
 
                         <div class="row">
 
+                            <input type="hidden" name="record_id" value="{{$record->id}}">
+
+
                             <div class="mb-3 col-md-12">
                                 <label>Username<span class="text-danger">*</span></label>
                                 <input type="text" name="username" id="username" class="form-control"
-                                    placeholder="Enter username" value="{{ old('username') }}" required>
+                                    placeholder="Enter username" value="{{ $record->username }}" required>
                                 <span class="text-danger">
                                     @error('username')
                                         {{ $message }}
@@ -58,7 +61,7 @@
                             <div class="mb-3 col-md-6">
                                 <label>Firstname<span class="text-danger">*</span></label>
                                 <input type="text" name="firstname" id="firstname" class="form-control"
-                                    placeholder="Enter Firstname" value="{{ old('username') }}" required>
+                                    placeholder="Enter Firstname" value="{{ $record->firstname }}" required>
                                 <span class="text-danger">
                                     @error('firstname')
                                         {{ $message }}
@@ -69,7 +72,7 @@
                             <div class="mb-3 col-md-6">
                                 <label>Lastname<span class="text-danger">*</span></label>
                                 <input type="text" name="lastname" id="lastname" class="form-control"
-                                    placeholder="Enter Lastname" value="{{ old('username') }}" required>
+                                    placeholder="Enter Lastname" value="{{ $record->lastname }}" required>
                                 <span class="text-danger">
                                     @error('lastname')
                                         {{ $message }}
@@ -81,7 +84,7 @@
                             <div class="mb-3 col-md-12">
                                 <label>Email<span class="text-danger">*</span></label>
                                 <input type="email" name="email" id="email" class="form-control"
-                                    placeholder="Enter Email" value="{{ old('email') }}" required>
+                                    placeholder="Enter Email" value="{{ $record->email }}" required>
                                 <span class="text-danger">
                                     @error('email')
                                         {{ $message }}
@@ -92,6 +95,7 @@
                             <div class="mb-3 col-md-12">
                                 <label>Admin Category<span class="text-danger">*</span></label>
                                 <select class="form-control" name="admin_category" id="" required>
+                                    <option value="{{ $record->admin_category }}">{{ $record->admin_category }}</option>
                                     <option value="">--- Select Category ---</option>
                                     <option value="SuperAdmin">1.Super Admin</option>
                                     <option value="Admin">2. Admin</option>
@@ -128,7 +132,7 @@
                             </div>
                             
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary float-end">Register Admin</button>
+                                <button type="submit" class="btn btn-primary float-end">Update user information</button>
                             </div>
                         </div>
                     </form>

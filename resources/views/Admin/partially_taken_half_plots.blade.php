@@ -15,84 +15,20 @@
                         <div class="row">
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
-                                    <h3 class="mb-0">{{ $total_half_plots_count }}</h3>
+                                    <h3 class="mb-0">{{ $not_taken_half_plots_count }}</h3>
                                 </div>
                             </div>
                         </div>
-                        <h6 class="text-muted font-weight-normal">Total Half plots</h6>
+                        <h6 class="text-muted font-weight-normal">Total Half plots taken from Estate</h6>
                     </div>
                 </div>
             </div>
-
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                    <a style="color: white;" href="{{ url('fully-taken-half-plots-in-estate/' . $estate_id) }}">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-9">
-                                    <div class="d-flex align-items-center align-self-start">
-                                        <h3 class="mb-0">{{ $TotalFullyPaidHalfsCount }}</h3>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <h6 class="text-muted font-weight-normal">Half Plots Fulltaken</h6>
-                        </div>
-                </div>
-                </a>
-            </div>
-
-
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                    <a style="color: white;" href="{{ url('Partially-taken-half-plots-in-estate/' . $estate_id) }}">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <div class="d-flex align-items-center align-self-start">
-                                    <h3 class="mb-0">{{ $total_half_plots_not_fully_taken_count }}</h3>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="icon icon-box-success ">
-                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <h6 class="text-muted font-weight-normal">(A: Half plots paid)</h6>
-                    </div>
-                </div>
-                </a>
-            </div>
-
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                    <a style="color: white;" href="{{ url('fully-not-taken-half-plots-in-estate/' . $estate_id) }}">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <div class="d-flex align-items-center align-self-start">
-                                    <h3 class="mb-0">{{ $total_half_plots_not_fully_taken_count }}</h3>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="icon icon-box-success ">
-                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <h6 class="text-muted font-weight-normal">(B: Half plots not taken)</h6>
-                    </div>
-                </div>
-                </a>
-            </div>
-
 
             <div class="row ">
                 <div class="col-12 grid-margin">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Available plots in {{ $estate_name }} estate </h4>
+                            <h4 class="card-title">Half plots Not taken {{ $estate_name }} estate </h4>
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -109,7 +45,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($total_estate_data as $key => $data)
+                                        @foreach ($not_taken_half_plots as $key => $data)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
                                                 <td> {{ $data->estate }} </td>

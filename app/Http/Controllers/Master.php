@@ -41,8 +41,6 @@ class Master extends Controller
     public function register($id)
     {
 
-        // return $id;
-
         $admin_category = AdminRegister::where('id', $id)->value('admin_category');
 
         if ($admin_category == 'Admin') {
@@ -81,12 +79,13 @@ class Master extends Controller
             $register_admin->email = $request->email;
             $register_admin->password = Hash::make($request->password);
             $register_admin->admin_category = $request->admin_category;
+            $register_admin->added_by = Session('LoggedAdmin');
 
             $save = $register_admin->save();
 
             if ($save) {
 
-                return back()->with('success', 'New Admin has been added to the Sozo Land Systems');
+                return back()->with('success', 'New User has been added to the Sozo Land Systems');
             }
 
         } else {
@@ -452,6 +451,8 @@ class Master extends Controller
             'estate_name', 'total_estate_data', 'TotalFullyPaidHalfsCount', 'total_half_plots_not_fully_taken_count']));
     }
 
+    
+
     public function fully_taken_half_plots($id)
     {
 
@@ -528,6 +529,33 @@ class Master extends Controller
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.not_taken_half_plots', $data, compact(['not_taken_half_plots', 'not_taken_half_plots_count', 'estate_name']));
+
+    }
+
+
+    public function partially_taken_half_plots($id)
+    {
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $not_taken_half_plots = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '0')
+            ->get();
+
+        $not_taken_half_plots_count = DB::table('plots')
+            ->where('plot_number', 'LIKE', '%h%')
+            ->where('estate', '=', $estate_name)
+            ->where('half_or_full', '=', '0')
+            ->count();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        // return view('Admin.not_taken_half_plots', $data, compact(['not_taken_half_plots', 'not_taken_half_plots_count', 'estate_name']));
+        return view('Admin.partially_taken_half_plots', $data, compact(['not_taken_half_plots', 'not_taken_half_plots_count', 'estate_name']));
 
     }
 
@@ -1647,9 +1675,19 @@ class Master extends Controller
         $lastname = $request->lastname;
         $NIN = $request->NIN;
         $date_of_birth = $request->date_of_birth;
+        $date_sold = $request->date_sold;
 
         $estate = $request->estate;
         $land_plot = $request->land_plot;
+
+        if ($date_sold != null) {
+
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+            // dd($mergedResults);
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
+        }
 
         if ($firstname != null && $lastname == null) {
 
@@ -2031,35 +2069,13 @@ class Master extends Controller
     public function download_receipt_payment($filename)
     {
 
-        // $filename = str_replace('.pdf', '', $filename);
-
-        // dd($filename);
-        // $pdf = reciept::where('reciept', $filename)->value('reciept');
-        // return response()->download(public_path('pdf_receipts/'.$filename));
-
-        // $filePath = storage_path('app/pdf_receipts/'. $filename);
-
-        // $filePath = public_path('pdf_receipts/' . $filename);
-
-        // dd($filePath);
-
         return response()->download(storage_path('public/pdf_receipts/' . $filePath));
-
-        // return $pdf->download($filename);
 
         return response()->download($filePath, Str::slug($filename))
             ->withHeaders([
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . Str::slug($filename) . '"',
             ]);
-
-        // dd($pdf);
-
-        // $pdf =  storage_path('public/pdf_receipts/'.$pdf);
-
-        // return $pdf->download($filename);
-
-        // return $pdf->stream('resume.pdf');
 
         return response()->download(public_path('pdf_receipts/' . $pdf));
 
@@ -2335,8 +2351,79 @@ class Master extends Controller
         $user_id = session('LoggedAdmin');
 
         $user_category = AdminRegister::where('id', '=', $user_id)->value('admin_category');
-
+       
         return $user_category;
     }
 
+    // User rights and previledges
+
+    public function userInformation()
+    {
+        
+        $user_records = AdminRegister::all();
+        $user_records_count = AdminRegister::all()->count();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.Users.users', $data, compact(['user_records','user_records_count']));
+    }
+
+    public function deleteUser($id)
+    {
+        $record = AdminRegister::find($id);
+        $record->delete();
+
+        return redirect()->back()->with('success','User has been deleted successfully');
+    }
+
+    public function editUser($id)
+    {
+
+        $record = AdminRegister::find($id);
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Login.editUser',$data, compact(['record']));
+    }
+
+    public function storeUserRecord(Request $request)
+    {
+        
+        $request->validate([
+            'username' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'email' => 'required|email',
+            'admin_category' => 'required',
+            'password' => 'required',
+            'confirm_password' => 'required',
+        ]);
+
+        $original_pass = $request->password;
+        $confirm_pass = $request->confirm_password;
+
+        if ($original_pass === $confirm_pass) {
+
+            $record_id = $request->record_id;
+
+            $register_admin = AdminRegister::find($record_id);
+
+            $register_admin->username = $request->username;
+            $register_admin->firstname = $request->firstname;
+            $register_admin->lastname = $request->lastname;
+            $register_admin->email = $request->email;
+            $register_admin->password = Hash::make($request->password);
+            $register_admin->admin_category = $request->admin_category;
+            $register_admin->added_by = Session('LoggedAdmin');
+
+            $save = $register_admin->save();
+
+            if ($save) {
+
+                return redirect('user-information')->with('success', 'User Information has been updated successfully in the Systems');
+            }
+
+        } else {
+            return back()->with('fail', 'Password is not the same as confirm password')->withInput();
+        }
+    }
 }

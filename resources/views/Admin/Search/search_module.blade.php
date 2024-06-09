@@ -40,6 +40,8 @@
                                                                 <option value="Plot">Plot</option>
                                                                 <option value="NIN">NIN</option>
                                                                 <option value="date_of_birth">Date of Birth</option>
+                                                                <option value="date_sold">Date Sold</option>
+
 
                                                             </select>
                                                         </div>
@@ -126,6 +128,19 @@
                                                 </div>
                                             </div>
 
+                                            
+                                            <div class="col-md-4" id="date_sold" style="display: none;">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-8 col-form-label">Enter date the plot was bought</label>
+                                                    <div class="col-sm-12">
+                                                        <div class="col-sm-12">
+                                                            <input type="date" name="date_sold" id="date_sold"
+                                                            class="form-control" placeholder="Enter date of birth">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
 
                                         <div class="col-md-1" id="plot_estate_field">
@@ -177,6 +192,7 @@
                     $('#plot_estate_field').hide();
                     $('#land_estate_field').hide();
                     $('#date_of_birth').hide();
+                    $('#date_sold').hide();
                     $('#NIN').hide();
 
                   }
@@ -187,6 +203,7 @@
                     $('#plot_estate_field').show();
                     $('#land_estate_field').show();
                     $('#date_of_birth').hide();
+                    $('#date_sold').hide();
                     $('#NIN').hide();
                   }
                   else if(search_name == 'NIN')
@@ -196,6 +213,7 @@
                     $('#plot_estate_field').hide();
                     $('#land_estate_field').hide();
                     $('#date_of_birth').hide();
+                    $('#date_sold').hide();
                     $('#NIN').show();
                   }
                   else if(search_name == 'date_of_birth')
@@ -206,6 +224,17 @@
                     $('#land_estate_field').hide();
                     $('#date_of_birth').show();
                     $('#NIN').hide();
+                    $('#date_sold').hide();
+                  }
+                  else if(search_name == 'date_sold')
+                  {
+                    $('#first_name').hide();
+                    $('#last_name').hide();
+                    $('#plot_estate_field').hide();
+                    $('#land_estate_field').hide();
+                    $('#date_of_birth').hide();
+                    $('#NIN').hide();
+                    $('#date_sold').show();
                   }
 
             });
