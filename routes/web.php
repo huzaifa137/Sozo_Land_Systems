@@ -105,4 +105,8 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('enter-saved-estate', [Master::class, 'enter_saved_estate'])->name('enter-saved-estate');
     Route::get('search-module', [Master::class, 'search_module'])->name('search-module');
 
+
+    Route::get('update-reminder/{id}',[Master::class,'updateReminder'])->name('update-reminder');
+    Route::post('save-update-reminder',[Master::class,'saveUpdateReminder'])->name('save-update-reminder');
+
 });

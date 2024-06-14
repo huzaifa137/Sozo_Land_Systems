@@ -131,11 +131,24 @@
                                             
                                             <div class="col-md-4" id="date_sold" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-8 col-form-label">Enter date the plot was bought</label>
+                                                    <label class="col-sm-8 col-form-label">Start date</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="date" name="date_sold" id="date_sold"
-                                                            class="form-control" placeholder="Enter date of birth">
+                                                            class="form-control" placeholder="Enter first date">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-4" id="end_date" style="display: none;">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-6 col-form-label">End date</label>
+                                                    <div class="col-sm-12">
+                                                        <div class="col-sm-12">
+                                                            <input type="date" name="end_date" id="end_date"
+                                                            class="form-control" placeholder="Enter last date">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -194,6 +207,7 @@
                     $('#date_of_birth').hide();
                     $('#date_sold').hide();
                     $('#NIN').hide();
+                    $('#end_date').hide();
 
                   }
                   else if(search_name == 'Plot')
@@ -205,6 +219,7 @@
                     $('#date_of_birth').hide();
                     $('#date_sold').hide();
                     $('#NIN').hide();
+                    $('#end_date').hide();
                   }
                   else if(search_name == 'NIN')
                   {
@@ -215,6 +230,7 @@
                     $('#date_of_birth').hide();
                     $('#date_sold').hide();
                     $('#NIN').show();
+                    $('#end_date').hide();
                   }
                   else if(search_name == 'date_of_birth')
                   {
@@ -225,6 +241,7 @@
                     $('#date_of_birth').show();
                     $('#NIN').hide();
                     $('#date_sold').hide();
+                    $('#end_date').hide();
                   }
                   else if(search_name == 'date_sold')
                   {
@@ -235,6 +252,7 @@
                     $('#date_of_birth').hide();
                     $('#NIN').hide();
                     $('#date_sold').show();
+                    $('#end_date').show();
                   }
 
             });

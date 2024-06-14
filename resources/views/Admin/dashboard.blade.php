@@ -402,10 +402,10 @@
                                                             </a>
                                                         </td>
 
-                                                        {{-- <td><a href="{{ 'delete/' . $all_sale->id }}"
+                                                        <td><a href="{{ 'delete/' . $all_sale->id }}" onclick=" return ('Please confirm you want to delete this record ?')"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
-                                                        </td> --}}
+                                                        </td>
                                                     </tr>
                                                 @endforeach
 
