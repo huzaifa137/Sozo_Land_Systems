@@ -31,7 +31,6 @@
                               <h4 class="card-title text-primary">Customer Information</h4>
                               @foreach ($user_information as $data)
                               <div class="row">
-                                <input type="hidden" name="id" value="{{$data->id}}">
                                 <div class="col-md-5">
                                   <div class="table-responsive">
                                     <table class="table">
@@ -58,6 +57,16 @@
                                           <td class="text-info">NIN</td>
                                           <td class="text-right font-weight-medium"> {{$data->NIN}} </td>
                                         </tr>
+
+                                        {{-- <tr>
+                                          <td class="text-info">Card Number</td>
+                                          <td class="text-right font-weight-medium"> {{$data->card_number}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Payment Method</td>
+                                          <td class="text-right font-weight-medium"> {{$data->method_payment}} </td>
+                                        </tr> --}}
 
                                         <tr>
                                           <td class="text-info">Estate</td>
@@ -95,7 +104,7 @@
                                           <td class="text-info">purchasing </td>
                                           <td class="text-right font-weight-medium"> {{$data->purchase_type}} </td>
                                         </tr>
-                                        
+
                                         <tr>
                                           <td class="text-info">Amount paid</td>
                                           <td class="text-right font-weight-medium"> {{$data->amount_payed}} </td>
@@ -117,50 +126,114 @@
                                           @endif
                                         </tr>
 
-                                        <input type="hidden" name="status" id="status" value="{{$data->next_installment_pay}}">
+                                        <tr>
+                                          <td class="text-info">Phone number</td>
+                                          <td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>
+                                        </tr>
 
+                                        <tr>
+                                          <td class="text-info">Added by :</td>
+                                          <td class="text-right font-weight-medium"> {{$data->added_by}} </td>
+                                        </tr>
+                                        
                                       </tbody>
                                     </table>
                                   </div>
                                 </div>
+
                                 <div class="col-md-7">
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_front}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_front}}" alt="">
                                   </div>
 
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_back}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_back}}" alt="">
                                   </div>
                                   @endforeach
                                 </div>
                               </div>
 
-                              <h4 class="card-title text-primary mt-3">Customer payment receipts</h4>
+                              <h4 class="card-title text-primary mt-3">Customer payment Agreement & receipts</h4>
                               <div class="row">
                                 <div class="col-md-5">
                                   <div class="table-responsive">
                                     <table class="table">
                                       <tbody>
+
+
+                                       
                                       </tbody>
+                                      
                                     </table>
                                   </div>
                                 </div>
                                 
                                 <div class="col-md-9" style="padding-left: 10rem">
-                                  @foreach ($user_reciepts as $user_reciept)
-                                  <br> 
-                                  <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->receipt}}" alt="">
-                                  </div>
-                                  @endforeach
+
+                                @foreach ($user_reciepts as $key => $user_receipt)
+                                <br> <br>
+                                <img style="width: 100%; " src="{{'/public/receipts/'.$user_receipt->receipt}}" alt="">
+                                @endforeach
                                 </div>
+
+                                <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/public/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
+
+                                <br> <br> 
+
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements_uploaded as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
+
+                                <br> <br> 
+
+                                  <div class="col-md-9 d-block" style="padding-left: 10rem">
+                                    {{-- <h4>User Receipts</h4>
+
+                                    @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
+
+                                    <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
+                                    <br>
+                                    
+                                    @endforeach
+    
+                                    <section class="d-inline"  style="padding-left: 10rem;" >
+                                      <h4>User Agreement</h4>
+  
+                                      @foreach ($user_agreements_pdf as $key => $user_agreement_pdf)
+  
+                                      <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
+                                      <br>
+                                      
+                                      @endforeach
+      
+                                      </section> --}}
+                                    </div>
+
+                                    <br>
+
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                    <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
+                                  </div>
+                                    
+                             
                               </div>
-                              {{-- <a href="{{'resale-amount/'.$data->id}}" class="btn btn-primary" id="Resale">Resale</a> --}}
                             </div>
+                            
+                          </div>
                         </div>
                       </div>
+
+                
                   </div>
-                  </div>
+              
               </div>
             </div>
           </div>
@@ -183,24 +256,9 @@
     <script type="text/javascript"></script>
     <script src="/assets/js/jquery.min.js"></script>
 
-    <script>
-  
-      $(document).ready(function () {
-       
-  
-          var land_plot = $("#status").val();
-        
-          if (land_plot == 'Resold') {
-            $('#Resale').hide();
-          }
-          else
-          {
-            $('#Resale').show();
-          }
-          
-        });
-      
-      </script>
+  <script>
+
+  </script>
 
 
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>

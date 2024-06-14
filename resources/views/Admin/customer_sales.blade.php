@@ -96,7 +96,7 @@
                           <tr>
                             
                             <td>
-                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
+                                <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
                               <span class="ps-2">{{$all_sale->firstname}}</span>
                             </td>
 
@@ -113,15 +113,23 @@
                             
                           </tr>
                           
-                         
+
                         </tbody>
                       </table>
+                
                     </div>
+                    
+                     </br> </br>
+                     {{ $all_sales->links() }}
                   </div>
                 </div>
               </div>
             </div>
-
+ <style>
+                                            .w-5{
+                                                display: none;
+                                            }
+                                        </style>
           
           </div>
           <!-- content-wrapper ends -->

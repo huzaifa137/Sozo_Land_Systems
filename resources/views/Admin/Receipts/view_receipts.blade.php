@@ -104,7 +104,7 @@
                                           <td class="text-info">purchasing </td>
                                           <td class="text-right font-weight-medium"> {{$data->purchase_type}} </td>
                                         </tr>
-                                        
+
                                         <tr>
                                           <td class="text-info">Amount paid</td>
                                           <td class="text-right font-weight-medium"> {{$data->amount_payed}} </td>
@@ -140,19 +140,20 @@
                                     </table>
                                   </div>
                                 </div>
+
                                 <div class="col-md-7">
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_front}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_front}}" alt="">
                                   </div>
 
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_back}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_back}}" alt="">
                                   </div>
                                   @endforeach
                                 </div>
                               </div>
 
-                              <h4 class="card-title text-primary mt-3">Customer payment receipts</h4>
+                              <h4 class="card-title text-primary mt-3">Customer payment Agreement & receipts</h4>
                               <div class="row">
                                 <div class="col-md-5">
                                   <div class="table-responsive">
@@ -169,23 +170,51 @@
                                 
                                 <div class="col-md-9" style="padding-left: 10rem">
 
-                                  @foreach ($user_reciepts as $key => $user_receipt)
-                                  <br> <br>
-                                  <img style="width: 100%; " src="{{'/public/receipts/'.$user_receipt->receipt}}" alt="">
-                                  @endforeach
-  
-                                  </div>
+                                @foreach ($user_reciepts as $key => $user_receipt)
+                                <br> <br>
+                                <img style="width: 100%; " src="{{'/public/public/receipts/'.$user_receipt->receipt}}" alt="">
+                                @endforeach
+                                </div>
 
-                                  <br> <br> 
+                                <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/public/public   /agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
+
+                                <br> <br> 
+
                                   <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements_uploaded as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
 
-                                    {{-- @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
+                                <br> <br> 
+
+                                  <div class="col-md-9 d-block" style="padding-left: 10rem">
+                                    {{-- <h4>User Receipts</h4>
+
+                                    @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
 
                                     <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
                                     <br>
                                     
-                                    @endforeach --}}
+                                    @endforeach
     
+                                    <section class="d-inline"  style="padding-left: 10rem;" >
+                                      <h4>User Agreement</h4>
+  
+                                      @foreach ($user_agreements_pdf as $key => $user_agreement_pdf)
+  
+                                      <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
+                                      <br>
+                                      
+                                      @endforeach
+      
+                                      </section> --}}
                                     </div>
 
                                     <br>
@@ -193,10 +222,7 @@
                                   <div class="col-md-9" style="padding-left: 10rem">
                                     <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
                                   </div>
-
-                                  <div class="col-md-9" style="padding-left: 10rem">
-                                    <a href="{{url('/download-estate',$data->id)}}">Download Sketch Estate</a>
-                                  </div>
+                                    
                              
                               </div>
                             </div>

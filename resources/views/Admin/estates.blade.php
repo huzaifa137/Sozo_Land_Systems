@@ -9,6 +9,11 @@
             </div>
 
 
+                                <style>
+                        a{
+                            color: white;
+                        }
+                    </style>
 
             <div class="row">
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
@@ -20,11 +25,7 @@
                           <h3 class="mb-0">{{$count_estates}}</h3>
                         </div>
                       </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
+               
                     </div>
                     <h6 class="text-muted font-weight-normal">Total Estates</h6>
                   </div>
@@ -39,11 +40,7 @@
                           <h3 class="mb-0">{{$number_plots}}</h3>
                         </div>
                       </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
+                   
                     </div>
                     <h6 class="text-muted font-weight-normal">Total Plots</h6>
                   </div>
@@ -98,11 +95,11 @@
                       @foreach ($estates as $key => $item)
                         
                         <tr>
-                          <td>{{$key+1}}</td>
-                            <td> {{$item->estate_name}} </td>
-                            <td> {{$item->estate_price}} </td>
-                            <td> {{$item->location}} </td>
-                            <td> {{$item->number_of_plots}} </td>
+                            <td><a href="{{'view-estate/'.$item->id}}"> {{$key+1}} </a></td>
+                            <td><a href="{{'view-estate/'.$item->id}}"> {{$item->estate_name}} </a></td>
+                            <td><a href="{{'view-estate/'.$item->id}}"> {{$item->estate_price}} </a></td>
+                            <td><a href="{{'view-estate/'.$item->id}}"> {{$item->location}} </a></td>
+                            <td><a href="{{'view-estate/'.$item->id}}"> {{$item->number_of_plots}} </a></td>
                             <td><a href="{{'view-estate/'.$item->id}}"><i class="btn btn-success">View Estate</i></a></td>
                             {{-- <td><a href="{{'delete/'.$info->id}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this case ?')"><i class="la la-trash-o"></i></a></td> --}}
                           </tr>

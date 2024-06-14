@@ -22,13 +22,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class Master extends Controller
 {
     public function login()
     {
-
         return view('Login.login');
     }
 
@@ -283,11 +281,11 @@ class Master extends Controller
 
     public function delete_sale($id)
     {
-        $data =  buyer::find($id);
+        $data = buyer::find($id);
 
         $data->delete();
 
-        return back()->with('sucess','Data has been deleted successfully');
+        return back()->with('sucess', 'Data has been deleted successfully');
 
     }
 
@@ -1866,11 +1864,18 @@ class Master extends Controller
     {
 
         $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+
         $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+        $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+        $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+        $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+        $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+        $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Resale.resale', $data, compact(['user_information', 'user_reciepts']));
+        return view('Admin.Resale.resale', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
     }
 
     public function resale_amount($id)
@@ -2072,22 +2077,11 @@ class Master extends Controller
 
     public function download_receipt_payment($filename)
     {
-
         return response()->download(storage_path('public/pdf_receipts/' . $filePath));
-
-        return response()->download($filePath, Str::slug($filename))
-            ->withHeaders([
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . Str::slug($filename) . '"',
-            ]);
-
-        return response()->download(public_path('pdf_receipts/' . $pdf));
-
     }
 
     public function add_expenditure()
     {
-
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Expenditure.add_expenditure', $data);
@@ -2169,20 +2163,20 @@ class Master extends Controller
         return view('Admin.Search.search_module', $data, compact(['records']));
     }
 
-    public function index()
-    {
+    // public function index()
+    // {
 
-        $data = [
-            'imagePath' => public_path('img/logo.jpg'),
-            'name' => 'John Doe',
-            'address' => 'USA',
-            'mobileNumber' => '000000000',
-            'email' => 'john.doe@email.com',
-        ];
+    //     $data = [
+    //         'imagePath' => public_path('img/logo.jpg'),
+    //         'name' => 'John Doe',
+    //         'address' => 'USA',
+    //         'mobileNumber' => '000000000',
+    //         'email' => 'john.doe@email.com',
+    //     ];
 
-        $pdf = PDF::loadView('resume', $data);
-        return $pdf->stream('resume.pdf');
-    }
+    //     $pdf = PDF::loadView('resume', $data);
+    //     return $pdf->stream('resume.pdf');
+    // }
 
     public function download_national_id(Request $request, $id)
     {
@@ -2265,7 +2259,9 @@ class Master extends Controller
         $count_estates_fully = plot::where('estate', $estate_name)
             ->where('status', '=', 'Not taken')->count();
 
-        return view('Admin.total_not_taken_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
+        $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
+
+        return view('Admin.total_not_taken_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
     }
 
     public function enter_saved_estate()
@@ -2451,7 +2447,7 @@ class Master extends Controller
             ->where('id', $user_id)
             ->update(['next_installment_pay' => $updated_reminder_date]);
 
-    return back()->with('success', 'Installement date has been updated successfully');
+        return back()->with('success', 'Installement date has been updated successfully');
 
     }
 }

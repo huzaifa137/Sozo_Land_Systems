@@ -125,11 +125,11 @@
                                 </div>
                                 <div class="col-md-7">
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_front}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_front}}" alt="">
                                   </div>
 
                                   <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$data->national_id_back}}" alt="">
+                                    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_back}}" alt="">
                                   </div>
                                   @endforeach
                                 </div>
@@ -145,17 +145,35 @@
                                     </table>
                                   </div>
                                 </div>
-                                
+
                                 <div class="col-md-9" style="padding-left: 10rem">
-                                  @foreach ($user_reciepts as $user_reciept)
-                                  <br> 
-                                  <div id="audience-map" class="vector-map">
-                                    <img style="width: 100%; height:100%" src="{{'/public/receipts/'.$user_reciept->receipt}}" alt="">
-                                  </div>
-                                  @endforeach
+
+                                @foreach ($user_reciepts as $key => $user_receipt)
+                                <br> <br>
+                                <img style="width: 100%; " src="{{'/public/public/receipts/'.$user_receipt->receipt}}" alt="">
+                                @endforeach
                                 </div>
+
+                                <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/public/public   /agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
+
+                                <br> <br> 
+
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                  @foreach ($user_agreements_uploaded as $user_agreement)
+                                    <br> <br>
+                                    <img style="width: 100%; " src="{{'/agreements/'.$user_agreement->agreement}}" alt="">
+                                    @endforeach
+                                </div>
+                                
                               </div>
-                              <a href="{{'resale-amount/'.$data->id}}" class="btn btn-primary" id="Resale">Resale</a>
+                              
+                              
+                              <a href="{{ url('resale-amount/'.$data->id)}}" class="btn btn-primary" id="Resale">Resale</a>
                             </div>
                         </div>
                       </div>

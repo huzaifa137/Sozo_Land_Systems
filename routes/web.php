@@ -105,8 +105,13 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('enter-saved-estate', [Master::class, 'enter_saved_estate'])->name('enter-saved-estate');
     Route::get('search-module', [Master::class, 'search_module'])->name('search-module');
 
+    Route::get('update-reminder/{id}', [Master::class, 'updateReminder'])->name('update-reminder');
+    Route::post('save-update-reminder', [Master::class, 'saveUpdateReminder'])->name('save-update-reminder');
 
-    Route::get('update-reminder/{id}',[Master::class,'updateReminder'])->name('update-reminder');
-    Route::post('save-update-reminder',[Master::class,'saveUpdateReminder'])->name('save-update-reminder');
-
+    //  New Routes Included
+    Route::get('all-buyers', [Master::class, 'all_buyers'])->name('all-buyers');
+    Route::get('all-sellers', [Master::class, 'all_sellers'])->name('all-sellers');
+    Route::get('all-agents', [Master::class, 'all_agents'])->name('all-agents');
+    Route::get('all-estates', [Master::class, 'all_estates'])->name('all-estates');
+    Route::get('all-plots', [Master::class, 'all_plots'])->name('all-plots');
 });

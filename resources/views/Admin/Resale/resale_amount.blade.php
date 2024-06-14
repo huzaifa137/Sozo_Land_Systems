@@ -26,7 +26,6 @@
                   @endif
 
                   <input type="hidden" name="user_id" value="{{$asset_info->id}}">
-                  
                       <div class="row">
                         <div class="col-md-4">
                           <div class="form-group row">
@@ -78,18 +77,12 @@
                             </div>
                           </div>
                           
-                          <div class="col-md-4" id="plot_estate_field">
+                          <div class="col-md-4">
                             <div class="form-group row">
-                              <label class="col-sm-6 col-form-label">Resell Category</label>
+                              <label class="col-sm-6 col-form-label"></label>
                               <div class="col-sm-12">
                                 <div class="col-sm-12">
-                                  <div class="col-sm-12">
-                                    <select name="resell_category" id="" class="form-control" required>
-                                      <option value="">--- Select Category ---</option>
-                                      <option value="1" class="form-control">Resold to company</option>
-                                      <option value="2" class="form-control">Sell for Client</option>
-                                    </select>
-                                  </div>
+                                  <!--<input type="file" name="reciept" id="reciept"  class="form-control" placeholder="Enter plot no" required>-->
                                 </div>
                               </div>
                             </div>

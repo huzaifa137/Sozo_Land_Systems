@@ -24,6 +24,14 @@
 										</div>
 									@endif
 
+
+                    <style>
+                        a{
+                            color: white;
+                        }
+                    </style>
+                    
+                    
                                     <div class="row ">
                                         <div class="col-12 grid-margin">
                                           <div class="card">
@@ -51,13 +59,15 @@
                                                     <tr>
                                                         <td>{{$key+1}}</td>
                                                       <td>
+                                                          <a href="{{ 'view-agreement/' . $item->id }}">
                                                         <span >{{$item->firstname}} {{$item->lastname}}</span>
+                                                        </a>
                                                       </td>
-                                                      <td> {{$item->NIN}}  </td>
-                                                      <td> {{$item->estate}} </td>
-                                                      <td> {{$item->plot_number}} </td>
-                                                      <td> {{$item->location}} </td>
-                                                      <td> {{$item->amount_payed}} </td>
+                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->NIN}}  </a></td>
+                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->estate}} </a></td>
+                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->plot_number}} </a> </td>
+                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->location}} </a></td>
+                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->amount_payed}} </a> </td>
                                                       <td>
                                                         <div class="badge badge-outline-warning">Full paid</div>
                                                       </td>

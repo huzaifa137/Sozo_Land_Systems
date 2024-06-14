@@ -96,16 +96,18 @@
                           <tr>
                             
                             <td>
-                                <img style="width: 100%; height:100%" src="{{'/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
+                                <a href="{{'view-reciept/'.$all_sale->id}}">
+                                <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
                               <span class="ps-2">{{$all_sale->firstname}}</span>
+                              </a>
                             </td>
 
                             
-                            <td> {{$all_sale->estate}}  </td>
-                            <td> {{$all_sale->plot_number}} </td>
-                            <td> {{$all_sale->method_payment}} </td>
-                            <td> {{$all_sale->amount_payed}} </td>
-                            <td> {{$all_sale->balance}} </td>
+                            <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->estate}}  </a></td>
+                            <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->plot_number}} </a></td>
+                            <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->method_payment}} </a></td>
+                            <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->amount_payed}} </a></td>
+                            <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->balance}} </a></td>
                                 
                                 <td><a href="{{'view-reciept/'.$all_sale->id}}" class="btn btn-outline-success btn-icon-text">
                                     <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>                           

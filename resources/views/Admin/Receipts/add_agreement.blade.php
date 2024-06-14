@@ -61,6 +61,7 @@
                             </div>
                           </div>
                         </div>
+
                       </div>
               
                       <div class="row">
@@ -69,10 +70,14 @@
                           
                             <div class="col-sm-9">
                             
-                              {{-- <button type="submit" class="btn btn-primary">Save</button> --}}
-
-                              <button type="submit" onclick="disableButton()"
+                              <!--<button type="submit" class="btn btn-primary">Save</button>-->
+                              
+                              
+                               <button type="submit" onclick="disableButton()"
                               class="btn btn-primary">Save</button>
+                              
+                              
+                              
                             </div>
                           </div>
                         </div>
@@ -87,8 +92,8 @@
             </div>
           </div>
 
-
-          <script>
+            
+                      <script>
             function disableButton() {
           
                 document.getElementById('myForm').submit();
