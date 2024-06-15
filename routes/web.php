@@ -37,7 +37,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('store-user-record', [Master::class, 'storeUserRecord'])->name('store-user-record');
     Route::get('admin-register/{id}', [Master::class, 'register']);
     Route::get('/edit/{id}/{user_id}', [Master::class, 'edit_sales']);
-    Route::get('/delete/{id}', [Master::class, 'delete_sale']);
+    Route::get('/delete/{id}/{plot_number}/{estate}', [Master::class, 'delete_sale']);
     Route::post('edit-user-info', [Master::class, 'edit_user_info'])->name('edit-user-info');
     Route::get('/resume', [Master::class, 'index']);
     Route::get('enter-saved-estate', [Master::class, 'enter_saved_estate'])->name('enter-saved-estate');

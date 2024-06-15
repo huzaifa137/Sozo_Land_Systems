@@ -88,7 +88,7 @@
         <br>
         <p style="text-align: center!important;"><strong>BETWEEN</strong></p>
         <br>
-        <p> <span style="font-weight: bold;text-align:justify;">SOZO PROPERTY CONSULTANTS LIMITED </span> of Kireka, Wakiso District Tel: ..............{{$user_info->phonenumber}}..............................(Hereinafter referred to as “the Vendor” which expression shall where the context so admit bind all its successors, legal representatives and assignees) of the one part;</p>
+        <p> <span style="font-weight: bold;text-align:justify;">SOZO PROPERTY CONSULTANTS LIMITED </span> of Kireka, Wakiso District Tel: ..............<strong>0200 407 700</strong>..............................(Hereinafter referred to as “the Vendor” which expression shall where the context so admit bind all its successors, legal representatives and assignees) of the one part;</p>
     
         <br>
         <p style="text-align: center!important;font-weight: bold;"><strong>AND</strong></p>
@@ -116,7 +116,7 @@
 
             <br>
 
-            <li>CONSIDERATION</li>
+            strong><li>PAYMENT OF THE CONSIDERATION</li></strong>
 
             <p>a)The Purchaser/s shall pay to the Vendor the entire purchase price indicated on the receipt of payment in cash upon signing this agreement, receipt of which the Vendor shall acknowledge by signing hereon and there shall be no further proof required to prove payment of the consideration herein.</p>
 

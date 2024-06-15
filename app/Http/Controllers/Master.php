@@ -279,11 +279,16 @@ class Master extends Controller
         }
     }
 
-    public function delete_sale($id)
+    public function delete_sale($id,$plot_number,$estate)
     {
-        $data = buyer::find($id);
 
+        $data = buyer::find($id);
         $data->delete();
+
+        $updatePlotInformation = plot::where('buyer_id', $id)
+                        ->where('estate',$estate)
+                        ->where('plot_number',$plot_number)
+                         ->update(['status' => "Not taken"]);
 
         return back()->with('sucess', 'Data has been deleted successfully');
 

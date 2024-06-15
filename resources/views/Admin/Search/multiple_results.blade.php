@@ -81,7 +81,7 @@
                                                                     <i class="mdi mdi-eye btn-icon-prepend"></i> Update
                                                                     Reminder </a> </td>
                                                                     
-                                                              <td><a href="{{ 'delete/' . $item->id }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
+                                                              <td><a href="{{ 'delete/' . $item->id . '/' . $item->plot_number . '/' . $item->estate }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
                                                         </td>
