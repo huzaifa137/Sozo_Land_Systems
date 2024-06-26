@@ -128,6 +128,7 @@ class Master extends Controller
     public function dashboard()
     {
 
+        
         $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10);
 
         $currentDate = Carbon::today();
@@ -158,11 +159,7 @@ class Master extends Controller
     public function admin_buyer()
     {
 
-        $data = $this->user_right_info();
-
-        if ($data != "SuperAdmin") {
-            return redirect('admin-dashboard')->with('error', 'You dont have user rights to use this feature');
-        }
+        $User_access_right = $this->user_right_info();
 
         $estates = Estate::all();
 
@@ -170,7 +167,7 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.buyer', $data, compact(['estates', 'plots']));
+        return view('Admin.buyer', $data, compact(['estates', 'plots','User_access_right']));
     }
 
     public function store_buyer_details(Request $request)
@@ -561,17 +558,19 @@ class Master extends Controller
     public function plots()
     {
 
-        $data = $this->user_right_info();
-
-        if ($data != "SuperAdmin") {
-            return redirect('admin-dashboard')->with('error', 'You dont have user rights to use this feature');
-        }
+        $User_access_right = $this->user_right_info();
+        $estates = Estate::all();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $estates = Estate::all();
-
-        return view('Admin.plots', $data, compact('estates'));
+        if($User_access_right == 'SuperAdmin')
+        {
+            return view('Admin.plots', $data, compact('estates'));
+        }
+        else
+        {
+             return redirect('estates');
+        }
     }
 
     public function add_house()
@@ -2349,17 +2348,6 @@ class Master extends Controller
         return view('Admin.Resale.back_for_company_on_sale', $data, compact(['sell_for_client']));
     }
 
-    public function user_right_info()
-    {
-
-        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
-        $user_id = session('LoggedAdmin');
-
-        $user_category = AdminRegister::where('id', '=', $user_id)->value('admin_category');
-
-        return $user_category;
-    }
-
     // User rights and previledges
 
     public function userInformation()
@@ -2453,6 +2441,18 @@ class Master extends Controller
             ->update(['next_installment_pay' => $updated_reminder_date]);
 
         return back()->with('success', 'Installement date has been updated successfully');
-
     }
+
+
+    public function user_right_info()
+    {
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        $user_id = session('LoggedAdmin');
+
+        $user_category = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+
+        return $user_category;
+    }
+
 }

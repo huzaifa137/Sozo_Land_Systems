@@ -26,6 +26,15 @@
 
 </head>
 
+
+<style>
+    .bg-white {
+    --bs-bg-opacity: 1;
+    background-color: rgb(255 255 255 / 27%) !important;
+    }
+</style>
+
+
 <body>
     <div class="container-scroller">
 
@@ -385,13 +394,6 @@
                                                                 class="btn btn-outline-success btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> View </a>
                                                         </td>
-
-                                                        {{-- <td><a href="{{ 'edit/' . $all_sale->id }}"
-                                                                class="btn btn-outline-warning btn-icon-text">
-                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
-                                                        </td> --}}
-
-                                                        {{-- {{}} --}}
 
                                                         <td><a href="{{ 'edit/'.$all_sale->id .'/'. $LoggedAdminInfo['id'] }}"
                                                             class="btn btn-outline-warning btn-icon-text">
