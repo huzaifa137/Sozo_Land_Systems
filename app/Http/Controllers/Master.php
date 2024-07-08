@@ -25,21 +25,26 @@ use Illuminate\Support\Facades\Storage;
 
 class Master extends Controller
 {
-    public function login()
+    public function login(Request $request)
     {
-        return view('Login.login');
+
+        $ipAddress = $request->ip();
+        $user_registered_ip = DB::table('admin_registers')->where('ip_address', $ipAddress)->value('ip_address');
+
+        return view('Login.login', compact(['user_registered_ip']));
     }
 
     public function reload_captcha()
     {
-
         return response()->json(['captcha' => captcha_img('flat')]);
     }
 
     public function register($id)
     {
 
-        $admin_category = AdminRegister::where('id', $id)->value('admin_category');
+        // $admin_category = AdminRegister::where('id', $id)->value('admin_category');
+
+        $admin_category = Session('LoggedAdmin');
 
         if ($admin_category == 'Admin') {
             return back()->with('error', 'Only Super Admins can Add more Admins');
@@ -94,25 +99,59 @@ class Master extends Controller
     public function admin_check(Request $request)
     {
 
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required',
-            'captcha' => 'required|captcha',
-        ]);
+        $user_registered_ip = $request->user_registered_ip;
+        $device_ip = $request->ip();
 
-        $AdminEmail = AdminRegister::where('email', '=', $request->email)->first();
+        if ($user_registered_ip == null) {
+            $request->validate([
+                'email' => 'required',
+                'password' => 'required',
+                'captcha' => 'required|captcha',
+            ]);
 
-        if (!$AdminEmail) {
-            return back()->with('fail', 'We dont recognise the above email or password');
-        } else {
+            $AdminEmail = AdminRegister::where('email', '=', $request->email)->first();
 
-            if (Hash::check($request->password, $AdminEmail->password)) {
-
-                $request->session()->put('LoggedAdmin', $AdminEmail->id);
-
-                return redirect('admin-dashboard');
+            if (!$AdminEmail) {
+                return back()->with('fail', 'We dont recognise the above email or password');
             } else {
-                return back()->with('fail', 'incorrect email or password');
+
+                if (Hash::check($request->password, $AdminEmail->password)) {
+
+                    $user_category = $AdminEmail->admin_category;
+
+                    if ($user_category == 'SuperAdmin') {
+                        DB::table('admin_registers')->where('id', $AdminEmail->id)->update(['ip_address' => $device_ip]);
+                    }
+
+                    $request->session()->put('LoggedAdmin', $AdminEmail->id);
+
+                    return redirect('admin-dashboard');
+                } else {
+                    return back()->with('fail', 'incorrect email or password');
+                }
+            }
+        } else {
+            $request->validate([
+                'email' => 'required',
+                'password' => 'required',
+            ]);
+
+            $AdminEmail = AdminRegister::where('email', '=', $request->email)->first();
+
+            if (!$AdminEmail) {
+                return back()->with('fail', 'We dont recognise the above email or password');
+            } else {
+
+                if (Hash::check($request->password, $AdminEmail->password)) {
+
+                    $user_category = $AdminEmail->admin_category;
+
+                    $request->session()->put('LoggedAdmin', $AdminEmail->id);
+
+                    return redirect('admin-dashboard');
+                } else {
+                    return back()->with('fail', 'incorrect email or password');
+                }
             }
         }
     }
@@ -121,6 +160,7 @@ class Master extends Controller
     {
         if (session()->has('LoggedAdmin')) {
             session()->pull('LoggedAdmin');
+
             return redirect('/');
         }
     }
@@ -128,7 +168,6 @@ class Master extends Controller
     public function dashboard()
     {
 
-        
         $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10);
 
         $currentDate = Carbon::today();
@@ -167,7 +206,7 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.buyer', $data, compact(['estates', 'plots','User_access_right']));
+        return view('Admin.buyer', $data, compact(['estates', 'plots', 'User_access_right']));
     }
 
     public function store_buyer_details(Request $request)
@@ -276,16 +315,16 @@ class Master extends Controller
         }
     }
 
-    public function delete_sale($id,$plot_number,$estate)
+    public function delete_sale($id, $plot_number, $estate)
     {
 
         $data = buyer::find($id);
         $data->delete();
 
         $updatePlotInformation = plot::where('buyer_id', $id)
-                        ->where('estate',$estate)
-                        ->where('plot_number',$plot_number)
-                         ->update(['status' => "Not taken"]);
+            ->where('estate', $estate)
+            ->where('plot_number', $plot_number)
+            ->update(['status' => "Not taken"]);
 
         return back()->with('sucess', 'Data has been deleted successfully');
 
@@ -563,13 +602,10 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        if($User_access_right == 'SuperAdmin')
-        {
+        if ($User_access_right == 'SuperAdmin') {
             return view('Admin.plots', $data, compact('estates'));
-        }
-        else
-        {
-             return redirect('estates');
+        } else {
+            return redirect('estates');
         }
     }
 
@@ -2443,7 +2479,6 @@ class Master extends Controller
         return back()->with('success', 'Installement date has been updated successfully');
     }
 
-
     public function user_right_info()
     {
 
@@ -2455,4 +2490,118 @@ class Master extends Controller
         return $user_category;
     }
 
+    // Poster Methods and Functions
+
+    public function all_posters()
+    {
+
+        $estates = Estate::all();
+
+        $Plots_with_posters = buyer::where('plot_poster', 0)->count();
+        $Plots_without_posters = buyer::where('plot_poster', 1)->count();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.Posters.all_posters', $data, compact(['estates', 'Plots_with_posters', 'Plots_without_posters']));
+    }
+
+    public function view_estate_poster($id)
+    {
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
+        $estate_with_plot_posters = buyer::where('estate', $specific_estate->estate_name)
+            ->where('plot_poster', 1)->count();
+
+        $estate_without_plot_posters = buyer::where('estate', $specific_estate->estate_name)
+            ->where('plot_poster', 0)->count();
+
+        return view('Admin.Posters.view_specific_estate_posters', $data, compact(['specific_estate',
+            'estate_id', 'estate_name', 'estate_with_plot_posters', 'estate_without_plot_posters']));
+    }
+
+    public function all_plot_posters_in_estate($id)
+    {
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
+        $estate_data = buyer::where('estate', $specific_estate->estate_name)
+            ->where('plot_poster', 1)->orderBy('plot_number', 'asc')->get();
+
+        $total_plots_with_posters = buyer::where('estate', $specific_estate->estate_name)
+            ->where('plot_poster', 1)->count();
+
+        return view('Admin.Posters.all_plot_posters_in_estate', $data, compact(['specific_estate', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'total_plots_with_posters']));
+    }
+
+    public function all_plot_without_posters_in_estate($id)
+    {
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
+        $estate_data = buyer::where('estate', $specific_estate->estate_name)
+            ->where('plot_poster', 0)->orderBy('plot_number', 'asc')->get();
+
+        $total_plots_without_posters = buyer::where('estate', $specific_estate->estate_name)
+            ->where('plot_poster', 0)->count();
+
+        return view('Admin.Posters.all_plot_without_posters_in_estate', $data, compact(['specific_estate', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'total_plots_without_posters']));
+    }
+
+    public function save_plot_poster(Request $request)
+    {
+        $selected_items = $request->selected_items;
+
+        if($selected_items != null)
+        {
+            foreach ($selected_items as $key => $selected_item) {
+
+                DB::table('buyers')->where('id', $selected_item)
+                                    ->update(['plot_poster' => 1]);
+            }
+    
+            Alert::success('Plots selected have been provided with posters');
+    
+            return back()->with('success','Plots selected have been provided with posters');
+        }
+        else
+        {
+            return back()->with('fail','Please select atleast one plot');
+        }
+    }
+
+    public function remove_poster_from_plots(Request $request)
+    {
+        $selected_items = $request->selected_items;
+
+        if($selected_items != null)
+        {
+            foreach ($selected_items as $key => $selected_item) {
+
+                 DB::table('buyers')->where('id', $selected_item)
+                                    ->update(['plot_poster' => 0]);
+            }
+        
+            return back()->with('success','Posters have been removed from the selected plots');
+        }
+        else
+        {
+            return back()->with('fail','Please select atleast one plot');
+        }   
+    }
 }

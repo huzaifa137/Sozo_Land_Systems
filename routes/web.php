@@ -114,4 +114,15 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('all-agents', [Master::class, 'all_agents'])->name('all-agents');
     Route::get('all-estates', [Master::class, 'all_estates'])->name('all-estates');
     Route::get('all-plots', [Master::class, 'all_plots'])->name('all-plots');
+
+    // Posters
+
+    Route::get('all-posters', [Master::class, 'all_posters'])->name('all-posters');
+    Route::get('view-estate-posters/{id}', [Master::class, 'view_estate_poster']);
+    Route::get('total-plot-posters-in-estate/{id}', [Master::class, 'all_plot_posters_in_estate']);
+    Route::get('total-plot-without-posters-in-estate/{id}', [Master::class, 'all_plot_without_posters_in_estate']);
+
+    Route::post('save-plot-poster',[Master::class,'save_plot_poster'])->name('save-plot-poster');
+    Route::post('remove-plot-from-poster',[Master::class,'remove_poster_from_plots'])->name('remove-plot-from-poster');
+
 });

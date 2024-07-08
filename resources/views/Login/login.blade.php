@@ -42,6 +42,8 @@
 
                         <div class="row">
 
+                            <input type="hidden" name="user_registered_ip" value="{{$user_registered_ip}}">
+
                             <div class="mb-3 col-md-12">
                                 <label>Email<span class="text-danger">*</span></label>
                                 <input type="email" name="email" id="email" class="form-control"
@@ -56,6 +58,7 @@
                                 <span class="text-danger">@error('password'){{ $message }}@enderror</span>
                             </div>
 
+                            @if ($user_registered_ip == null)
 
                             <div class="mb-4 col-md-12">
                                 <label class="mb-1">Captcha<span class="text-danger">*</span></label>
@@ -63,13 +66,14 @@
                                     <span class="text-danger">@error('captcha'){{$message}}@enderror</span>
                             </div>
 
-
                             <div class="mb-1 col-md-12">
                                 <div class="captcha">
                                     <span style="width: 50%; height: 50%;">{!! captcha_img('flat') !!}</span>
                                     <button type="button" class="btn btn-danger reload" id="reload">&#x21bb;</button>                                    
                                 </div>
                             </div>
+
+                            @endif
 
                             <div class="col-md-12">
                                 <button class="btn btn-primary float-end" >Login</button>
