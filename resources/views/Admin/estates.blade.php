@@ -9,11 +9,21 @@
             </div>
 
 
-                                <style>
+                    <style>
                         a{
                             color: white;
                         }
                     </style>
+                    
+                    
+                <?php  
+                
+                use App\Models\AdminRegister;
+
+                $user_id = Session('LoggedAdmin');
+                $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+                
+                ?>
 
             <div class="row">
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
@@ -31,7 +41,13 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              
+             
+              
+              
+                 @if($User_access_right == 'SuperAdmin')
+                 
+                  <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <div class="row">
@@ -42,13 +58,29 @@
                       </div>
                    
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Plots</h6>
+                    <h6 class="text-muted font-weight-normal">Total Fully purchased plots</h6>
                   </div>
                 </div>
               </div>
               
               
-              
+                            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0">{{$Not_fully_paid_plots}}</h3>
+                        </div>
+                      </div>
+                   
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Not taken plots</h6>
+                  </div>
+                </div>
+              </div>
+                 
+                 
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -69,6 +101,14 @@
                   </div>
                 </div>
               </div>
+              
+            @else
+            
+        
+            @endif
+              
+              
+
             
 
             </div>
@@ -112,7 +152,7 @@
             <!--  </div>-->
             <!--</div>-->
             
-            <div class="row">
+ <div class="row">
     <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">

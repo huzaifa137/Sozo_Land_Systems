@@ -27,7 +27,7 @@
 
 
                       <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                           <div class="form-group row">
                             <label class="col-sm-6 col-form-label">Land or Plot</label>
                             <div class="col-sm-12">
@@ -41,7 +41,7 @@
                           </div>
                         </div>
 
-                        <div class="col-md-4" id="plot_estate_field">
+                        <div class="col-md-3" id="plot_estate_field">
                           <div class="form-group row">
                             <label class="col-sm-6 col-form-label">Estate</label>
                             <div class="col-sm-12">
@@ -57,7 +57,7 @@
                           </div>
                         </div>
 
-                        <div class="col-md-4" id="land_estate_field" style="display: none">
+                        <div class="col-md-3" id="land_estate_field" style="display: none">
                           <div class="form-group row">
                             <label class="col-sm-6 col-form-label">Land Estate</label>
                             <div class="col-sm-12">
@@ -68,12 +68,27 @@
                           </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                           <div class="form-group row">
                             <label class="col-sm-6 col-form-label">Plot no</label>
                             <div class="col-sm-12">
                               <div class="col-sm-12">
                                 <input type="number" name="plot_no" id="plot_no" class="form-control" placeholder="Enter plot no" required>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                          <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Half or not Half</label>
+                            <div class="col-sm-12">
+                              <div class="col-sm-12">
+                                <select name="half_not_half" id="half_not_half" class="form-control" required>
+                                  <option value="">---choose---</option>
+                                  <option value="1">Not Half</option>
+                                  <option value="2">Half</option>
+                                </select>
                               </div>
                             </div>
                           </div>

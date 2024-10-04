@@ -44,8 +44,10 @@
                             <form action="{{ route('remove-plot-from-poster') }}" method="post">
                                 @csrf
                                 <h4 class="card-title">Plots with posters</h4>
-
+                                
                                 <a href="javascript:void(0);" id="select-all" class="btn btn-primary">Select all</a>
+                                  
+                                 </br> </br>
 
                                 @if (Session::get('success'))
                                 <div class="alert alert-success">

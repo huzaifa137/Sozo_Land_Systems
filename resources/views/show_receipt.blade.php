@@ -10,9 +10,10 @@
 <body>
     <h1>Receipt Preview</h1>
 
-    <iframe src="{{ asset('storage/pdf_receipts/' . basename($pdfPath)) }}" width="100%" height="600px">
+    <!-- Display the PDF in an iframe -->
+    <iframe src="{{ $pdfPath }}" width="100%" height="600px">
         Your browser does not support PDFs.
-        <a href="{{ asset('storage/pdf_receipts/' . basename($pdfPath)) }}">Download the PDF</a>
+        <a href="{{ $pdfPath }}">Download the PDF</a>
     </iframe>
 
 </body>

@@ -3,16 +3,17 @@
 use App\Http\Controllers\Master;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [Master::class, 'login'])->name('/');
 Route::post('admin-send', [Master::class, 'admin_check'])->name('admin-send');
 Route::get('reload-captcha', [Master::class, 'reload_captcha']);
 
 Route::group(['middleware' => ['AdminAuth']], function () {
+    
+    Route::get('/', [Master::class, 'login'])->name('home');
+
 
     Route::post('admin-registration', [Master::class, 'admin_register_data'])->name('admin-registration');
     Route::get('admin-dashboard', [Master::class, 'dashboard'])->name('admin-dashboard');
     Route::get('admin-buyer', [Master::class, 'admin_buyer'])->name('admin-buyer');
-    Route::post('update-data-form', [Master::class, 'update_data_form'])->name('update-data-form');
     Route::get('admin-logout', [Master::class, 'logout'])->name('admin-logout');
     Route::post('store-buyer-details', [Master::class, 'store_buyer_details'])->name('store-buyer-details');
     Route::get('Edit_sale/{id}', [Master::class, 'Edit_sale']);
@@ -35,7 +36,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('delete-user/{id}', [Master::class, 'deleteUser'])->name('add-user');
     Route::get('edit-user/{id}', [Master::class, 'editUser']);
     Route::post('store-user-record', [Master::class, 'storeUserRecord'])->name('store-user-record');
-    Route::get('admin-register/{id}', [Master::class, 'register']);
+    Route::get('admin-register', [Master::class, 'register']);
     Route::get('/edit/{id}/{user_id}', [Master::class, 'edit_sales']);
     Route::get('/delete/{id}/{plot_number}/{estate}', [Master::class, 'delete_sale']);
     Route::post('edit-user-info', [Master::class, 'edit_user_info'])->name('edit-user-info');
@@ -101,7 +102,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('download/{id}', [Master::class, 'download_agreement_receipt']);
     Route::get('download_receipt/{id}', [Master::class, 'download_receipt_payment']);
 
-// Sales
+    // Sales
     Route::get('enter-saved-estate', [Master::class, 'enter_saved_estate'])->name('enter-saved-estate');
     Route::get('search-module', [Master::class, 'search_module'])->name('search-module');
 
@@ -114,7 +115,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('all-agents', [Master::class, 'all_agents'])->name('all-agents');
     Route::get('all-estates', [Master::class, 'all_estates'])->name('all-estates');
     Route::get('all-plots', [Master::class, 'all_plots'])->name('all-plots');
-
+    
     // Posters
 
     Route::get('all-posters', [Master::class, 'all_posters'])->name('all-posters');
@@ -124,10 +125,15 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::post('save-plot-poster',[Master::class,'save_plot_poster'])->name('save-plot-poster');
     Route::post('remove-plot-from-poster',[Master::class,'remove_poster_from_plots'])->name('remove-plot-from-poster');
+    
+    Route::get('multiple-records', [Master::class, 'get_multiple_records'])->name('multiple-records');
+    Route::get('repeatitive', [Master::class, 'get_repeatitive_records'])->name('repeatitive');
+    Route::get('fetchPendingNumbers', [Master::class, 'fetchPendingNumbers'])->name('fetchPendingNumbers');
 
     Route::get('clearence-user-agreement/{userID}', [Master::class, 'clearenceUserAgreement']);
     Route::post('attach-seller-agreement', [Master::class, 'attachSellerAgreement'])->name('attach-seller-agreement');
+    
+        Route::get('/receipt/{id}', [Master::class, 'showReceipt'])->name('showReceipt');
 
-
- 
+    
 });

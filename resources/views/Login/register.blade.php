@@ -96,7 +96,6 @@
                                     <option value="SuperAdmin">1.Super Admin</option>
                                     <option value="Admin">2. Admin</option>
                                     <option value="Admin">3. Sales</option>
-                                    <option value="Admin">4. Cashier</option>
                                 </select>
                                 <span class="text-danger">
                                     @error('email')

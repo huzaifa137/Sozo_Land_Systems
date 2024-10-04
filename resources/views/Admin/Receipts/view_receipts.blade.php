@@ -7,24 +7,12 @@
             
               <div class="col-12 grid-margin">
                 <div class="card">
-                
-                   
-
-                    @include('sweetalert::alert')
-
-                    @if (Session::get('success'))
-										<div class="alert alert-success">
-											{{Session::get('success')}}
-										</div>
-									@endif
-
-                  @if (Session::get('failed'))
-										<div class="alert alert-danger">
-											{{Session::get('danger')}}
-										</div>
-									@endif
-
-                      <div class="row">
+                    <?php
+                    $userInformation = DB::table('admin_registers')->where('id',Session('LoggedAdmin'))->first();
+                    ?>
+                    
+                    @if ($userInformation->admin_category == 'SuperAdmin')
+                        <div class="row">
                         <div class="col-12">
                           <div class="card">
                             <div class="card-body">
@@ -155,6 +143,162 @@
 
                               <h4 class="card-title text-primary mt-3">Customer payment Agreement & receipts</h4>
                               <div class="row">
+                                  
+                              <div class="col-md-9" style="padding-left: 10rem">
+
+                                @foreach ($user_reciepts as $key => $user_receipt)
+                                <br> <br>
+                                <img style="width: 100%; " src="{{'/public/public/receipts/'.$user_receipt->receipt}}" alt="">
+                                @endforeach
+                                </div>
+
+                                 <div class="col-md-9" style="padding-left: 10rem">
+
+                                 @foreach ($user_resell_agreement as $key => $user_receipt)
+                                <br> <br>
+                                <img style="width: 100%; " src="{{'/public/public/resoldPlots/'.$user_receipt->seller_agreeement}}" alt="">
+                                @endforeach
+                                </div>
+                              
+                                
+                              </div>
+                            </div>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    
+                    @else
+                     <div class="row">
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-body">
+                              <h4 class="card-title text-primary">Customer Information</h4>
+                              @foreach ($user_information as $data)
+                              <div class="row">
+                                <div class="col-md-5">
+                                  <div class="table-responsive">
+                                    <table class="table">
+                                      <tbody>
+                                      
+                                        <tr>
+                                        
+                                          <td class="text-info">Name</td>
+                                          <td class="text-right font-weight-medium"> {{$data->firstname}} {{$data->lastname}}  </td>
+                                        </tr>
+                                        <tr>
+                                         
+                                          <td class="text-info">Gender</td>
+                                          <td class="text-right font-weight-medium"> {{$data->gender}} </td>
+                                        </tr>
+                                        <tr>
+                                         
+                                          <td class="text-info">Date of birth</td>
+                                          <td class="text-right font-weight-medium">{{$data->date_of_birth}} </td>
+                                        </tr>
+
+
+                                        <tr>
+                                          <!--<td class="text-info">NIN</td>-->
+                                          <!--<td class="text-right font-weight-medium"> {{$data->NIN}} </td>-->
+                                        </tr>
+
+                                        {{-- <tr>
+                                          <td class="text-info">Card Number</td>
+                                          <td class="text-right font-weight-medium"> {{$data->card_number}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Payment Method</td>
+                                          <td class="text-right font-weight-medium"> {{$data->method_payment}} </td>
+                                        </tr> --}}
+
+                                        <tr>
+                                          <td class="text-info">Estate</td>
+                                          <td class="text-right font-weight-medium"> {{$data->estate}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Plot No.</td>
+                                          <td class="text-right font-weight-medium"> {{$data->plot_number}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Width 1</td>
+                                          <td class="text-right font-weight-medium"> {{$data->width_1}} </td>
+                                        </tr>
+
+
+                                        <tr>
+                                          <td class="text-info">Width 2</td>
+                                          <td class="text-right font-weight-medium"> {{$data->width_2}} </td>
+                                        </tr>
+
+
+                                        <tr>
+                                          <td class="text-info">Height 1</td>
+                                          <td class="text-right font-weight-medium"> {{$data->height_1}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Height 2</td>
+                                          <td class="text-right font-weight-medium"> {{$data->height_2}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">purchasing </td>
+                                          <td class="text-right font-weight-medium"> {{$data->purchase_type}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Amount paid</td>
+                                          <td class="text-right font-weight-medium"> {{$data->amount_payed}} </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Balance</td>
+                                          <td class="text-right font-weight-medium"> {{$data->balance}} </td>
+                                        </tr>
+
+                                        <tr> 
+                                          <td class="text-info">Status</td>
+                                          @if ($data->next_installment_pay == "Fully payed")
+                                          <td class="text-right font-weight-medium">{{$data->next_installment_pay}} </td>
+                                          @elseif ($data->next_installment_pay == "Resold")
+                                          <td class="text-right font-weight-medium">{{$data->next_installment_pay}}</td>
+                                          @else
+                                          <td class="text-right font-weight-medium">Under payment</td>
+                                          @endif
+                                        </tr>
+
+                                        <tr>
+                                          <!--<td class="text-info">Phone number</td>-->
+                                          <!--<td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>-->
+                                        </tr>
+
+                                        <tr>
+                                          <td class="text-info">Added by :</td>
+                                          <td class="text-right font-weight-medium"> {{$data->added_by}} </td>
+                                        </tr>
+                                        
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+
+                                <div class="col-md-7">
+                                <!--  <div id="audience-map" class="vector-map">-->
+                                <!--    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_front}}" alt="">-->
+                                <!--  </div>-->
+
+                                <!--  <div id="audience-map" class="vector-map">-->
+                                <!--    <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$data->national_id_back}}" alt="">-->
+                                <!--  </div>-->
+                                <!--  @endforeach-->
+                                <!--</div>-->
+                              </div>
+
+                              <div class="row">
                                 <div class="col-md-5">
                                   <div class="table-responsive">
                                     <table class="table">
@@ -167,63 +311,8 @@
                                     </table>
                                   </div>
                                 </div>
-                                
-                                <div class="col-md-9" style="padding-left: 10rem">
 
-                                @foreach ($user_reciepts as $key => $user_receipt)
-                                <br> <br>
-                                <img style="width: 100%; " src="{{'/public/public/receipts/'.$user_receipt->receipt}}" alt="">
-                                @endforeach
-                                </div>
 
-                                <div class="col-md-9" style="padding-left: 10rem">
-                                  @foreach ($user_agreements as $user_agreement)
-                                    <br> <br>
-                                    <img style="width: 100%; " src="{{'/public/public/agreements/'.$user_agreement->agreement}}" alt="">
-                                    @endforeach
-                                </div>
-
-                                <br> <br> 
-
-                                  <div class="col-md-9" style="padding-left: 10rem">
-                                  @foreach ($user_agreements_uploaded as $user_agreement)
-                                    <br> <br>
-                                    <img style="width: 100%; " src="{{'/agreements/'.$user_agreement->agreement}}" alt="">
-                                    @endforeach
-                                </div>
-
-                                <br> <br> 
-
-                                  <div class="col-md-9 d-block" style="padding-left: 10rem">
-                                    {{-- <h4>User Receipts</h4>
-
-                                    @foreach ($user_reciepts_pdf as $key => $user_reciept_pdf)
-
-                                    <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
-                                    <br>
-                                    
-                                    @endforeach
-    
-                                    <section class="d-inline"  style="padding-left: 10rem;" >
-                                      <h4>User Agreement</h4>
-  
-                                      @foreach ($user_agreements_pdf as $key => $user_agreement_pdf)
-  
-                                      <a href="{{url('/download_receipt',$user_reciept_pdf->reciept)}}">download receipt {{$key+1}}</a>
-                                      <br>
-                                      
-                                      @endforeach
-      
-                                      </section> --}}
-                                    </div>
-
-                                    <br>
-
-                                  {{-- <div class="col-md-9" style="padding-left: 10rem">
-                                    <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
-                                  </div> --}}
-                                    
-                             
                               </div>
                             </div>
                             
@@ -231,9 +320,10 @@
                         </div>
                       </div>
 
+                    @endif
                 
+                    
                   </div>
-              
               </div>
             </div>
           </div>

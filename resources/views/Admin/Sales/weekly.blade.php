@@ -51,6 +51,13 @@
                 </div>
               </div>
 
+
+              <style>
+              a{
+                  color:#FFF;
+              }
+              </style>
+              
               <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -82,6 +89,7 @@
                       <table class="table">
                         <thead>
                           <tr>
+                            <th>No</th>
                             <th> Client Name </th>
                             <th> Estate </th>
                             <th> Plot no.</th>
@@ -92,8 +100,10 @@
                           </tr>
                         </thead>
                         <tbody>
-                            @foreach ($weeklyRecords as $weeklyRecord)
+                            @foreach ($weeklyRecords as $key => $weeklyRecord)
                           <tr>
+                            
+                            <td>{{$key+1}}</td>
                             
                             <td>
                                 <a href="{{'view-reciept/'.$weeklyRecord->id}}">

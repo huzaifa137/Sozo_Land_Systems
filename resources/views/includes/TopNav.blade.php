@@ -1,11 +1,23 @@
 <ul class="navbar-nav navbar-nav-right">
-    <li class="nav-item dropdown d-none d-lg-block">
+    
+            <?php  
+                
+                use App\Models\AdminRegister;
+
+                $user_id = Session('LoggedAdmin');
+                $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+                
+              ?>
+              
+              
+        @if($User_access_right == 'SuperAdmin')
+                    <li class="nav-item dropdown d-none d-lg-block">
       <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-bs-toggle="dropdown" aria-expanded="false" >+ Manage Admins</a>
       <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
         <h6 class="p-3 mb-0" style="text-align: center">Sozo Properties</h6>
         <div class="dropdown-divider"></div>
 
-        <a class="dropdown-item preview-item" href="{{'admin-register/'.$LoggedAdminInfo['id'] }}">
+        <a class="dropdown-item preview-item" href="{{'admin-register'}}">
           <div class="preview-thumbnail">
             <div class="preview-icon bg-dark rounded-circle">
               <i class="mdi mdi-plus text-primary"></i>
@@ -16,18 +28,9 @@
           </div>
         </a>
         <div class="dropdown-divider"></div>
-        {{-- <a class="dropdown-item preview-item">
-          <div class="preview-thumbnail">
-            <div class="preview-icon bg-dark rounded-circle">
-              <i class="mdi mdi-eye text-info"></i>
-            </div>
-          </div>
-          <div class="preview-item-content">
-            <p class="preview-subject ellipsis mb-1">View All Admins</p>
-          </div>
-        </a> --}}
     </li>
     
+             @endif
     
    
     <li class="nav-item dropdown">

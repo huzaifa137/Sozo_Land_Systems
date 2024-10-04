@@ -34,7 +34,7 @@
             <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <a href="{{ url('admin-register/' . $LoggedAdminInfo['id']) }}"
+                        <a href="{{ url('admin-register') }}"
                             style="text-decoration: none;color:white;">
                             <div class="row">
                                 <div class="col-9">

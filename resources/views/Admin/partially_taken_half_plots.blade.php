@@ -7,6 +7,12 @@
 
             </div>
         </div>
+        
+         <style>
+              a{
+                  color:#FFF;
+              }
+              </style>
 
         <div class="row">
             <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
@@ -19,7 +25,7 @@
                                 </div>
                             </div>
                         </div>
-                        <h6 class="text-muted font-weight-normal">Total Half plots taken from Estate</h6>
+                        <h6 class="text-muted font-weight-normal">Half Plots taken from Estate</h6>
                     </div>
                 </div>
             </div>
@@ -28,7 +34,7 @@
                 <div class="col-12 grid-margin">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Half plots Not taken {{ $estate_name }} estate </h4>
+                            <h4 class="card-title">Half plots taken {{ $estate_name }} estate </h4>
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -47,15 +53,17 @@
                                     <tbody>
                                         @foreach ($not_taken_half_plots as $key => $data)
                                             <tr>
-                                                <td>{{ $key + 1 }}</td>
-                                                <td> {{ $data->estate }} </td>
-                                                <td> {{ $data->plot_number }} </td>
-                                                <td> {{ $data->width_1 }} </td>
-                                                <td> {{ $data->width_2 }} </td>
-                                                <td> {{ $data->height_1 }} </td>
-                                                <td> {{ $data->height_2 }} </td>
-                                                <td> {{ $data->location }} </td>
-                                                <td> {{ $data->status }}</td>
+                                               
+
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $key + 1 }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->estate }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->plot_number }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->width_1 }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->width_2 }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->height_1 }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->height_2 }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->location }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->status }}</a></td>
 
                                             </tr>
                                         @endforeach

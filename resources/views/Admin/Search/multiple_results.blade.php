@@ -10,6 +10,12 @@
                   <div class="card-body">
                     <h4 class="card-title" style="padding-left: 1rem;color:green">Records found </h4>
 
+    
+                    <style>
+                    a{
+                        color:white;
+                    }
+                    </style>
                     @include('sweetalert::alert')
 
                     @if (Session::get('success'))
@@ -23,6 +29,13 @@
 											{{Session::get('danger')}}
 										</div>
 									@endif
+									
+									
+									<?php 
+									
+									   $userRight = DB::table('admin_registers')->where('id',Session('LoggedAdmin'))->value('admin_category');
+									   
+									?>
 
                                     <div class="row ">
                                         <div class="col-12 grid-margin">
@@ -40,9 +53,7 @@
                                                       <th> Plot No </th>
                                                       <th> Location </th>
                                                       <th> Amount Payed </th>
-                                                      <th> Status </th>
-                                                      <th colspan="2" style="text-align: center"> Reciepts </th>
-                                                      <th> Make Agreement</th>
+                                                      <th colspan="2" style="text-align:center;"> Action </th>
                                                     </tr>
                                                   </thead>
                                                   <tbody>
@@ -50,41 +61,26 @@
         
                                                     <tr>
                                                         
-                                                        <td>{{$key+1}}</td>
-                                                      <td>
-                                                        <span >{{$item->firstname}} {{$item->lastname}}</span>
-                                                      </td>
-                                                      <td> {{$item->NIN}}  </td>
-                                                      <td> {{$item->estate}} </td>
-                                                      <td> {{$item->plot_number}} </td>
-                                                      <td> {{$item->location}} </td>
-                                                      <td> {{$item->amount_payed}} </td>
-                                                      <td>
-                                                        <div class="badge badge-outline-warning">Under payment</div>
-                                                      </td>
-
-                                                        <td><a href="{{'add-reciept/'.$item->id}}" class="btn btn-outline-primary btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Make reciept </a> </td>
-
-                                                        <td><a href="{{'view-reciept/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
+                                                    <td><a href="{{'view-reciept/'.$item->id}}">{{$key+1}}</a></td>
+                                                    <td>
+                                                      <span ><a href="{{'view-reciept/'.$item->id}}">{{$item->firstname}} {{$item->lastname}}</a></span>
+                                                    </td>
+                                                    <td> <a href="{{'view-reciept/'.$item->id}}">{{$item->NIN}}</a>  </td>
+                                                    <td> <a href="{{'view-reciept/'.$item->id}}">{{$item->estate}}</a> </td>
+                                                    <td> <a href="{{'view-reciept/'.$item->id}}">{{$item->plot_number}}</a> </td>
+                                                    <td> <a href="{{'view-reciept/'.$item->id}}">{{$item->location}}</a> </td>
+                                                    <td> <a href="{{'view-reciept/'.$item->id}}">{{$item->amount_payed}}</a> </td>
+                                                      
+                                                         <td><a href="{{'view-reciept/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
                                                             
-
-                                                            <td><a href="{{'attach-receipt/'.$item->id}}" class="btn btn-outline-primary btn-primary-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Upload receipt </a> </td>
-
-                                                            <td><a href="{{'add-agreement/'.$item->id}}" class="btn btn-outline-success btn-icon-text">
-                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Upload agreement </a> </td>
-                                                                
-                                                            <td><a href="{{ 'update-reminder/' . $item->id }}"
-                                                                    class="btn btn-secondary btn-icon-text">
-                                                                    <i class="mdi mdi-eye btn-icon-prepend"></i> Update
-                                                                    Reminder </a> </td>
-                                                                    
+                                                            @if($userRight == 'SuperAdmin')
+                                                            
+                                                                                                                                
                                                               <td><a href="{{ 'delete/' . $item->id . '/' . $item->plot_number . '/' . $item->estate }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
-                                                        </td>
+                                                            @endif
 
                                                         </tr>
                                                     <tr>

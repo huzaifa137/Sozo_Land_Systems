@@ -25,17 +25,29 @@
     <link rel="shortcut icon" href="/img/favicon.jpg" />
 
 </head>
-
-
-<style>
+    
+    <style>
     .bg-white {
     --bs-bg-opacity: 1;
     background-color: rgb(255 255 255 / 27%) !important;
     }
-</style>
+
+    </style>
 
 
 <body>
+    
+    
+             <?php  
+                
+                use App\Models\AdminRegister;
+
+                $user_id = Session('LoggedAdmin');
+                $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+                
+              ?>
+              
+              
     <div class="container-scroller">
 
         <!-- partial:partials/_sidebar.html -->
@@ -103,7 +115,9 @@
 
                         {{-- <input type="hidden" name="admin_category" value="{{$LoggedAdminInfo['admin_category']}}"> --}}
 
-                    <div class="row">
+
+                                                @if($User_access_right == 'SuperAdmin')
+                                                    <div class="row">
                         <div class="col-sm-4 grid-margin">
                             <div class="card">
                                 <div class="card-body">
@@ -161,7 +175,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                                                @else
+                                                
+                                                @endif   
 
 
                     <div class="row">
@@ -360,6 +376,7 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
+                                                    <th>No</th>
                                                     <th> Client Name </th>
                                                     <th> Estate </th>
                                                     <th> Plot no.</th>
@@ -367,13 +384,18 @@
                                                     <th> Amount paid </th>
                                                     <th> Balance </th>
                                                     <th> View </th>
-                                                    <th>Action</th>
+                                                    
+                                                @if($User_access_right == 'SuperAdmin')
+                                                    <th style="text-align:center;">Action</th>
+                                                @else
+                                                
+                                                @endif
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($all_sales as $all_sale)
+                                                @foreach ($all_sales as $key => $all_sale)
                                                     <tr>
-
+                                                        <td>{{$key+1}}</td>
                                                         <td>
                                                             <a href="{{ 'view-reciept/' . $all_sale->id }}">
                                                             <img style="width: 100%; height:100%"
@@ -395,15 +417,23 @@
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> View </a>
                                                         </td>
 
+                                                            @if($User_access_right == 'SuperAdmin')
+
                                                         <td><a href="{{ 'edit/'.$all_sale->id .'/'. $LoggedAdminInfo['id'] }}"
                                                             class="btn btn-outline-warning btn-icon-text">
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
-                                                    </td>
+                                                        </td>
 
-                                                    <td><a href="{{ 'delete/' . $all_sale->id }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
+                                                        <td>
+                                                        <a href="{{ 'delete/' . $all_sale->id }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
                                                         </td>
+                                                        
+                                                        @else
+                                                        
+                                                        @endif
+
                                                 @endforeach
 
                                                 </tr>
@@ -414,9 +444,7 @@
 
                                         <br> <br>
                                         <span>
-
-                                            {{ $all_sales->links() }}
-
+                                               {{ $all_sales->links() }}
                                         </span>
                                         
                                         <style>

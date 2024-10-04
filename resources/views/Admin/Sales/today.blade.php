@@ -50,6 +50,13 @@
                   </div>
                 </div>
               </div>
+              
+              
+              <style>
+              a{
+                  color:#FFF;
+              }
+              </style>
 
               <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
@@ -82,6 +89,7 @@
                       <table class="table">
                         <thead>
                           <tr>
+                             <th>No</th>
                             <th> Client Name </th>
                             <th> Estate </th>
                             <th> Plot no.</th>
@@ -92,9 +100,10 @@
                           </tr>
                         </thead>
                         <tbody>
-                            @foreach ($records as $all_sale)
+                            @foreach ($records as $key => $all_sale)
                           <tr>
                             
+                            <td>{{$key+1}}</td>
                             <td>
                                 <a href="{{'view-reciept/'.$all_sale->id}}">
                                 <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
@@ -102,7 +111,7 @@
                               <span class="ps-2">{{$all_sale->firstname}}</span>
                               </a>
                             </td>
-
+ 
                             
                             <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->estate}}  </a></td>
                             <td><a href="{{'view-reciept/'.$all_sale->id}}"> {{$all_sale->plot_number}} </a></td>

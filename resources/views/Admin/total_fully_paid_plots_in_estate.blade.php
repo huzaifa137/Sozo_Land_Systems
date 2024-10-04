@@ -7,6 +7,13 @@
 
                         </div>
                     </div>
+                    
+                    
+             <style>
+              a{
+                  color:#FFF;
+              }
+              </style>
 
                     <div class="row">
                         <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
@@ -49,15 +56,14 @@
                                     <thead>
                                         <tr>
                                             <th>No.</th>
-                                            <th> Estate Name</th>
+                                            <th> Client Name</th>
                                             <th> Plot Number</th>
                                             <th> Width1 </th>
                                             <th> Width2 </th>
                                             <th> height1 </th>
                                             <th> height2 </th>
+                                            <th> Status</th>
                                             <th> Location</th>
-                                            <th>Plot Status</th>
-                                            <th>view estate pdf</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -65,17 +71,16 @@
                                         @foreach ($estate_data as $key => $data)
                                                     
                                         <tr>
-                                            <td>{{$key+1}}</td>
-                                            <td> {{ $data->estate }} </td>
-                                            <td> {{ $data->plot_number }} </td>
-                                            <td> {{ $data->width_1 }} </td>
-                                            <td> {{ $data->width_2 }} </td>
-                                            <td> {{ $data->height_1 }} </td>
-                                            <td> {{ $data->height_2 }} </td>
-                                            <td> {{ $data->location }} </td>
-                                            <td> {{ $data->status}}</td>
-                                            <td> <a href="{{ url('view-estate-pdf/' . $data->id .'/'. $data->estate) }}">View estate</a></td>
-
+                                            
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $key + 1 }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->firstname }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->plot_number }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->width_1 }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->width_2 }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->height_1 }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->height_2 }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->status }}</a></td>
+                                            <td><a href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->location }}</a></td>
                                         </tr>
 
                                         @endforeach

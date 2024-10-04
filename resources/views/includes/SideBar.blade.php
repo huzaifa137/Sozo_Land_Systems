@@ -75,6 +75,7 @@
                      <li class="nav-item"> <a class="nav-link" href="{{ route('estates') }}">Estates</a></li>
                 @else
                     <li class="nav-item"> <a class="nav-link" href="{{ route('estates') }}">Estates</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('plots') }}">Plots and House</a></li>
                 @endif
             
 

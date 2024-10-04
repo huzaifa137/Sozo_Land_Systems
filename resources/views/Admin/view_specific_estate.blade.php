@@ -40,7 +40,11 @@
                         <div class="row">
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
-                                    <h3 class="mb-0">{{ $count_estates_fully }}</h3>
+                                     @if($connectedPlotsProcessedFullyPaid != 0)
+                                         <h3 class="mb-0"> {{$connectedPlotsProcessedFullyPaidJoined}}</h3>
+                                         @else
+                                         <h3 class="mb-0">{{ $count_estates_fully }}</h3>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-3">
@@ -64,7 +68,12 @@
                         <div class="row">
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
-                                    <h3 class="mb-0">{{ $count_estates_not_fully }}</h3>
+                                    <!--<h3 class="mb-0">{{ $count_estates_not_fully }}</h3>-->
+                                    @if($connectedPlotsProcessedNotFullyPaid != 0)
+                                         <h3 class="mb-0"> {{$connectedPlotsProcessedNotFullyPaidjoined}}</h3>
+                                         @else
+                                         <h3 class="mb-0">{{ $count_estates_not_fully }}</h3>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-3">
@@ -137,7 +146,15 @@
                 </div>
             </div>
         </div>
+        
+        <div>
+                        <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="900px"></iframe>
+                    </div>
+                    
     </div>
+    
+    
+     		    
 
 
 </div>

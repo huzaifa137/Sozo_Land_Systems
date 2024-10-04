@@ -82,6 +82,7 @@
                       <table class="table">
                         <thead>
                           <tr>
+                              <th>No</th>
                             <th> Client Name </th>
                             <th> Estate </th>
                             <th> Plot no.</th>
@@ -92,9 +93,11 @@
                           </tr>
                         </thead>
                         <tbody>
-                            @foreach ($all_sales as $all_sale)
+                            @foreach ($all_sales as $key => $all_sale)
                           <tr>
                             
+                            
+                            <td>{{$key+1}}</td>
                             <td>
                                 <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
                               <span class="ps-2">{{$all_sale->firstname}}</span>

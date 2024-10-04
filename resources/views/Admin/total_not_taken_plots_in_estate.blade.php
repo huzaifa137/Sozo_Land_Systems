@@ -48,31 +48,47 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>No.</th>
+                                            <!--<th>No.</th>-->
+                                            <th> Plot No</th>
+                                            <th> Plot Price</th>
+                                            <th> Exceptional Amount</th>
                                             <th> Estate Name</th>
-                                            <th> Plot Number</th>
                                             <th> Width1 </th>
                                             <th> Width2 </th>
                                             <th> height1 </th>
                                             <th> height2 </th>
                                             <th> Location</th>
-                                            <th>Plot Status</th>
+                                            <th> Status</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($estate_data as $key => $data)
                                                     
                                         <tr>
-                                            <td>{{$key+1}}</td>
-                                            <td> {{ $data->estate }} </td>
+                                            <!--<td>{{$key+1}}</td>-->
                                             <td> {{ $data->plot_number }} </td>
+
+                                            
+                                            @if($data->exceptional_amount > 0 )
+                                            <td>0</td>
+                                            <td> {{ $data->exceptional_amount}}</td>
+                                            @else()
+                                            <td>{{ $estate_price}}</td>
+                                            <td> {{ $data->exceptional_amount}}</td>
+                                            @endif
+                                            
+                                            <td> {{ $data->estate }} </td>
+                                            
+                                            
                                             <td> {{ $data->width_1 }} </td>
                                             <td> {{ $data->width_2 }} </td>
                                             <td> {{ $data->height_1 }} </td>
                                             <td> {{ $data->height_2 }} </td>
                                             <td> {{ $data->location }} </td>
                                             <td> {{ $data->status}}</td>
-                                         
+                                            
+                                            
                                         </tr>
 
                                         @endforeach
@@ -84,6 +100,10 @@
                     </div>
                 </div>
             </div>
+            
+             		    <div>
+                        <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="900px"></iframe>
+                    </div>
 
 
         </div>

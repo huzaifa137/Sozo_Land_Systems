@@ -24,7 +24,7 @@
                                 </div>
                             </div>
                         </div>
-                        <h6 class="text-muted font-weight-normal">Total plots with posters</h6>
+                        <h6 class="text-muted font-weight-normal">Total plots without posters</h6>
                     </div>
                 </div>
             </div>
@@ -43,9 +43,11 @@
                         <div class="card-body">
                             <form action="{{ route('save-plot-poster') }}" method="post">
                                 @csrf
-                                <h4 class="card-title">Plots with posters</h4>
+                                <h4 class="card-title">Total plots without posters</h4>
 
                                 <a href="javascript:void(0);" id="select-all" class="btn btn-primary">Select all</a>
+                                
+                                </br> </br>
 
                                 @if (Session::get('success'))
                                 <div class="alert alert-success">
@@ -98,8 +100,8 @@
                                 <br>
 
                                 <button type="submit" class="btn btn-success btn-sm"
-                                    onclick="return confirm('Please confirm you want to remove poster from plot !')">Remove
-                                    posters from selected plots <span style="color: rgb(25, 0, 255);"></span></button>
+                                    onclick="return confirm('Please confirm you want to remove poster from plot !')">Add posters
+                                    to selected plots <span style="color: rgb(25, 0, 255);"></span></button>
                             </form>
                         </div>
                     </div>
