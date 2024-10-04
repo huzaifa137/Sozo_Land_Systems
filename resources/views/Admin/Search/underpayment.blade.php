@@ -40,9 +40,8 @@
                                                       <th> Plot No </th>
                                                       <th> Location </th>
                                                       <th> Amount Payed </th>
-                                                      <!--<th> Status </th>-->
-                                                      <th colspan="2" style="text-align: center"> Reciepts </th>
-                                                      <th colspan="2"> Make Agreement</th>
+                                                      <th colspan="2"> system Action Buttons </th>
+
                                                     </tr>
                                                   </thead>
                                                   <tbody>
@@ -60,22 +59,11 @@
                                                       <td> {{$item->plot_number}} </td>
                                                       <td> {{$item->location}} </td>
                                                       <td> {{$item->amount_payed}} </td>
-                                                      <!--<td>-->
-                                                      <!--  <div class="badge badge-outline-warning">Under payment</div>-->
-                                                      <!--</td>-->
 
-                                                        <td><a href="{{'add-reciept/'.$item->id}}" class="btn btn-outline-primary btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Make reciept </a> </td>
 
                                                         <td><a href="{{'view-reciept/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
-                                                            
-
-                                                            <td><a href="{{'attach-receipt/'.$item->id}}" class="btn btn-outline-primary btn-primary-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Upload receipt </a> </td>
-
-                                                            <td><a href="{{'add-agreement/'.$item->id}}" class="btn btn-outline-success btn-icon-text">
-                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> Upload agreement </a> </td>
+                                                        
                                                                 
                                                                  <td><a href="{{'resale/'.$item->id}}" class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> Resell plot </a> </td>

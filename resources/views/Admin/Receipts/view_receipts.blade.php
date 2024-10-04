@@ -219,9 +219,9 @@
 
                                     <br>
 
-                                  <div class="col-md-9" style="padding-left: 10rem">
+                                  {{-- <div class="col-md-9" style="padding-left: 10rem">
                                     <a href="{{url('/download_national',$data->id)}}">Download National ID</a>
-                                  </div>
+                                  </div> --}}
                                     
                              
                               </div>

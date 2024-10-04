@@ -125,4 +125,9 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('save-plot-poster',[Master::class,'save_plot_poster'])->name('save-plot-poster');
     Route::post('remove-plot-from-poster',[Master::class,'remove_poster_from_plots'])->name('remove-plot-from-poster');
 
+    Route::get('clearence-user-agreement/{userID}', [Master::class, 'clearenceUserAgreement']);
+    Route::post('attach-seller-agreement', [Master::class, 'attachSellerAgreement'])->name('attach-seller-agreement');
+
+
+ 
 });
