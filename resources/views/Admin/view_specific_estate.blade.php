@@ -20,9 +20,7 @@
                                     </div>
                                 </div>
                                 <div class="col-3">
-                                    {{-- <div class="icon icon-box-success " style="">
-                                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                                </div> --}}
+
                                 </div>
                             </div>
                             <h6 class="text-muted font-weight-normal mt-3">Plots in {{ $estate_name }} Estate</h6>
@@ -40,17 +38,15 @@
                         <div class="row">
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
-                                     @if($connectedPlotsProcessedFullyPaid != 0)
-                                         <h3 class="mb-0"> {{$connectedPlotsProcessedFullyPaidJoined}}</h3>
-                                         @else
-                                         <h3 class="mb-0">{{ $count_estates_fully }}</h3>
+                                    @if ($connectedPlotsProcessedFullyPaid != 0)
+                                        <h3 class="mb-0"> {{ $connectedPlotsProcessedFullyPaidJoined }}</h3>
+                                    @else
+                                        <h3 class="mb-0">{{ $count_estates_fully }}</h3>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-3">
-                                {{-- <div class="icon icon-box-success">
-                                                <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                            </div> --}}
+
                             </div>
                         </div>
                         <h6 class="text-muted font-weight-normal mt-3">Fully paid plots in
@@ -69,10 +65,10 @@
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
                                     <!--<h3 class="mb-0">{{ $count_estates_not_fully }}</h3>-->
-                                    @if($connectedPlotsProcessedNotFullyPaid != 0)
-                                         <h3 class="mb-0"> {{$connectedPlotsProcessedNotFullyPaidjoined}}</h3>
-                                         @else
-                                         <h3 class="mb-0">{{ $count_estates_not_fully }}</h3>
+                                    @if ($connectedPlotsProcessedNotFullyPaid != 0)
+                                        <h3 class="mb-0"> {{ $connectedPlotsProcessedNotFullyPaidjoined }}</h3>
+                                    @else
+                                        <h3 class="mb-0">{{ $count_estates_not_fully }}</h3>
                                     @endif
                                 </div>
                             </div>
@@ -112,14 +108,31 @@
             </div>
             </a>
         </div>
-
-
     </div>
+
+
+    @if (Session::get('success'))
+        <div class="alert alert-success">
+            {{ Session::get('success') }}
+        </div>
+    @endif
+
+    @if (Session::get('error'))
+        <div class="alert alert-danger">
+            {{ Session::get('error') }}
+        </div>
+    @endif
+
 
     <div class="row ">
         <div class="col-12 grid-margin">
             <div class="card">
                 <div class="card-body">
+
+                    <?php
+                    $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->value('admin_category');
+                    ?>
+
                     <h4 class="card-title">Estate Information</h4>
                     <div class="table-responsive">
                         <table class="table">
@@ -129,6 +142,11 @@
                                     <th> Estate Price </th>
                                     <th> Location </th>
                                     <th> Number of plots </th>
+
+                                    @if ($userInfo == 'SuperAdmin')
+                                        <th> Action </th>
+                                    @endif
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -138,6 +156,16 @@
                                     <td> {{ $specific_estate->estate_price }} </td>
                                     <td> {{ $specific_estate->location }} </td>
                                     <td> {{ $specific_estate->number_of_plots }} </td>
+
+
+
+                                    @if ($userInfo == 'SuperAdmin')
+                                        <td><a class="text-white btn btn-primary"
+                                                href="{{ url('edit-estate-information/' . $specific_estate->id) }}"
+                                                onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                Edit </a></td>
+                                    @endif
+
                                 </tr>
 
                             </tbody>
@@ -146,15 +174,16 @@
                 </div>
             </div>
         </div>
-        
+
         <div>
-                        <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="900px"></iframe>
-                    </div>
-                    
+            <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0"
+                width="100%" height="900px"></iframe>
+        </div>
+
     </div>
-    
-    
-     		    
+
+
+
 
 
 </div>

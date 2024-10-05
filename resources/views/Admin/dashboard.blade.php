@@ -386,7 +386,7 @@
                                                     <th> View </th>
                                                     
                                                 @if($User_access_right == 'SuperAdmin')
-                                                    <th style="text-align:center;">Action</th>
+                                                    <th style="text-align:center;" colspan="3">Action</th>
                                                 @else
                                                 
                                                 @endif
@@ -425,7 +425,7 @@
                                                         </td>
 
                                                         <td>
-                                                        <a href="{{ 'delete/' . $all_sale->id }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
+                                                        <a href="{{ 'delete/' . $all_sale->id .'/'. $all_sale->plot_number .'/'. $all_sale->estate }}" onclick=" return confirm('Please confirm you want to delete this record ?')"
                                                                 class="btn btn-outline-danger btn-icon-text">
                                                                 <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
                                                         </td>

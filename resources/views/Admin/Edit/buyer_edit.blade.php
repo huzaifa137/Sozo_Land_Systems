@@ -129,41 +129,7 @@
                                             </div>
 
 
-                                            <p class="card-description">Payment Method:</p>
-
-                                            <div class="row">
-                                                <div class="col-md-10">
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-3 col-form-label">Select Payment
-                                                            Method:</label>
-                                                        <div class="col-sm-9">
-                                                            <select name="payment_method" id="payment_method"
-                                                                class="form-control" >
-                                                                {{-- <option value="">--- Select Payment ---</option> --}}
-                                                                {{-- <option value="Full_payment">Full Payment</option> --}}
-                                                                <option value="paying_in_installments">Paying in
-                                                                    Installments</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-10">
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-3 col-form-label">Purchase
-                                                            Category:</label>
-                                                        <div class="col-sm-9">
-                                                            <select name="purchase_type" id="purchase_type"
-                                                                class="form-control" >
-                                                              <option value="{{$info->purchase_type}}">{{$info->purchase_type}}</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                           
 
                                             
 
