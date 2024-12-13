@@ -7,39 +7,38 @@
                 <div class="card">
                     <div class="card-body">
                         <h4>Provide user selling agreement</h4>
-
-                        <form action="{{ route('attach-seller-agreement') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-
-                            @if (Session::get('success'))
-                                <div class="alert alert-success">
-                                    {{ Session::get('success') }}
-                                </div>
-                            @endif
-
-                            @if (Session::get('error'))
-                                <div class="alert alert-danger">
-                                    {{ Session::get('error') }}
-                                </div>
-                            @endif
-
-                            <input type="hidden" name="user_id" value="{{ $userId }}">
-
-                            <div class="row">
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <input type="file" name="seller_agreeement" id="seller_agreeement"
-                                            class="form-control" placeholder="Attach seller agreement" required>
+                        
+                            <form action="{{ route('attach-seller-agreement') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                            
+                                @if (Session::get('success'))
+                                    <div class="alert alert-success">
+                                        {{ Session::get('success') }}
+                                    </div>
+                                @endif
+                            
+                                @if (Session::get('error'))
+                                    <div class="alert alert-danger">
+                                        {{ Session::get('error') }}
+                                    </div>
+                                @endif
+                            
+                                <input type="hidden" name="user_id" value="{{ $userId }}">
+                            
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="file" name="seller_agreeement[]" id="seller_agreeement" class="form-control" multiple required>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="col-md-12 text-right">
+                                        <button type="submit" class="btn btn-primary"
+                                            onclick="confirm('Please confirm you want to upload this seller agreement!')">Upload Agreement</button>
                                     </div>
                                 </div>
+                            </form>
 
-                                <div class="col-md-12 text-right">
-                                    <button type="submit" class="btn btn-primary"
-                                        onclick="confirm('Please confirm you want to upload this seller agreement !')">upload agreement</button>
-                                </div>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>

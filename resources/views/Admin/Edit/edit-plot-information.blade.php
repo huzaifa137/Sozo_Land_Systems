@@ -122,6 +122,37 @@
                                 </div>
 
                             </div>
+                            
+
+                            
+                           @if($plotInformation->exceptional_status == "Yes")
+                              <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="width1" class="col-form-label">Exceptional Amount</label>
+                                        <input type="text" name="exceptional_amount" id="exceptional_amount"
+                                            value="{{ $plotInformation->exceptional_amount }}" class="form-control"
+                                            >
+                                    </div>
+                                </div>
+                            </div>
+                           
+                           @else
+                           
+                            <div class="row" style="display:none;">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="width1" class="col-form-label">Exceptional Amount</label>
+                                        <input type="text" name="exceptional_amount" id="exceptional_amount"
+                                            value="0" class="form-control"
+                                            >
+                                    </div>
+                                </div>
+                            </div>
+                           
+                           @endif
+                            
+
 
                             <div class="row">
                                 <div class="col-md-10">

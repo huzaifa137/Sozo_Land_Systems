@@ -87,7 +87,7 @@
                                                     <label class="col-sm-3 col-form-label">Nin Number</label>
                                                     <div class="col-sm-9">
                                                         <input type="text" name="NIN" id="NIN" class="form-control" value="{{$info->NIN}}"
-                                                            >
+                                                            required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -96,7 +96,7 @@
                                                     <label class="col-sm-3 col-form-label">CardNumber</label>
                                                     <div class="col-sm-9">
                                                         <input type="text" name="card_number" id="card_number" value="{{$info->card_number}}"
-                                                            class="form-control" >
+                                                            class="form-control" required>
                                                     </div>
                                                 </div>
                                             </div>

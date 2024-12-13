@@ -38,6 +38,15 @@
                 <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                     
                 </div>
+                
+                 <?php  
+                
+                use App\Models\AdminRegister;
+
+                $user_id = Session('LoggedAdmin');
+                $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+                
+              ?>
 
             <div class="row ">
                 <div class="col-12 grid-margin">
@@ -57,8 +66,12 @@
                                             <th> Width2 </th>
                                             <th> height1 </th>
                                             <th> height2 </th>
-                                            <th> Location</th>
                                             <th> Status</th>
+                                            
+                                            @if($userInfo == 'SuperAdmin')
+                                            <th> Plot Edit</th>
+                                            @endif
+
 
                                         </tr>
                                     </thead>
@@ -85,10 +98,29 @@
                                             <td> {{ $data->width_2 }} </td>
                                             <td> {{ $data->height_1 }} </td>
                                             <td> {{ $data->height_2 }} </td>
-                                            <td> {{ $data->location }} </td>
                                             <td> {{ $data->status}}</td>
                                             
                                             
+                                        @if($userInfo == 'SuperAdmin')
+                                        
+                                            @if($data->exceptional_status == 'Yes')
+
+                                            <td><a class="text-white btn btn-primary"
+                                                    href="{{ url('edit-plot-information/' . $data->id) }}"
+                                                    onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                    Edit Plot</a></td>
+                                                    
+                                                     @else
+                                                     
+                                                   <td><a class="text-white btn btn-primary disabled"
+                                                    href="{{ url('edit-plot-information/' . $data->id) }}"
+                                                    onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                    Not editabled</a></td>
+                                               @endif
+                                               
+                                              
+                                            @endif
+
                                         </tr>
 
                                         @endforeach

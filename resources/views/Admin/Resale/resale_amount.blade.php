@@ -100,9 +100,10 @@
                                 <div class="col-md-3 seller-agreement-section d-none">
                                     <div class="form-group">
                                         <label>Seller agreement</label>
-                                        <input type="file" name="seller_agreeement" id="seller_agreeement"
-                                            class="form-control" placeholder="Attach seller agreement">
+                                        <input type="file" name="seller_agreeement[]" id="seller_agreeement"
+                                            class="form-control" placeholder="Attach seller agreement" multiple>
                                     </div>
+
                                 </div>
 
                                 <div class="col-md-3">

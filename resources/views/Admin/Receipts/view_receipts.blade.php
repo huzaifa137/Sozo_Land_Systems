@@ -9,6 +9,7 @@
                 <div class="card">
                     <?php
                     $userInformation = DB::table('admin_registers')->where('id',Session('LoggedAdmin'))->first();
+                    
                     ?>
                     
                     @if ($userInformation->admin_category == 'SuperAdmin')
@@ -151,15 +152,19 @@
                                 <img style="width: 100%; " src="{{'/public/public/receipts/'.$user_receipt->receipt}}" alt="">
                                 @endforeach
                                 </div>
-
-                                 <div class="col-md-9" style="padding-left: 10rem">
-
-                                 @foreach ($user_resell_agreement as $key => $user_receipt)
-                                <br> <br>
-                                <img style="width: 100%; " src="{{'/public/public/resoldPlots/'.$user_receipt->seller_agreeement}}" alt="">
-                                @endforeach
-                                </div>
-                              
+                                
+                                <br>
+                                
+                                  <div class="col-md-9" style="padding-left: 10rem">
+                                        @if (!empty($user_resell_agreement->seller_agreeement))
+                                            @foreach ($user_resell_agreement->seller_agreeement as $image)
+                                                <br><br>
+                                                <img style="width: 100%;" src="{{ asset('/public/public/resoldPlots/' . $image) }}" alt="Seller Agreement Image">
+                                            @endforeach
+                                        @else
+                                            <p>No seller agreement images found.</p>
+                                        @endif
+                                    </div>
                                 
                               </div>
                             </div>

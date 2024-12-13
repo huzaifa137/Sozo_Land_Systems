@@ -13,19 +13,20 @@ class AdminAuth
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+public function handle(Request $request, Closure $next): Response
     {
-        if(!session()->has('LoggedAdmin') && ($request->path() !='/' )){
-            return redirect('/')->with('fail','You must be logged in');
-        }
+        // if (!session()->has('LoggedAdmin') && $request->path() != '/') {
+        //     return redirect('/')->with('fail', 'You must be logged in');
+        // }
+        
+        if (!session()->has('LoggedAdmin') && $request->path() != '/' && $request->path() != 'privacy-policy') {
+    return redirect('/')->with('fail', 'You must be logged in');
+}
 
-        if(session()->has('LoggedAdmin') && ($request->path() == '/' )){
-            return back();
-        }
 
-        // return $next($request)->header('Cache-Control','no-cache, no-store, max-age=0, must-revalidate')
-        //                       ->header('Pragma','no-cache')
-        //                       ->header('Expires','Sat 01 Jan 1990 00:00:00 GMT');
+        if (session()->has('LoggedAdmin') && $request->path() == '/') {
+            return redirect()->route('admin-dashboard');
+        }
 
         return $next($request);
     }

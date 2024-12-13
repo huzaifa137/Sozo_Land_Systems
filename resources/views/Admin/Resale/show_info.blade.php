@@ -290,6 +290,11 @@
                                           @endif
                                         </tr>
 
+                                          @if ($userInformation->email == "sozoproperties531@gmail.com")
+                                         <td class="text-info">Phone number</td>
+                                         <td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>
+                                          @endif
+
                                         <tr>
                                           <!--<td class="text-info">Phone number</td>-->
                                           <!--<td class="text-right font-weight-medium"> {{$data->phonenumber}} </td>-->

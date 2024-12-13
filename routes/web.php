@@ -7,8 +7,9 @@ Route::post('admin-send', [Master::class, 'admin_check'])->name('admin-send');
 Route::get('reload-captcha', [Master::class, 'reload_captcha']);
 
 Route::group(['middleware' => ['AdminAuth']], function () {
-
+    
     Route::get('/', [Master::class, 'login'])->name('home');
+
 
     Route::post('admin-registration', [Master::class, 'admin_register_data'])->name('admin-registration');
     Route::get('admin-dashboard', [Master::class, 'dashboard'])->name('admin-dashboard');
@@ -76,7 +77,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('download-estate/{id}', [Master::class, 'download_estate']);
     Route::get('total-plots-in-estate/{id}', [Master::class, 'all_plots_in_estate'])->name('total-plots-in-estate');
     Route::get('total-fully-paid-plots-in-estate/{id}', [Master::class, 'total_fully_paid_plots_in_estate']);
-    Route::get('total-not-taken-plots-in-estate/{id}', [Master::class, 'total_not_taken_plots_in_estate']);
+    Route::get('total-not-taken-plots-in-estate/{id}', [Master::class, 'total_not_taken_plots_in_estate'])->name('total-not-taken-plots-in-estate');
     Route::post('send-estate-data', [Master::class, 'store_estate'])->name('send-estate-data');
     Route::post('send-plot-data', [Master::class, 'send_plot_estate'])->name('send-plot-data');
 
@@ -114,7 +115,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('all-agents', [Master::class, 'all_agents'])->name('all-agents');
     Route::get('all-estates', [Master::class, 'all_estates'])->name('all-estates');
     Route::get('all-plots', [Master::class, 'all_plots'])->name('all-plots');
-
+    
     // Posters
 
     Route::get('all-posters', [Master::class, 'all_posters'])->name('all-posters');
@@ -122,21 +123,25 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('total-plot-posters-in-estate/{id}', [Master::class, 'all_plot_posters_in_estate']);
     Route::get('total-plot-without-posters-in-estate/{id}', [Master::class, 'all_plot_without_posters_in_estate']);
 
-    Route::post('save-plot-poster', [Master::class, 'save_plot_poster'])->name('save-plot-poster');
-    Route::post('remove-plot-from-poster', [Master::class, 'remove_poster_from_plots'])->name('remove-plot-from-poster');
-
+    Route::post('save-plot-poster',[Master::class,'save_plot_poster'])->name('save-plot-poster');
+    Route::post('remove-plot-from-poster',[Master::class,'remove_poster_from_plots'])->name('remove-plot-from-poster');
+    
     Route::get('multiple-records', [Master::class, 'get_multiple_records'])->name('multiple-records');
     Route::get('repeatitive', [Master::class, 'get_repeatitive_records'])->name('repeatitive');
     Route::get('fetchPendingNumbers', [Master::class, 'fetchPendingNumbers'])->name('fetchPendingNumbers');
 
     Route::get('clearence-user-agreement/{userID}', [Master::class, 'clearenceUserAgreement']);
     Route::post('attach-seller-agreement', [Master::class, 'attachSellerAgreement'])->name('attach-seller-agreement');
-
+    
     Route::get('/receipt/{id}', [Master::class, 'showReceipt'])->name('showReceipt');
-
+    
     Route::get('/edit-plot-information/{plotInformation}', [Master::class, 'editPlotInformation']);
     Route::post('store-plot-updated-information', [Master::class, 'storePlotUpdatedInformation'])->name('store-plot-updated-information');
 
     Route::get('/edit-estate-information/{plotInformation}', [Master::class, 'editEstateInformation']);
     Route::post('store-estate-updated-information', [Master::class, 'storeEstateUpdatedInformation'])->name('store-estate-updated-information');
+    
+    Route::get('privacy-policy', [Master::class, 'privacyPolicy'])->name('privacy-policy');
+
+    
 });
