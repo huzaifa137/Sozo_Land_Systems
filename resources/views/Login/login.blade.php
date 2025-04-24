@@ -60,18 +60,18 @@
 
                             @if ($user_registered_ip == null)
 
-                            <div class="mb-4 col-md-12">
-                                <label class="mb-1">Captcha<span class="text-danger">*</span></label>
-                                    <input type="text" name="captcha" id="captcha" class="form-control" placeholder="Enter captcha" required>
-                                    <span class="text-danger">@error('captcha'){{$message}}@enderror</span>
-                            </div>
+                            <!--<div class="mb-4 col-md-12">-->
+                            <!--    <label class="mb-1">Captcha<span class="text-danger">*</span></label>-->
+                            <!--        <input type="text" name="captcha" id="captcha" class="form-control" placeholder="Enter captcha" required>-->
+                            <!--        <span class="text-danger">@error('captcha'){{$message}}@enderror</span>-->
+                            <!--</div>-->
 
-                            <div class="mb-1 col-md-12">
-                                <div class="captcha">
-                                    <span style="width: 50%; height: 50%;">{!! captcha_img('flat') !!}</span>
-                                    <button type="button" class="btn btn-danger reload" id="reload">&#x21bb;</button>                                    
-                                </div>
-                            </div>
+                            <!--<div class="mb-1 col-md-12">-->
+                            <!--    <div class="captcha">-->
+                            <!--        <span style="width: 50%; height: 50%;">{!! captcha_img('flat') !!}</span>-->
+                            <!--        <button type="button" class="btn btn-danger reload" id="reload">&#x21bb;</button>                                    -->
+                            <!--    </div>-->
+                            <!--</div>-->
 
                             @endif
 

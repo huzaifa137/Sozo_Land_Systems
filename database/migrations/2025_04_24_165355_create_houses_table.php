@@ -13,12 +13,19 @@ return new class extends Migration
     {
         Schema::create('houses', function (Blueprint $table) {
             $table->id();
-            $table->text('estate');
-            $table->text('plot_number');
-            $table->text('width');
-            $table->text('height');
-            $table->text('status')->dedault('Not Taken');
+            $table->text('price');
             $table->text('location');
+            $table->text('width1');
+            $table->text('width2');
+            $table->text('height1');
+            $table->text('height2');
+            $table->text('LandTenure');
+            $table->text('bedroom');
+            $table->text('purchase_procedure');
+            $table->text('amenities');
+            $table->json('agreement_files')->nullable();
+            $table->json('house_images')->nullable();
+            $table->text('status')->default(0);
             $table->timestamps();
         });
     }
