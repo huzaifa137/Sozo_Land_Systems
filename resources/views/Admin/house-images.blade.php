@@ -132,7 +132,11 @@
                     </div>
 
                     <div class="col-md-2 mb-2">
-                        <input type="number" name="price" class="form-control w-100" placeholder="Price">
+                        <input type="number" name="min_price" class="form-control w-100" placeholder="min price">
+                    </div>
+
+                    <div class="col-md-2 mb-2">
+                        <input type="number" name="max_price" class="form-control w-100" placeholder="max price">
                     </div>
 
                     <div class="col-md-2 mb-2">
@@ -158,6 +162,7 @@
                         <select name="status" class="form-control w-100">
                             <option value="">Status</option>
                             <option value="0">Available</option>
+                            <option value="1">Pending Approval</option>
                             <option value="10">Sold</option>
                         </select>
                     </div>

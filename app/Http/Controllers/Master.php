@@ -9,6 +9,7 @@ use App\Models\Estate;
 use App\Models\expenditure;
 use App\Models\expenditure_service;
 use App\Models\house;
+use App\Models\houseBuyer;
 use App\Models\pdf_agreements;
 use App\Models\pdf_receipt;
 use App\Models\plot;
@@ -3205,15 +3206,14 @@ class Master extends Controller
             $query->where('location', 'like', '%' . $request->location . '%');
         }
 
-        if ($request->filled('price')) {
-            $price = $request->price;
+        if ($request->filled('min_price')) {
+            $price = $request->min_price;
+            $query->where('price', '>=', $price);
+        }
 
-            if (strpos($price, '-') !== false) {
-                list($minPrice, $maxPrice) = explode('-', $price);
-                $query->whereBetween('price', [(int) $minPrice, (int) $maxPrice]);
-            } else {
-                $query->where('price', '>=', $price);
-            }
+        if ($request->filled('max_price')) {
+            $price = $request->max_price;
+            $query->where('price', '<=', $price);
         }
 
         if ($request->filled('bedroom')) {
@@ -3243,6 +3243,92 @@ class Master extends Controller
         $house = house::findOrFail($id);
 
         return view('Admin.show-house-information', compact('house'));
+    }
+
+    public function store_buyer_house_details(Request $request)
+    {
+
+        $request->validate([
+            'firstname'         => 'required|string|max:255',
+            'lastname'          => 'required|string|max:255',
+            'gender'            => 'required|string',
+            'date_of_birth'     => 'required|date',
+            'NIN'               => 'required|string|max:255',
+            'card_number'       => 'required|string|max:255',
+            'phonenumber'       => 'required|string|max:255',
+            'national_id_front' => 'required|file|mimes:jpg,png,jpeg|max:2048',
+            'national_id_back'  => 'required|file|mimes:jpg,png,jpeg|max:2048',
+            'profile_pic'       => 'required|file|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+        $nationalIdFrontPath = null;
+        if ($request->hasFile('national_id_front') && $request->file('national_id_front')->isValid()) {
+            $nationalIdFrontPath = $request->file('national_id_front')->store('uploads/national_ids', 'public');
+        }
+
+        $nationalIdBackPath = null;
+        if ($request->hasFile('national_id_back') && $request->file('national_id_back')->isValid()) {
+            $nationalIdBackPath = $request->file('national_id_back')->store('uploads/national_ids', 'public');
+        }
+
+        $profilePicPath = null;
+        if ($request->hasFile('profile_pic') && $request->file('profile_pic')->isValid()) {
+            $profilePicPath = $request->file('profile_pic')->store('uploads/profile_pics', 'public');
+        }
+
+        $buyer = new houseBuyer();
+
+        $buyer->firstname         = $request->input('firstname');
+        $buyer->lastname          = $request->input('lastname');
+        $buyer->gender            = $request->input('gender');
+        $buyer->date_of_birth     = $request->input('date_of_birth');
+        $buyer->NIN               = $request->input('NIN');
+        $buyer->card_number       = $request->input('card_number');
+        $buyer->phonenumber       = $request->input('phonenumber');
+        $buyer->national_id_front = $nationalIdFrontPath;
+        $buyer->national_id_back  = $nationalIdBackPath;
+        $buyer->profile_pic       = $profilePicPath;
+        $buyer->house_id          = $request->input('house_id');
+        $buyer->sold_by           = Session('LoggedAdmin');
+        $buyer->save();
+
+        $id = $request->input('house_id');
+
+        DB::table('houses')->where('id', $id)
+            ->update(['status' => 1]);
+
+        return response()->json([
+            'message' => 'Buyer details stored successfully!',
+        ]);
+    }
+
+    public function approvalHouseSell()
+    {
+        $pendingApprovals = house::where('status', 1)->paginate(2);
+
+        return view('Admin.show-pending-house-approval', compact(['pendingApprovals']));
+    }
+
+    public function pendingHouseInformation($id)
+    {
+        $pendingHouses = house::where('id', $id)->first();
+
+        return view('Admin.show-pending-approval-houses', compact(['pendingHouses']));
+    }
+
+    public function approveHouseSell(Request $request)
+    {
+        $houseId = $request->input('house_id');
+
+        DB::table('house_buyers')->where('house_id', $houseId)->update([
+            'selling_status' => 10,
+        ]);
+
+        DB::table('houses')->where('id', $houseId)->update([
+            'status' => 10,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
 }

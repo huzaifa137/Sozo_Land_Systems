@@ -66,11 +66,8 @@
 
                 @if ($User_access_right == 'SuperAdmin')
                     <li class="nav-item"> <a class="nav-link" href="{{ route('admin-buyer') }}">Sell Plot</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell
-                            House</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('estates') }}">Estates</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('plots') }}">Add Plot</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('add-house') }}">Add House</a></li>
                 @elseif($User_access_right == 'Admin')
                     <li class="nav-item"> <a class="nav-link" href="{{ route('admin-buyer') }}">Sell Plot</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell
@@ -85,6 +82,55 @@
             </ul>
         </div>
     </li>
+
+    <?php
+    $pendingApproval = DB::table('houses')->where('status', 1)->count();
+    ?>
+    <li class="nav-item menu-items">
+        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ui-house"
+            aria-expanded="false" aria-controls="ui-house">
+            <span class="menu-icon">
+                <i class="mdi mdi-home"></i>
+            </span>
+            <span class="menu-title d-flex align-items-center">
+                Houses
+                @if ($pendingApproval > 0)
+                    <span class="badge bg-danger rounded-pill ms-2">{{ $pendingApproval }}</span>
+                @endif
+            </span>
+            <i class="menu-arrow"></i>
+        </a>
+
+        <div class="collapse" id="ui-house">
+            <ul class="nav flex-column sub-menu">
+                @if ($User_access_right == 'SuperAdmin')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('add-house') }}">Add House</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell House</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center"
+                            href="{{ route('approval.house.sell') }}">
+                            Pending Approval
+                            @if ($pendingApproval > 0)
+                                <span class="badge bg-danger rounded-pill ms-2">{{ $pendingApproval }}</span>
+                            @endif
+                        </a>
+                    </li>
+                @elseif($User_access_right == 'Admin')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('add-house') }}">Add House</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell House</a>
+                    </li>
+                @endif
+            </ul>
+        </div>
+    </li>
+
 
 
     @if ($User_access_right == 'SuperAdmin')
@@ -101,7 +147,8 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="{{ route('accomplished') }}">Full purchased</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under payments</a>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under
+                            payments</a>
                     </li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
                             Receipts</a>

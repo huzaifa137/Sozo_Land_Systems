@@ -14,11 +14,14 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('admin-dashboard', [Master::class, 'dashboard'])->name('admin-dashboard');
     Route::get('admin-buyer', [Master::class, 'admin_buyer'])->name('admin-buyer');
     Route::get('house-information/{id}', [Master::class, 'showHouseInfo'])->name('house.details');
+    Route::get('approval-house-sell', [Master::class, 'approvalHouseSell'])->name('approval.house.sell');
     Route::get('admin-sell-house', [Master::class, 'adminSellHouse'])->name('admin-sell-house');
     Route::get('admin-sell-house-fetch', [Master::class, 'adminSellHouseFetch'])->name('admin.sell.house.fetch');
     Route::get('admin-logout', [Master::class, 'logout'])->name('admin-logout');
     Route::post('store-buyer-details', [Master::class, 'store_buyer_details'])->name('store-buyer-details');
+    Route::post('store-buyer-house-details', [Master::class, 'store_buyer_house_details'])->name('store-buyer-house-details');
     Route::get('Edit_sale/{id}', [Master::class, 'Edit_sale']);
+    Route::get('pending-house-information/{id}', [Master::class, 'pendingHouseInformation']);
     Route::get('delete_sale/{id}', [Master::class, 'delete_sale']);
     Route::get('view_specific_sale/{id}', [Master::class, 'view_specific_sale']);
     Route::post('store-new-receipt', [Master::class, 'store_new_receipt'])->name('store-new-receipt');
@@ -71,6 +74,8 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('add-expenditure', [Master::class, 'add_expenditure'])->name('add-expenditure');
     Route::post('store-expenditure', [Master::class, 'store_expenditure'])->name('store-expenditure');
     Route::get('expense-today', [Master::class, 'today_expense'])->name('expense-today');
+    Route::post('/approve-house-sell', [Master::class, 'approveHouseSell'])->name('approve-house-sell');
+
 
     Route::get('estates', [Master::class, 'estates'])->name('estates');
     Route::get('plots', [Master::class, 'plots'])->name('plots');
