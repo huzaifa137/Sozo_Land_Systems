@@ -256,7 +256,17 @@
                                     <strong>Phone Number:</strong><span>{{ $user->phonenumber }}</span>
                                 </div>
                                 <div class="col-md-6 info-row">
-                                    <strong>Sold By:</strong><span>{{ $user->sold_by }}</span>
+                                    <?php
+                                    $LoggedUser = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
+                                    ?>
+                                    <strong>Sold By:</strong><span>{{ $LoggedUser->username }}</span>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <a href="{{ url('agreement/download/' . $pendingHouses->id) }}"
+                                        class="btn btn-md btn-success">
+                                        <i class="fa fa-download"></i> Download Agreement
+                                    </a>
                                 </div>
 
                                 <!-- Display Images -->

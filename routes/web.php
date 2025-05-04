@@ -10,6 +10,8 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::get('/', [Master::class, 'login'])->name('home');
 
+    Route::get('/agreement/download/{houseId}', [Master::class, 'downloadAgreementPdf']);
+
     Route::post('admin-registration', [Master::class, 'admin_register_data'])->name('admin-registration');
     Route::get('admin-dashboard', [Master::class, 'dashboard'])->name('admin-dashboard');
     Route::get('admin-buyer', [Master::class, 'admin_buyer'])->name('admin-buyer');

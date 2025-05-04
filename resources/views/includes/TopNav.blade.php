@@ -9,7 +9,6 @@
     
     ?>
 
-
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-bs-toggle="dropdown"
@@ -19,7 +18,7 @@
                 <h6 class="p-3 mb-0" style="text-align: center">Sozo Properties</h6>
                 <div class="dropdown-divider"></div>
 
-                <a class="dropdown-item preview-item" href="{{ 'admin-register' }}">
+                <a class="dropdown-item preview-item" href="{{ url('/admin-register') }}">
                     <div class="preview-thumbnail">
                         <div class="preview-icon bg-dark rounded-circle">
                             <i class="mdi mdi-plus text-primary"></i>

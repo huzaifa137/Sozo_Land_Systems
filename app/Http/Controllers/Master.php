@@ -3155,8 +3155,12 @@ class Master extends Controller
         $record->LandTenure         = $request->LandTenure;
         $record->bedroom            = $request->bedroom;
         $record->purchase_procedure = $request->purchase_procedure;
-        $record->amenities          = is_array($request->amenities) ? implode(',', $request->amenities) : $request->amenities;
-        $record->status             = 0;
+        if ($request->amenities !== null) {
+            $record->amenities = is_array($request->amenities) ? implode(',', $request->amenities) : $request->amenities;
+        } else {
+            $record->amenities = '-';
+        }
+        $record->status = 0;
 
         $agreementPaths = [];
         if ($request->hasFile('agreements')) {
@@ -3241,7 +3245,6 @@ class Master extends Controller
     public function showHouseInfo($id)
     {
         $house = house::findOrFail($id);
-
         return view('Admin.show-house-information', compact('house'));
     }
 
@@ -3290,6 +3293,26 @@ class Master extends Controller
         $buyer->profile_pic       = $profilePicPath;
         $buyer->house_id          = $request->input('house_id');
         $buyer->sold_by           = Session('LoggedAdmin');
+        // $buyer->save();
+
+        // Generate and save the PDF
+
+        $user = DB::table('buyers')->where('id', 1)->first();
+
+        $data = [
+            'buyer'           => $user,
+            'agreement_date'  => now()->day,
+            'agreement_month' => now()->format('F'),
+            'agreement_year'  => now()->year,
+        ];
+
+        $pdf      = Pdf::loadView('house_agreement', $data)->setPaper('A4');
+        $fileName = 'buyer_agreement_' . $user->id . '.pdf';
+        $filePath = 'agreements/' . $fileName;
+
+        Storage::disk('public')->put($filePath, $pdf->output());
+
+        $buyer->buyer_pdf = $filePath;
         $buyer->save();
 
         $id = $request->input('house_id');
@@ -3329,6 +3352,17 @@ class Master extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function downloadAgreementPdf($houseId)
+    {
+        $buyer = houseBuyer::where('house_id', $houseId)->firstOrFail();
+
+        if (! $buyer->buyer_pdf || ! Storage::disk('public')->exists($buyer->buyer_pdf)) {
+            abort(404, 'PDF not found.');
+        }
+
+        return Storage::disk('public')->download($buyer->buyer_pdf, 'land-sale-agreement.pdf');
     }
 
 }

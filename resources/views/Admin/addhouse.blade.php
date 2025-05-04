@@ -385,7 +385,15 @@
             }
         }
 
-        if (housePicsVisible && (!housePicsInput || housePicsInput.files.length === 0)) {
+        // if (housePicsVisible && (!housePicsInput || housePicsInput.files.length === 0)) {
+        //     fileErrors.push('Please attach at least one <strong>House Image</strong>.');
+        //     if (housePicsInput) {
+        //         housePicsInput.classList.add('is-invalid');
+        //         if (!firstInvalid) firstInvalid = housePicsInput;
+        //     }
+        // }
+
+        if (!housePicsInput || housePicsInput.files.length === 0) {
             fileErrors.push('Please attach at least one <strong>House Image</strong>.');
             if (housePicsInput) {
                 housePicsInput.classList.add('is-invalid');

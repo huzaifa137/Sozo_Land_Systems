@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('LandTenure');
             $table->text('bedroom');
             $table->text('purchase_procedure');
-            $table->text('amenities');
+            $table->text('amenities')->nullable();
             $table->json('agreement_files')->nullable();
             $table->json('house_images')->nullable();
             $table->text('status')->default(0);
