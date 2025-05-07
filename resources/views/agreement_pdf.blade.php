@@ -66,9 +66,7 @@
 
     <section>
         <div class="img_class">
-        
                 <img src="{{$profile_pic}}"  />
-
     </div>
         <center>
             <h2>THE REPUBLIC OF UGANDA</h2>

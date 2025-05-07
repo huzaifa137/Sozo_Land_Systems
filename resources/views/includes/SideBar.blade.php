@@ -94,9 +94,15 @@
             </span>
             <span class="menu-title d-flex align-items-center">
                 Houses
-                @if ($pendingApproval > 0)
-                    <span class="badge bg-danger rounded-pill ms-2">{{ $pendingApproval }}</span>
+
+                @if ($User_access_right == 'SuperAdmin')
+                    @if ($pendingApproval > 0)
+                        <span class="badge bg-danger rounded-pill ms-2">{{ $pendingApproval }}</span>
+                    @endif
+                @else
+                    <span class="badge bg-danger rounded-pill ms-2"></span>
                 @endif
+
             </span>
             <i class="menu-arrow"></i>
         </a>

@@ -3176,8 +3176,8 @@ class Master extends Controller
         if ($request->hasFile('housePics')) {
             foreach ($request->file('housePics') as $file) {
                 if ($file->isValid()) {
-                    $path              = $file->store('uploads/housePics', 'public');
-                    $houseImagePaths[] = $path;
+                    $path              = $file->move(public_path('uploads/housePics'), $file->getClientOriginalName());
+                    $houseImagePaths[] = 'uploads/housePics/' . $file->getClientOriginalName();
                 }
             }
         }
@@ -3264,19 +3264,43 @@ class Master extends Controller
             'profile_pic'       => 'required|file|mimes:jpg,png,jpeg|max:2048',
         ]);
 
+        // $nationalIdFrontPath = null;
+        // if ($request->hasFile('national_id_front') && $request->file('national_id_front')->isValid()) {
+        //     $nationalIdFrontPath = $request->file('national_id_front')->store('uploads/national_ids', 'public');
+        // }
+
+        // $nationalIdBackPath = null;
+        // if ($request->hasFile('national_id_back') && $request->file('national_id_back')->isValid()) {
+        //     $nationalIdBackPath = $request->file('national_id_back')->store('uploads/national_ids', 'public');
+        // }
+
+        // $profilePicPath = null;
+        // if ($request->hasFile('profile_pic') && $request->file('profile_pic')->isValid()) {
+        //     $profilePicPath = $request->file('profile_pic')->store('uploads/profile_pics', 'public');
+        // }
+
         $nationalIdFrontPath = null;
         if ($request->hasFile('national_id_front') && $request->file('national_id_front')->isValid()) {
-            $nationalIdFrontPath = $request->file('national_id_front')->store('uploads/national_ids', 'public');
+            $file     = $request->file('national_id_front');
+            $filename = time() . '_front_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/houseBuyerIds'), $filename);
+            $nationalIdFrontPath = 'uploads/houseBuyerIds/' . $filename;
         }
 
         $nationalIdBackPath = null;
         if ($request->hasFile('national_id_back') && $request->file('national_id_back')->isValid()) {
-            $nationalIdBackPath = $request->file('national_id_back')->store('uploads/national_ids', 'public');
+            $file     = $request->file('national_id_back');
+            $filename = time() . '_back_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/houseBuyerIds'), $filename);
+            $nationalIdBackPath = 'uploads/houseBuyerIds/' . $filename;
         }
 
         $profilePicPath = null;
         if ($request->hasFile('profile_pic') && $request->file('profile_pic')->isValid()) {
-            $profilePicPath = $request->file('profile_pic')->store('uploads/profile_pics', 'public');
+            $file     = $request->file('profile_pic');
+            $filename = time() . '_profile_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/houseBuyerIds'), $filename);
+            $profilePicPath = 'uploads/houseBuyerIds/' . $filename;
         }
 
         $buyer = new houseBuyer();

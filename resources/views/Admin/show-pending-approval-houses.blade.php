@@ -159,34 +159,38 @@
             </div>
 
             <!-- House Images -->
-            <div class="col-12 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">House Images</h4>
-                        <div class="row">
-                            @php
-                                $images = json_decode(@$pendingHouses->house_images, true);
-                            @endphp
-
-                            @if (count($images) == 1)
-                                <!-- For a single image, span full width -->
-                                <div class="col-12 single-image-container">
-                                    <img src="{{ asset('storage/' . $images[0]) }}" alt="House Image"
-                                        class="uniform-img mb-2">
-                                </div>
-                            @else
-                                <!-- For multiple images -->
-                                @foreach ($images as $image)
-                                    <div class="col-md-4">
-                                        <img src="{{ asset('storage/' . $image) }}" alt="House Image"
-                                            class="uniform-img mb-2">
+            
+                <div class="col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">House Images</h4>
+                            <div class="row">
+                                @php
+                                    $decoded = json_decode($pendingHouses->house_images, true);
+                                    $images = is_array($decoded) ? $decoded : [];
+                                @endphp
+                                
+                                                                
+                               @if (count($images) === 1)
+                                    <div class="col-12 single-image-container">
+                                        <img src="{{ asset($images[0]) }}" alt="House Image" class="uniform-img mb-2">
                                     </div>
-                                @endforeach
-                            @endif
+                                @elseif(count($images) > 1)
+                                    @foreach ($images as $image)
+                                        <div class="col-md-4">
+                                            <img src="{{ asset($image) }}" alt="House Image" class="uniform-img mb-2">
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="col-12">
+                                        <p>No images available for this house.</p>
+                                    </div>
+                                @endif
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Agreement Files -->
             @if (!empty(@$pendingHouses->agreement_files) && json_decode(@$pendingHouses->agreement_files, true))
@@ -275,23 +279,23 @@
                                         'height: 250px; width: 100%; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
                                 @endphp
 
-                                <div class="col-md-4 mt-4 text-center">
-                                    <label class="fw-bold mb-2">National ID Front</label>
-                                    <img src="{{ asset('storage/' . $user->national_id_front) }}" class="img-thumbnail"
-                                        style="{{ $imageStyle }}">
-                                </div>
+                                     <div class="col-md-4 mt-4 text-center">
+                                        <label class="fw-bold mb-2">National ID Front</label>
+                                        <img src="{{ asset($user->national_id_front) }}" class="img-thumbnail"
+                                            style="{{ $imageStyle }}">
+                                    </div>
 
-                                <div class="col-md-4 mt-4 text-center">
-                                    <label class="fw-bold mb-2">National ID Back</label>
-                                    <img src="{{ asset('storage/' . $user->national_id_back) }}" class="img-thumbnail"
-                                        style="{{ $imageStyle }}">
-                                </div>
+                                    <div class="col-md-4 mt-4 text-center">
+                                        <label class="fw-bold mb-2">National ID Back</label>
+                                        <img src="{{ asset($user->national_id_back) }}" class="img-thumbnail"
+                                            style="{{ $imageStyle }}">
+                                    </div>
 
-                                <div class="col-md-4 mt-4 text-center">
-                                    <label class="fw-bold mb-2">Profile Image</label>
-                                    <img src="{{ asset('storage/' . $user->profile_pic) }}" class="img-thumbnail"
-                                        style="{{ $imageStyle }}">
-                                </div>
+                                    <div class="col-md-4 mt-4 text-center">
+                                        <label class="fw-bold mb-2">Profile Image</label>
+                                        <img src="{{ asset($user->profile_pic) }}" class="img-thumbnail"
+                                            style="{{ $imageStyle }}">
+                                    </div>
 
                             </div>
                         @else

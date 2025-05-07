@@ -182,7 +182,8 @@
                     <div class="col-md-3 col-sm-6 col-12 mb-3">
                         <div class="image-card">
                             <a href="{{ route('house.details', ['id' => $house->id]) }}" class="d-block">
-                                <img src="{{ $firstImage }}" alt="House Thumbnail" class="uniform-img" />
+                                {{-- <img src="{{ $firstImage }}" alt="House Thumbnail" class="uniform-img" /> --}}
+                                <img src="{{ $images[0] }}" alt="House Thumbnail" class="uniform-img" />
                                 <div class="hover-info">
                                     <div><strong>Price:</strong> {{ $house->price }}</div>
                                     <div><strong>Location:</strong> {{ $house->location }}</div>
