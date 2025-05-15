@@ -132,6 +132,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell House</a>
                     </li>
+                @elseif($User_access_right == 'Sales')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Houses</a>
+                    </li>
                 @endif
             </ul>
         </div>

@@ -3200,7 +3200,7 @@ class Master extends Controller
         $data              = ['LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first()];
         $User_access_right = $this->user_right_info();
 
-        if (! in_array($User_access_right, ['SuperAdmin', 'Admin'])) {
+        if (! in_array($User_access_right, ['SuperAdmin', 'Admin','Sales'])) {
             return redirect('estates');
         }
 

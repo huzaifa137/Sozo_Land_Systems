@@ -215,211 +215,216 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                 $user = DB::table('house_buyers')->where('house_id', $house->id)->first();
             @endphp
 
-            <!-- Add margin-top to create space between sections -->
-            <div class="col-12" style="margin-top: 50px;">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Buyer Information</h4>
+            @if ($User_access_right != 'Admin' && $User_access_right != 'SuperAdmin')
+    
+            @else
+                <!-- Add margin-top to create space between sections -->
+                <div class="col-12" style="margin-top: 50px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Buyer Information</h4>
 
-                        @if (@$user)
-                            @if (@$user->selling_status == 0)
-                                <div class="alert alert-danger d-flex align-items-center" role="alert"
-                                    style="font-size: 16px;">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    <strong><span style="color: black;">CEO Pending Approval</span></strong>
-                                </div>
+                            @if (@$user)
+                                @if (@$user->selling_status == 0)
+                                    <div class="alert alert-danger d-flex align-items-center" role="alert"
+                                        style="font-size: 16px;">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong><span style="color: black;">CEO Pending Approval</span></strong>
+                                    </div>
+                                @endif
                             @endif
-                        @endif
 
-                        @if ($user)
-                            <!-- Show stored buyer details nicely formatted -->
-                            <div class="row">
-                                <div class="col-md-6 info-row">
-                                    <strong>First Name:</strong><span>{{ $user->firstname }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
-                                    <strong>Last Name:</strong><span>{{ $user->lastname }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
-                                    <strong>Gender:</strong><span>{{ $user->gender }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
-                                    <strong>Date of Birth:</strong><span>{{ $user->date_of_birth }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
-                                    <strong>NIN:</strong><span>{{ $user->NIN }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
-                                    <strong>Card Number:</strong><span>{{ $user->card_number }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
-                                    <strong>Phone Number:</strong><span>{{ $user->phonenumber }}</span>
-                                </div>
-                                <div class="col-md-6 info-row">
+                            @if ($user)
+                                <!-- Show stored buyer details nicely formatted -->
+                                <div class="row">
+                                    <div class="col-md-6 info-row">
+                                        <strong>First Name:</strong><span>{{ $user->firstname }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        <strong>Last Name:</strong><span>{{ $user->lastname }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        <strong>Gender:</strong><span>{{ $user->gender }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        <strong>Date of Birth:</strong><span>{{ $user->date_of_birth }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        <strong>NIN:</strong><span>{{ $user->NIN }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        <strong>Card Number:</strong><span>{{ $user->card_number }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        <strong>Phone Number:</strong><span>{{ $user->phonenumber }}</span>
+                                    </div>
+                                    <div class="col-md-6 info-row">
+                                        @php
+                                            $LoggedUser = DB::table('admin_registers')
+                                                ->where('id', Session('LoggedAdmin'))
+                                                ->first();
+                                        @endphp
+                                        <strong>Sold By:</strong><span>{{ $LoggedUser->username ?? 'N/A' }}</span>
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <a href="{{ url('agreement/download/' . $house->id) }}"
+                                            class="btn btn-md btn-success">
+                                            <i class="fa fa-download"></i> Download Agreement
+                                        </a>
+                                    </div>
+
+                                    <!-- Display Images -->
                                     @php
-                                        $LoggedUser = DB::table('admin_registers')
-                                            ->where('id', Session('LoggedAdmin'))
-                                            ->first();
+                                        $imageStyle =
+                                            'height: 250px; width: 100%; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
                                     @endphp
-                                    <strong>Sold By:</strong><span>{{ $LoggedUser->username ?? 'N/A' }}</span>
-                                </div>
 
-                                <div class="col-md-12 mt-3">
-                                    <a href="{{ url('agreement/download/' . $house->id) }}"
-                                        class="btn btn-md btn-success">
-                                        <i class="fa fa-download"></i> Download Agreement
-                                    </a>
-                                </div>
+                                    <div class="col-md-4 mt-4 text-center">
+                                        <label class="fw-bold mb-2">National ID Front</label>
+                                        <img src="{{ asset($user->national_id_front) }}" class="img-thumbnail"
+                                            style="{{ $imageStyle }}">
+                                    </div>
 
-                                <!-- Display Images -->
-                                @php
-                                    $imageStyle =
-                                        'height: 250px; width: 100%; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
-                                @endphp
+                                    <div class="col-md-4 mt-4 text-center">
+                                        <label class="fw-bold mb-2">National ID Back</label>
+                                        <img src="{{ asset($user->national_id_back) }}" class="img-thumbnail"
+                                            style="{{ $imageStyle }}">
+                                    </div>
 
-                                <div class="col-md-4 mt-4 text-center">
-                                    <label class="fw-bold mb-2">National ID Front</label>
-                                    <img src="{{ asset($user->national_id_front) }}" class="img-thumbnail"
-                                        style="{{ $imageStyle }}">
+                                    <div class="col-md-4 mt-4 text-center">
+                                        <label class="fw-bold mb-2">Profile Image</label>
+                                        <img src="{{ asset($user->profile_pic) }}" class="img-thumbnail"
+                                            style="{{ $imageStyle }}">
+                                    </div>
                                 </div>
-
-                                <div class="col-md-4 mt-4 text-center">
-                                    <label class="fw-bold mb-2">National ID Back</label>
-                                    <img src="{{ asset($user->national_id_back) }}" class="img-thumbnail"
-                                        style="{{ $imageStyle }}">
-                                </div>
-
-                                <div class="col-md-4 mt-4 text-center">
-                                    <label class="fw-bold mb-2">Profile Image</label>
-                                    <img src="{{ asset($user->profile_pic) }}" class="img-thumbnail"
-                                        style="{{ $imageStyle }}">
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    @if (@$user)
-                                        @if (@$user->selling_status == 10)
-                                            <td>
-                                                <button class="btn btn-success btn-md disabled">
-                                                    <i class="fas fa-check-circle"></i> Approved & Sold
-                                                </button>
-                                            </td>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @if (@$user)
+                                            @if (@$user->selling_status == 10)
+                                                <td>
+                                                    <button class="btn btn-success btn-md disabled">
+                                                        <i class="fas fa-check-circle"></i> Approved & Sold
+                                                    </button>
+                                                </td>
+                                            @endif
                                         @endif
-                                    @endif
-                                </div>
-                            </div>
-                        @else
-                            <!-- Show the buyer form if no buyer found -->
-                            <form class="form-sample" id="myForm" action="{{ route('store-buyer-house-details') }}"
-                                method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <p class="card-description">Enter customer purchasing information</p>
-
-                                <input type="hidden" name="house_id" id="house_id" value="{{ $house->id }}">
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">First Name</label>
-                                            <input type="text" name="firstname" id="firstname"
-                                                class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">Last Name</label>
-                                            <input type="text" name="lastname" id="lastname"
-                                                class="form-control" required>
-                                        </div>
                                     </div>
                                 </div>
+                            @else
+                                <!-- Show the buyer form if no buyer found -->
+                                <form class="form-sample" id="myForm"
+                                    action="{{ route('store-buyer-house-details') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <p class="card-description">Enter customer purchasing information</p>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">Gender</label>
-                                            <select name="gender" id="gender" class="form-control" required>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" name="house_id" id="house_id"
+                                        value="{{ $house->id }}">
 
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">Date of Birth</label>
-                                            <input type="date" name="date_of_birth" id="date_of_birth"
-                                                class="form-control" required>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">First Name</label>
+                                                <input type="text" name="firstname" id="firstname"
+                                                    class="form-control" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">Nin Number</label>
-                                            <input type="text" name="NIN" id="NIN" class="form-control"
-                                                required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">Card Number</label>
-                                            <input type="text" name="card_number" id="card_number"
-                                                class="form-control" required>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">National ID Front</label>
-                                            <input type="file" name="national_id_front" id="national_id_front"
-                                                class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">National ID Back</label>
-                                            <input type="file" name="national_id_back" id="national_id_back"
-                                                class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label">Profile Image</label>
-                                            <input type="file" name="profile_pic" id="profile_pic"
-                                                class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-form-label mt-2">Phone Number</label>
-                                            <input type="text" name="phonenumber" id="phonenumber"
-                                                class="form-control" required>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Last Name</label>
+                                                <input type="text" name="lastname" id="lastname"
+                                                    class="form-control" required>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-10">
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <button type="button" id="submit_click"
-                                                    class="btn btn-primary">Sell</button>
+                                                <label class="col-form-label">Gender</label>
+                                                <select name="gender" id="gender" class="form-control" required>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Date of Birth</label>
+                                                <input type="date" name="date_of_birth" id="date_of_birth"
+                                                    class="form-control" required>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </form>
-                        @endif
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Nin Number</label>
+                                                <input type="text" name="NIN" id="NIN"
+                                                    class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Card Number</label>
+                                                <input type="text" name="card_number" id="card_number"
+                                                    class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">National ID Front</label>
+                                                <input type="file" name="national_id_front" id="national_id_front"
+                                                    class="form-control" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">National ID Back</label>
+                                                <input type="file" name="national_id_back" id="national_id_back"
+                                                    class="form-control" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Profile Image</label>
+                                                <input type="file" name="profile_pic" id="profile_pic"
+                                                    class="form-control" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label mt-2">Phone Number</label>
+                                                <input type="text" name="phonenumber" id="phonenumber"
+                                                    class="form-control" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="form-group">
+                                                    <button type="button" id="submit_click"
+                                                        class="btn btn-primary">Sell</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
-
+            @endif
 
         </div>
 
