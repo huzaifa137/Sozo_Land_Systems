@@ -2701,6 +2701,26 @@ class Master extends Controller
 
     }
 
+    public function back_on_market_all(Request $request)
+    {
+        $query = resale::query();
+
+        if ($request->has('estate') && $request->estate != '') {
+            $query->where('estate', $request->estate);
+        }
+
+        $allResales = $query->get();
+        $estates    = Estate::all();
+        $data       = [
+            'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first(),
+            'allResales'      => $allResales,
+            'estates'         => $estates,
+            'selectedEstate'  => $request->estate,
+        ];
+
+        return view('Admin.Resale.back-on-market-all', $data);
+    }
+
     public function back_for_client_on_sale()
     {
 
@@ -3200,7 +3220,7 @@ class Master extends Controller
         $data              = ['LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first()];
         $User_access_right = $this->user_right_info();
 
-        if (! in_array($User_access_right, ['SuperAdmin', 'Admin','Sales'])) {
+        if (! in_array($User_access_right, ['SuperAdmin', 'Admin', 'Sales'])) {
             return redirect('estates');
         }
 

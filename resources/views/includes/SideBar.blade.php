@@ -256,10 +256,19 @@
                     <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Back on
                             market</a>
                     </li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market-all') }}">All Back on Market</a></li>
                 </ul>
             </div>
         </li>
     @else
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('back-on-market-all') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-file-document"></i>
+                </span>
+                <span class="menu-title">Back on Market</span>
+            </a>
+        </li>
     @endif
 
 

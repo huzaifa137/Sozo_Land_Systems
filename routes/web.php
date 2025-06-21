@@ -36,6 +36,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('fully-not-taken-half-plots-in-estate/{id}', [Master::class, 'fully_not_taken_half_plots']);
     Route::get('Partially-taken-half-plots-in-estate/{id}', [Master::class, 'partially_taken_half_plots']);
     Route::get('back-on-market', [Master::class, 'back_on_market'])->name('back-on-market');
+    Route::get('back-on-market-all', [Master::class, 'back_on_market_all'])->name('back-on-market-all');
     Route::get('back-for-client-on-sale', [Master::class, 'back_for_client_on_sale'])->name('back-for-client-on-sale');
     Route::get('back-for-company-on-sale', [Master::class, 'back_for_company_on_sale'])->name('back-for-company-on-sale');
     Route::get('user-right-info', [Master::class, 'user_right_info'])->name('user-right-info');
@@ -77,7 +78,6 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('store-expenditure', [Master::class, 'store_expenditure'])->name('store-expenditure');
     Route::get('expense-today', [Master::class, 'today_expense'])->name('expense-today');
     Route::post('/approve-house-sell', [Master::class, 'approveHouseSell'])->name('approve-house-sell');
-
 
     Route::get('estates', [Master::class, 'estates'])->name('estates');
     Route::get('plots', [Master::class, 'plots'])->name('plots');
