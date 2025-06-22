@@ -445,6 +445,7 @@ class Master extends Controller
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         $specific_estate = Estate::find($id);
+        
         $estate_id       = $id;
         $estate_name     = $specific_estate->estate_name;
 
@@ -687,6 +688,7 @@ class Master extends Controller
     {
 
         $specific_estate = Estate::find($id);
+
         $estate_id       = $id;
         $estate_name     = $specific_estate->estate_name;
 

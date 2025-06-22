@@ -142,7 +142,7 @@
                                     <th> Estate Price </th>
                                     <th> Location </th>
                                     <th> Number of plots </th>
-
+                                    <th> Download Sketch</th>
                                     @if ($userInfo == 'SuperAdmin')
                                         <th> Action </th>
                                     @endif
@@ -150,14 +150,27 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                
+                                <link rel="stylesheet"
+                                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+                                <div class="mt-3">
+
+                                </div>
 
                                 <tr>
                                     <td> {{ $specific_estate->estate_name }} </td>
                                     <td> {{ $specific_estate->estate_price }} </td>
                                     <td> {{ $specific_estate->location }} </td>
                                     <td> {{ $specific_estate->number_of_plots }} </td>
-
-
+                                    <td>
+                                        <button id="downloadBtn" class="btn btn-success" onclick="handleDownload()">
+                                            <i class="fas fa-download me-1"></i>
+                                            <span id="btnText">Download Sketch</span>
+                                            <span id="btnSpinner" class="spinner-border spinner-border-sm d-none"
+                                                role="status" aria-hidden="true"></span>
+                                        </button>
+                                    </td>
 
                                     @if ($userInfo == 'SuperAdmin')
                                         <td><a class="text-white btn btn-primary"
@@ -175,20 +188,47 @@
             </div>
         </div>
 
+        <script>
+            function handleDownload() {
+                const btn = document.getElementById('downloadBtn');
+                const btnText = document.getElementById('btnText');
+                const btnSpinner = document.getElementById('btnSpinner');
+
+                btnText.textContent = 'Downloading...';
+                btnSpinner.classList.remove('d-none');
+                btn.disabled = true;
+
+                const link = document.createElement('a');
+                link.href = "{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}";
+                link.download = '';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                setTimeout(() => {
+                    btnText.textContent = 'Download Sketch';
+                    btnSpinner.classList.add('d-none');
+                    btn.disabled = false;
+                }, 1500);
+            }
+        </script>
+
+
+        <style>
+            .btn .spinner-border {
+                margin-left: 5px;
+            }
+        </style>
+
+
         <div>
             <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0"
                 width="100%" height="900px"></iframe>
         </div>
 
     </div>
-
-
-
-
-
 </div>
-<!-- content-wrapper ends -->
-<!-- partial:partials/_footer.html -->
+
 <footer class="footer">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
         <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
