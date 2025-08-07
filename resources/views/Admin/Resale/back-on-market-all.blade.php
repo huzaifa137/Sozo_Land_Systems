@@ -15,35 +15,83 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="">All Plots back on market </h4>
-
-                        <form method="GET" action="{{ route('back-on-market-all') }}">
-                            <div class="form-row align-items-center mb-4">
-                                <div class="col-auto">
-                                    <select name="estate" class="form-control">
-                                        <option value="">-- Filter plots by Estate --</option>
-                                        @foreach ($estates as $estate)
-                                            <option value="{{ $estate->estate_name }}"
-                                                {{ request('estate') == $estate->estate_name ? 'selected' : '' }}>
-                                                {{ ucfirst(str_replace('_', ' ', $estate->estate_name)) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <br>
-                                <link rel="stylesheet"
+      <link rel="stylesheet"
                                     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-                                <div class="col-auto">
-                                    <button type="submit" class="btn btn-primary">
-                                        Search <i class="fas fa-search"></i>
-                                    </button>
-                                    <a href="{{ route('back-on-market-all') }}" class="btn btn-secondary">
-                                        <i class="fas fa-sync-alt"></i> Reset
-                                    </a>
-                                </div>
-
+                        
+                    <form method="GET" action="{{ route('back-on-market-all') }}">
+                        <div class="form-row align-items-center mb-4">
+                    
+                            {{-- Filter Type Selector --}}
+                            <div class="col-auto">
+                                <select id="filterType" name="filter_type" class="form-control">
+                                    <option value="">-- Select Filter Type --</option>
+                                    <option value="estate" {{ request('filter_type') == 'estate' ? 'selected' : '' }}>Filter by Estate</option>
+                                    <option value="date" {{ request('filter_type') == 'date' ? 'selected' : '' }}>Filter by Date</option>
+                                    <option value="name" {{ request('filter_type') == 'name' ? 'selected' : '' }}>Filter by Name</option>
+                                </select>
                             </div>
-                        </form>
+                    
+                            <br>
+                    
+                            {{-- Estate Filter --}}
+                            <div class="col-auto" id="estateFilter" style="display: none;">
+                                <select name="estate" class="form-control">
+                                    <option value="">-- Select Estate --</option>
+                                    @foreach ($estates as $estate)
+                                        <option value="{{ $estate->estate_name }}"
+                                            {{ request('estate') == $estate->estate_name ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('_', ' ', $estate->estate_name)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                    
+                            <br>
+                    
+                            {{-- Date Filter --}}
+                            <div class="col-auto" id="dateFilter" style="display: none;">
+                                <input type="date" name="filter_date" class="form-control" value="{{ request('filter_date') }}">
+                            </div>
+                    
+                            <br>
+                    
+                            {{-- Name Filter --}}
+                            <div class="col-auto position-relative" id="nameFilter" style="display: none;">
+                                <input type="text" id="buyerSearch" class="form-control" placeholder="Search buyer name..." autocomplete="off">
+                                <input type="hidden" name="buyer_id" id="selectedBuyerId">
+                                <div id="buyerSuggestions" class="list-group position-absolute w-100" style="z-index: 999;"></div>
+                            </div>
+                    
+                            <br>
+                    
+                            {{-- Submit + Reset --}}
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">
+                                    Search <i class="fas fa-search"></i>
+                                </button>
+                                <a href="{{ route('back-on-market-all') }}" class="btn btn-secondary">
+                                    <i class="fas fa-sync-alt"></i> Reset
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+            
+
+                @if(request('filter_type') == 'name' && request('buyer_id'))
+                    @php
+                        $buyer = DB::table('buyers')->where('id', request('buyer_id'))->first();
+                    @endphp
+                    @if($buyer)
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                document.getElementById('buyerSearch').value = "{{ $buyer->firstname }} {{ $buyer->lastname }}";
+                            });
+                        </script>
+                    @endif
+                @endif
+
+
 
                         <div class="table-responsive">
                             <table class="table">
@@ -73,6 +121,74 @@
                 </div>
             </div>
         </div>
+        
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterType = document.getElementById('filterType');
+        const estateFilter = document.getElementById('estateFilter');
+        const dateFilter = document.getElementById('dateFilter');
+        const nameFilter = document.getElementById('nameFilter');
+        const buyerSearch = document.getElementById('buyerSearch');
+        const buyerSuggestions = document.getElementById('buyerSuggestions');
+        const selectedBuyerId = document.getElementById('selectedBuyerId');
+
+        function toggleFilters() {
+            const value = filterType.value;
+            estateFilter.style.display = 'none';
+            dateFilter.style.display = 'none';
+            nameFilter.style.display = 'none';
+
+            if (value === 'estate') {
+                estateFilter.style.display = 'block';
+            } else if (value === 'date') {
+                dateFilter.style.display = 'block';
+            } else if (value === 'name') {
+                nameFilter.style.display = 'block';
+            }
+        }
+
+        filterType.addEventListener('change', toggleFilters);
+        toggleFilters(); // restore selected filter state on page load
+
+        // Buyer live search
+        buyerSearch.addEventListener('keyup', function () {
+            const query = this.value;
+
+            if (query.length < 2) {
+                buyerSuggestions.innerHTML = '';
+                return;
+            }
+
+            fetch(`/search-buyers?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    buyerSuggestions.innerHTML = '';
+
+                    if (data.length === 0) {
+                        buyerSuggestions.innerHTML = '<div class="list-group-item">No results found</div>';
+                        return;
+                    }
+
+                    data.forEach(buyer => {
+                        const item = document.createElement('div');
+                        item.classList.add('list-group-item', 'list-group-item-action');
+                        item.textContent = buyer.firstname + ' ' + buyer.lastname;
+                        item.dataset.id = buyer.id;
+
+                        item.addEventListener('click', () => {
+                            buyerSearch.value = item.textContent;
+                            selectedBuyerId.value = buyer.id;
+                            buyerSuggestions.innerHTML = '';
+                        });
+
+                        buyerSuggestions.appendChild(item);
+                    });
+                });
+        });
+    });
+</script>
+
+
 
 
     </div>

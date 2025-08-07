@@ -445,7 +445,6 @@ class Master extends Controller
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         $specific_estate = Estate::find($id);
-        
         $estate_id       = $id;
         $estate_name     = $specific_estate->estate_name;
 
@@ -688,7 +687,6 @@ class Master extends Controller
     {
 
         $specific_estate = Estate::find($id);
-
         $estate_id       = $id;
         $estate_name     = $specific_estate->estate_name;
 
@@ -2702,26 +2700,63 @@ class Master extends Controller
         return view('Admin.Resale.Backonmarket', $data, compact(['count_resold_to_company_in_cash', 'count_sell_for_client_not_in_cash']));
 
     }
+    
 
-    public function back_on_market_all(Request $request)
-    {
-        $query = resale::query();
-
-        if ($request->has('estate') && $request->estate != '') {
-            $query->where('estate', $request->estate);
+        public function back_on_market_all(Request $request)
+        {
+            $query = resale::query();
+        
+            $filterType = $request->input('filter_type');
+        
+            // Estate filter
+            if ($filterType === 'estate' && $request->filled('estate')) {
+                $query->where('estate', $request->estate);
+            }
+        
+            // Date filter
+            if ($filterType === 'date' && $request->filled('filter_date')) {
+                try {
+                    $date = Carbon::parse($request->filter_date)->toDateString();
+                    $query->whereDate('created_at', $date);
+                } catch (\Exception $e) {
+                    // Optional: log error or notify user
+                }
+            }
+        
+            // Name filter (via buyer_id from hidden input)
+            if ($filterType === 'name' && $request->filled('buyer_id')) {
+                $query->where('user_id', $request->buyer_id);
+            }
+        
+            $allResales = $query->get();
+            $estates    = Estate::all();
+        
+            return view('Admin.Resale.back-on-market-all', [
+                'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first(),
+                'allResales'      => $allResales,
+                'estates'         => $estates,
+                'selectedEstate'  => $request->estate,
+                'filterType'      => $filterType,
+                'filterDate'      => $request->filter_date,
+                'buyer_id'        => $request->buyer_id, // ✅ required to repopulate selected buyer
+            ]);
         }
 
-        $allResales = $query->get();
-        $estates    = Estate::all();
-        $data       = [
-            'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first(),
-            'allResales'      => $allResales,
-            'estates'         => $estates,
-            'selectedEstate'  => $request->estate,
-        ];
+        
+        public function searchBuyers(Request $request)
+        {
+            $search = $request->input('query');
+        
+            $buyers = DB::table('buyers')
+                ->where('firstname', 'like', "%{$search}%")
+                ->orWhere('lastname', 'like', "%{$search}%")
+                ->select('id', 'firstname', 'lastname')
+                ->limit(10)
+                ->get();
+        
+            return response()->json($buyers);
+        }
 
-        return view('Admin.Resale.back-on-market-all', $data);
-    }
 
     public function back_for_client_on_sale()
     {
@@ -3222,7 +3257,7 @@ class Master extends Controller
         $data              = ['LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first()];
         $User_access_right = $this->user_right_info();
 
-        if (! in_array($User_access_right, ['SuperAdmin', 'Admin', 'Sales'])) {
+        if (! in_array($User_access_right, ['SuperAdmin', 'Admin','Sales'])) {
             return redirect('estates');
         }
 
