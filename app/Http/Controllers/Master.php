@@ -190,17 +190,20 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
+        $paid_not_in_cash = Resale::orderBy('id', 'desc')
+            ->paginate(10);
+            
         $User_access_right = $this->user_right_info();
 
         if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin') {
             return view('Admin.dashboard', $data, compact(['all_sales', 'totalAmount', 'totalweekSales', 'totalmonthSales'
-                , 'plots_fully_paid', 'under_payment', 'amount_in_debts', 'User_access_right']));
+                , 'plots_fully_paid', 'under_payment', 'amount_in_debts', 'User_access_right','paid_not_in_cash']));
         } else {
             return redirect('estates');
         }
 
         return view('Admin.dashboard', $data, compact(['all_sales', 'totalAmount', 'totalweekSales', 'totalmonthSales'
-            , 'plots_fully_paid', 'under_payment', 'amount_in_debts', 'User_access_right']));
+            , 'plots_fully_paid', 'under_payment', 'amount_in_debts', 'User_access_right','paid_not_in_cash']));
     }
 
     public function admin_buyer()

@@ -100,6 +100,7 @@
                                         <th>No</th>
                                         <th> Estate</th>
                                         <th> Plot number</th>
+                                        <th> Plot status </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,11 +108,30 @@
                                     @foreach ($allResales as $key => $item)
                                         <?php
                                         $userinformation = DB::table('buyers')->where('id', $item->user_id)->first();
+                                         $plot_status = DB::table('plots')
+                                            ->where('estate', $item->estate)
+                                            ->where('plot_number', $item->plot_number)
+                                            ->first();
                                         ?>
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td> {{ $item->estate }} </td>
                                             <td> {{ $item->plot_number }} </td>
+                                            @if ($plot_status->status == 'Not taken')
+                                                <td>
+                                                    <a href="javascript:void();"
+                                                       class="btn btn-outline-success btn-icon-text"> <!-- Green Color -->
+                                                        <i class="mdi mdi-check-circle btn-icon-prepend"></i> Plot available
+                                                    </a>
+                                                </td>
+                                            @else
+                                                <td>
+                                                    <a href="javascript:void();"
+                                                       class="btn btn-outline-danger btn-icon-text"> <!-- Red Color -->
+                                                        <i class="mdi mdi-close-circle btn-icon-prepend"></i> Already Resold
+                                                    </a>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
