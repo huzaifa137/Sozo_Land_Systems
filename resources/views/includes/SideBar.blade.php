@@ -240,7 +240,7 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
 
 
 
-    @if ($User_access_right == 'SuperAdmin')
+    @if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin')
         <li class="nav-item menu-items">
             <a class="nav-link " data-bs-toggle="collapse" href="#ui-resales" aria-expanded="false"
                 aria-controls="ui-basic">
