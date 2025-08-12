@@ -1,29 +1,15 @@
 @include('includes.header')
-        <!-- partial -->
-        <div class="main-panel">
-          <div class="content-wrapper">
-            <div class="row">
-              <div class="col-12 grid-margin stretch-card">
-                
-              </div>
-            </div>
+<!-- partial -->
+<div class="main-panel">
+  <div class="content-wrapper">
 
-
-            <div class="row">
-              <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
-               
-              </div>
-            </div>
-
-            <div class="row ">
+    <div class="row">
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Update clients reminder date</h4>
                     <form class="form-sample" id="myForm" action="{{ route('store-update-payment')}}" method="POST" enctype="multipart/form-data">
                       @csrf
-                      <p class="card-description">Enter Customer Buyer Information:</p>
-
                       <input type="hidden" name="user_id" value="{{$records->id}}">
                       <div class="row">
                         <div class="col-md-6">

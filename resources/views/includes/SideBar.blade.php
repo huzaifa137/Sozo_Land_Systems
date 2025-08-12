@@ -7,8 +7,8 @@
                     <span class="count bg-success"></span>
                 </div>
                 <?php
-                use App\Models\AdminRegister;
-                $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
+use App\Models\AdminRegister;
+$user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
                 ?>
                 <div class="profile-name">
                     <h5 class="mb-0 font-weight-normal">{{ $user->username }}</h5>
@@ -22,9 +22,9 @@
 
 
     <?php
-    
-    $user_id = Session('LoggedAdmin');
-    $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
+
+$user_id = Session('LoggedAdmin');
+$User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
     
     ?>
 
@@ -84,15 +84,17 @@
     </li>
 
     <?php
-    $pendingApproval = DB::table('houses')->where('status', 1)->count();
+$pendingApproval = DB::table('houses')->where('status', 1)->count();
     ?>
     <li class="nav-item menu-items">
         <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ui-house"
             aria-expanded="false" aria-controls="ui-house">
+
             <span class="menu-icon">
                 <i class="mdi mdi-home"></i>
             </span>
-            <span class="menu-title d-flex align-items-center">
+
+            <span class="menu-title">
                 Houses
 
                 @if ($User_access_right == 'SuperAdmin')
@@ -195,8 +197,7 @@
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false"
-                aria-controls="ui-basic">
+            <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false" aria-controls="ui-basic">
                 <span class="menu-icon">
                     <i class="mdi mdi-chart-bar"></i>
                 </span>
@@ -217,8 +218,7 @@
         </li>
     @elseif($User_access_right == 'Admin')
         <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false"
-                aria-controls="ui-basic">
+            <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false" aria-controls="ui-basic">
                 <span class="menu-icon">
                     <i class="mdi mdi-chart-bar"></i>
                 </span>
@@ -256,7 +256,8 @@
                     <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Back on
                             market</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market-all') }}">All Back on Market</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market-all') }}">All Back on
+                            Market</a></li>
                 </ul>
             </div>
         </li>
@@ -271,21 +272,68 @@
         </li>
     @endif
 
+    @php
+        $today = \Carbon\Carbon::now()->format('Y/m/d');
+        $reminderCount = \App\Models\buyer::whereDate('next_installment_pay', $today)->count();
+    @endphp
+
+    <style>
+        @keyframes pulse-grow-shrink {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.25);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .badge-pulse {
+            animation: pulse-grow-shrink 1s infinite;
+            animation-delay: 0.8s;
+        }
+
+        .badge-sm {
+            font-size: 0.65rem;
+            padding: 0.25em 0.5em;
+        }
+    </style>
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false"
-                aria-controls="ui-basic">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
                 <span class="menu-icon">
                     <i class="mdi mdi-security"></i>
                 </span>
-                <span class="menu-title">Reminders</span>
+                <span class="menu-title d-flex align-items-center">
+                    Reminders
+                    @if ($reminderCount > 0)
+                        <span class="badge rounded-pill bg-danger ms-2 animate__animated animate__bounceIn badge-pulse">
+                            {{ $reminderCount }}
+                        </span>
+                    @endif
+                </span>
                 <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="ui-alerts">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('payment-reminder') }}">Today's
-                            reminders</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('set-reminder') }}">Set Reminder</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('payment-reminder') }}">
+                            Today's reminders
+                            @if ($reminderCount > 0)
+                                <span
+                                    class="badge rounded-pill bg-danger ms-2 animate__animated animate__bounceIn badge-pulse badge-sm">
+                                    {{ $reminderCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+
                 </ul>
             </div>
         </li>
