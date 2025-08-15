@@ -457,6 +457,121 @@
                             </div>
                         </div>
                     </div>
+                    
+                    
+                     <div class="row ">
+            <div class="col-12 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Most Recent Plots back on market </h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Name</th>
+                                        <th> Plot number</th>
+                                        <th> Estate </th>
+                                        <th> view </th>
+                                        <th> Plot status </th>
+                                         <!--<th> Payment Status </th>-->
+                                        <!--<th> Clearence plot</th>-->
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach ($paid_not_in_cash as $key => $item)
+                                        <?php
+                                        
+                                        $userinformation = DB::table('buyers')
+                                            ->where('id', $item->user_id)
+                                            ->first();
+                                            
+                                        $plot_status = DB::table('plots')
+                                            ->where('estate', $item->estate)
+                                            ->where('plot_number', $item->plot_number)
+                                            ->first();
+                                        ?>
+
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td> {{ @$userinformation->firstname . ' ' . @$userinformation->lastname }}
+                                            </td>
+                                            <td> {{ @$userinformation->plot_number }} </td>
+                                            <td> {{ $item->estate }} </td>
+
+                                            <td><a href="{{ 'view-reciept/' . $item->user_id }}"
+                                                    class="btn btn-outline-info btn-icon-text">
+                                                    <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
+
+                                            @if ($plot_status->status == 'Not taken')
+                                                <td>
+                                                    <a href="javascript:void();"
+                                                       class="btn btn-outline-success btn-icon-text"> <!-- Green Color -->
+                                                        <i class="mdi mdi-check-circle btn-icon-prepend"></i> Plot available
+                                                    </a>
+                                                </td>
+                                            @else
+                                                <td>
+                                                    <a href="javascript:void();"
+                                                       class="btn btn-outline-danger btn-icon-text"> <!-- Red Color -->
+                                                        <i class="mdi mdi-close-circle btn-icon-prepend"></i> Already Resold
+                                                    </a>
+                                                </td>
+                                            @endif
+                                            
+                                            <!--@if ($item->seller_agreeement == '-')-->
+                                            <!--    <td><a href="{{ 'view-reciept/' . $item->user_id }}"-->
+                                            <!--            class="btn btn-danger btn-icon-text">-->
+                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Pending clearence-->
+                                            <!--        </a>-->
+                                            <!--    </td>-->
+                                            <!--@else-->
+                                            <!--    <td><a href="{{ 'view-reciept/' . $item->user_id }}"-->
+                                            <!--            class="btn btn-success btn-icon-text">-->
+                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Cleared-->
+                                            <!--            successfully</a>-->
+                                            <!--    </td>-->
+                                            <!--@endif-->
+                                            
+
+                                            <!--@if ($item->seller_agreeement == '-')-->
+                                            <!--    <td><a href="{{ 'clearence-user-agreement/' . $item->user_id }}"-->
+                                            <!--            class="btn btn-outline-primary btn-icon-text">-->
+                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Clearence </a>-->
+                                            <!--    </td>-->
+                                            <!--@else-->
+                                            <!--    <td><a href="{{ 'clearence-user-agreement/' . $item->user_id }}"-->
+                                            <!--            class="btn btn-outline-primary btn-icon-text disabled">-->
+                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Clearence </a>-->
+                                            <!--    </td>-->
+                                            <!--@endif-->
+
+
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            
+                             <br> <br>
+                                        <span>
+                                               {{ $paid_not_in_cash->links() }}
+                                        </span>
+                                        
+                                        <style>
+                                            .w-5{
+                                                display: none;
+                                            }
+                                        </style>
+                                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
                     <div class="row">
 
                     </div>

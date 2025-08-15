@@ -37,6 +37,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('Partially-taken-half-plots-in-estate/{id}', [Master::class, 'partially_taken_half_plots']);
     Route::get('back-on-market', [Master::class, 'back_on_market'])->name('back-on-market');
     Route::get('back-on-market-all', [Master::class, 'back_on_market_all'])->name('back-on-market-all');
+    Route::get('/search-buyers', [Master::class, 'searchBuyers'])->name('search.buyers');
     Route::get('back-for-client-on-sale', [Master::class, 'back_for_client_on_sale'])->name('back-for-client-on-sale');
     Route::get('back-for-company-on-sale', [Master::class, 'back_for_company_on_sale'])->name('back-for-company-on-sale');
     Route::get('user-right-info', [Master::class, 'user_right_info'])->name('user-right-info');
@@ -58,10 +59,12 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('weekly-records', [Master::class, 'weeklyRecords'])->name('weekly-records');
     Route::get('monthly-records', [Master::class, 'recordsInCurrentMonth'])->name('monthly-records');
     Route::get('payment-reminder', [Master::class, 'searchByPaymentDate'])->name('payment-reminder');
+    Route::get('set-reminder', [Master::class, 'setReminder'])->name('set-reminder');
     Route::get('update-payment-reminder/{id}', [Master::class, 'update_payment_reminder']);
     Route::post('store-update-payment', [Master::class, 'store_update_payment_reminder'])->name('store-update-payment');
     Route::get('search-land', [Master::class, 'search_plot'])->name('search-land');
     Route::post('search-land-db', [Master::class, 'search_land_db'])->name('search-land-db');
+    Route::post('search-clients-to-setup-reminders', [Master::class, 'search_clients_to_setup_reminders'])->name('search-clients-to-setup-reminders');
     Route::post('search-plot-land-db', [Master::class, 'search_plot_land_db'])->name('search-plot-land-db');
     Route::get('resale/{id}', [Master::class, 'resale'])->name('resale/{id}');
     Route::get('resale-amount/{id}', [Master::class, 'resale_amount']);
@@ -79,6 +82,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('expense-today', [Master::class, 'today_expense'])->name('expense-today');
     Route::post('/approve-house-sell', [Master::class, 'approveHouseSell'])->name('approve-house-sell');
 
+
     Route::get('estates', [Master::class, 'estates'])->name('estates');
     Route::get('plots', [Master::class, 'plots'])->name('plots');
     Route::get('add-estate', [Master::class, 'add_estate'])->name('add-estate');
@@ -90,11 +94,11 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('send-estate-data', [Master::class, 'store_estate'])->name('send-estate-data');
     Route::post('send-plot-data', [Master::class, 'send_plot_estate'])->name('send-plot-data');
 
-// Houses Module
+    // Houses Module
     Route::get('add-house', [Master::class, 'add_house'])->name('add-house');
     Route::post('send-house-data', [Master::class, 'send_house_data'])->name('send-house-data');
 
-// RECIEPTS
+    // RECIEPTS
     Route::get('pending-buyers', [Master::class, 'pending_buyers'])->name('pending-buyers');
     Route::get('pending-receipts', [Master::class, 'pending_receipts'])->name('pending-receipts');
     Route::get('pending-agreements', [Master::class, 'pending_agreements'])->name('pending-agreements');
@@ -105,7 +109,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('add-agreement/{id}', [Master::class, 'add_agreement'])->name('add-agreement');
     Route::post('store-first-receipt', [Master::class, 'store_first_receipt'])->name('store-first-receipt');
 
-// Agreements
+    // Agreements
     Route::get('accomplished', [Master::class, 'accomplished_buyers'])->name('accomplished');
     Route::get('view-agreement/{id}', [Master::class, 'view_agreement'])->name('view-agreement');
     Route::get('download/{id}', [Master::class, 'download_agreement_receipt']);

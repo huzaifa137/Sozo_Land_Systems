@@ -190,6 +190,9 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
+        $paid_not_in_cash = Resale::orderBy('id', 'desc')
+            ->paginate(10);
+
         $User_access_right = $this->user_right_info();
 
         if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin') {
@@ -202,7 +205,8 @@ class Master extends Controller
                 'plots_fully_paid',
                 'under_payment',
                 'amount_in_debts',
-                'User_access_right'
+                'User_access_right',
+                'paid_not_in_cash'
             ]));
         } else {
             return redirect('estates');
@@ -217,7 +221,8 @@ class Master extends Controller
             'plots_fully_paid',
             'under_payment',
             'amount_in_debts',
-            'User_access_right'
+            'User_access_right',
+            'paid_not_in_cash'
         ]));
     }
 
@@ -463,7 +468,6 @@ class Master extends Controller
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         $specific_estate = Estate::find($id);
-
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -717,7 +721,6 @@ class Master extends Controller
     {
 
         $specific_estate = Estate::find($id);
-
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -1946,14 +1949,37 @@ class Master extends Controller
     public function searchByPaymentDate(Request $request)
     {
         $currentDate = Carbon::now();
+        $formattedDate = $currentDate->format('Y/m/d');
+
+        $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
+        $records_count = $records->count();
+
+        $upcomingreminders = buyer::where('next_installment_pay', '!=', 'Fully payed')
+            ->whereDate('next_installment_pay', '>', $formattedDate)->get();
+
+        $expiredreminders = buyer::where('next_installment_pay', '!=', 'Fully payed')
+            ->whereDate('next_installment_pay', '<', $formattedDate)->get();
+
+        $data = [
+            'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()
+        ];
+
+        return view('Admin.Sales.payment_reminders', $data, compact(['records_count', 'records', 'upcomingreminders', 'expiredreminders']));
+    }
+
+
+    public function setReminder(Request $request)
+    {
+        $currentDate = Carbon::now();
 
         $formattedDate = $currentDate->format('Y/m/d');
         $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
         $records_count = buyer::whereDate('next_installment_pay', $formattedDate)->count();
-
+        $estates = Estate::all();
+        
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Sales.payment_reminders', $data, compact(['records_count', 'records']));
+        return view('Admin.Sales.set-reminder', $data, compact(['records_count', 'records', 'estates']));
     }
 
     public function update_payment_reminder($id)
@@ -2148,6 +2174,106 @@ class Master extends Controller
             }
         }
     }
+
+    public function search_clients_to_setup_reminders(Request $request)
+    {
+
+        $firstname = $request->firstname;
+        $lastname = $request->lastname;
+        $date_sold = $request->date_sold;
+        $end_date = $request->end_date;
+
+        $estate = $request->estate;
+        $land_plot = $request->land_plot;
+
+        if ($date_sold != null && $end_date != null) {
+
+            $startDate = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+            $endDate = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            $mergedResults = $startDate->merge($endDate);
+
+            return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+        } elseif ($date_sold != null && $end_date == null) {
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+        } elseif ($date_sold == null && $end_date != null) {
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+            return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+        }
+
+        if ($firstname != null && $lastname == null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $firstname . '%')->get();
+
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+
+        } elseif ($firstname == null && $lastname != null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $lastname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get();
+
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+        }
+
+        if ($firstname != null && $lastname != null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get();
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+
+        } else if ($estate != null) {
+
+            $result = DB::table('buyers')
+                ->where('estate', $estate, )
+                ->where('plot_number', $land_plot, )
+                ->first();
+
+            if (!$result) {
+                return back()->with('error', 'No Plot has been found with provided information');
+            } else {
+
+                $id = $result->id;
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+                $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+                $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+                $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+                $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+                $firstname = DB::table('buyers')->where('id', '=', $id)->get();
+
+                $mergedResults = $firstname;
+
+                return view('Admin.Search.multiple_results_reminder_set_up', $data, ['result' => $mergedResults]);
+            }
+        }
+    }
+
 
     public function search_plot_land_db(Request $request)
     {
@@ -2755,72 +2881,74 @@ class Master extends Controller
 
         return response()->download(public_path('estate_pdf/' . $estate_record));
     }
- public function back_on_market()
+
+    public function back_on_market()
     {
 
-        $count_resold_to_company_in_cash   = resale::where('paid_cash', '=', 1)->count();
+        $count_resold_to_company_in_cash = resale::where('paid_cash', '=', 1)->count();
         $count_sell_for_client_not_in_cash = resale::where('paid_cash', '=', 0)->count();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
         return view('Admin.Resale.Backonmarket', $data, compact(['count_resold_to_company_in_cash', 'count_sell_for_client_not_in_cash']));
 
     }
-    
 
-        public function back_on_market_all(Request $request)
-        {
-            $query = resale::query();
-        
-            $filterType = $request->input('filter_type');
-        
-            // Estate filter
-            if ($filterType === 'estate' && $request->filled('estate')) {
-                $query->where('estate', $request->estate);
-            }
-        
-            // Date filter
-            if ($filterType === 'date' && $request->filled('filter_date')) {
-                try {
-                    $date = Carbon::parse($request->filter_date)->toDateString();
-                    $query->whereDate('created_at', $date);
-                } catch (\Exception $e) {
-                    // Optional: log error or notify user
-                }
-            }
-        
-            // Name filter (via buyer_id from hidden input)
-            if ($filterType === 'name' && $request->filled('buyer_id')) {
-                $query->where('user_id', $request->buyer_id);
-            }
-        
-            $allResales = $query->get();
-            $estates    = Estate::all();
-        
-            return view('Admin.Resale.back-on-market-all', [
-                'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first(),
-                'allResales'      => $allResales,
-                'estates'         => $estates,
-                'selectedEstate'  => $request->estate,
-                'filterType'      => $filterType,
-                'filterDate'      => $request->filter_date,
-                'buyer_id'        => $request->buyer_id, // ✅ required to repopulate selected buyer
-            ]);
+
+    public function back_on_market_all(Request $request)
+    {
+        $query = resale::query();
+
+        $filterType = $request->input('filter_type');
+
+        // Estate filter
+        if ($filterType === 'estate' && $request->filled('estate')) {
+            $query->where('estate', $request->estate);
         }
 
-        
-        public function searchBuyers(Request $request)
-        {
-            $search = $request->input('query');
-        
-            $buyers = DB::table('buyers')
-                ->where('firstname', 'like', "%{$search}%")
-                ->orWhere('lastname', 'like', "%{$search}%")
-                ->select('id', 'firstname', 'lastname')
-                ->limit(10)
-                ->get();
-        
-            return response()->json($buyers);
+        // Date filter
+        if ($filterType === 'date' && $request->filled('filter_date')) {
+            try {
+                $date = Carbon::parse($request->filter_date)->toDateString();
+                $query->whereDate('created_at', $date);
+            } catch (\Exception $e) {
+                // Optional: log error or notify user
+            }
         }
+
+        // Name filter (via buyer_id from hidden input)
+        if ($filterType === 'name' && $request->filled('buyer_id')) {
+            $query->where('user_id', $request->buyer_id);
+        }
+
+        $allResales = $query->get();
+        $estates = Estate::all();
+
+        return view('Admin.Resale.back-on-market-all', [
+            'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first(),
+            'allResales' => $allResales,
+            'estates' => $estates,
+            'selectedEstate' => $request->estate,
+            'filterType' => $filterType,
+            'filterDate' => $request->filter_date,
+            'buyer_id' => $request->buyer_id, // ✅ required to repopulate selected buyer
+        ]);
+    }
+
+
+    public function searchBuyers(Request $request)
+    {
+        $search = $request->input('query');
+
+        $buyers = DB::table('buyers')
+            ->where('firstname', 'like', "%{$search}%")
+            ->orWhere('lastname', 'like', "%{$search}%")
+            ->select('id', 'firstname', 'lastname')
+            ->limit(10)
+            ->get();
+
+        return response()->json($buyers);
+    }
+
 
     public function back_for_client_on_sale()
     {
