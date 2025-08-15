@@ -50,9 +50,9 @@
 
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td> {{ $userinformation->firstname . ' ' . $userinformation->lastname }}
+                                            <td> {{ @$userinformation->firstname . ' ' . @$userinformation->lastname }}
                                             </td>
-                                            <td> {{ $userinformation->plot_number }} </td>
+                                            <td> {{ @$userinformation->plot_number }} </td>
                                             <td> {{ $item->estate }} </td>
 
                                             <td><a href="{{ 'view-reciept/' . $item->user_id }}"
