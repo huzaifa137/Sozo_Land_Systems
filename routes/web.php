@@ -156,4 +156,12 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::get('privacy-policy', [Master::class, 'privacyPolicy'])->name('privacy-policy');
 
+    Route::get('assign-empty-plot', [Master::class, 'assignEmptyPlot'])->name('assign-empty-plot');
+    Route::post('search-clients-to-transfer', [Master::class, 'search_clients_to_transfer'])->name('search-clients-to-transfer');
+    Route::get('search-available-empty-plots', [Master::class, 'searchAvailableEmptyPlots'])->name('search-available-empty-plots');
+    Route::get('available-estates', [Master::class, 'estates'])->name('available-estates');
+    Route::get('total-available-plots-in-estate/{id}', [Master::class, 'total_available_plots_in_estate'])->name('total-available-plots-in-estate');
+    Route::get('view-available-estate-plots/{id}', [Master::class, 'view_available_plots_in_estate'])->name('view-available-estate-plots');
+    Route::post('/transfer-client', [Master::class, 'transfer'])->name('client.transfer');
+
 });

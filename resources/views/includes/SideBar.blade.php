@@ -85,7 +85,8 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
     <?php
 $pendingApproval = DB::table('houses')->where('status', 1)->count();
-    ?>
+            ?>
+
     <li class="nav-item menu-items">
         <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ui-house"
             aria-expanded="false" aria-controls="ui-house">
@@ -272,6 +273,39 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
         </li>
     @endif
 
+
+    @if ($User_access_right == 'SuperAdmin')
+        <li class="nav-item menu-items">
+            <a class="nav-link " data-bs-toggle="collapse" href="#ui-transfers" aria-expanded="false"
+                aria-controls="ui-basic">
+                <span class="menu-icon">
+                    <i class="mdi mdi-swap-horizontal"></i>
+                </span>
+                <span class="menu-title">Transfers</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-transfers">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('assign-empty-plot') }}">Transfer to new
+                            plot</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Transfer Multiple
+                            Plots</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Interchange Clients</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    @else
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('back-on-market-all') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-file-document"></i>
+                </span>
+                <span class="menu-title">Back on Market</span>
+            </a>
+        </li>
+    @endif
+
     @php
         $today = \Carbon\Carbon::now()->format('Y/m/d');
         $reminderCount = \App\Models\buyer::whereDate('next_installment_pay', $today)->count();
@@ -305,11 +339,13 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
-            <a class="nav-link" data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
+            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
+               
                 <span class="menu-icon">
                     <i class="mdi mdi-security"></i>
                 </span>
-                <span class="menu-title d-flex align-items-center">
+
+                <span class="menu-title">
                     Reminders
                     @if ($reminderCount > 0)
                         <span class="badge rounded-pill bg-danger ms-2 animate__animated animate__bounceIn badge-pulse">
@@ -319,6 +355,7 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
                 </span>
                 <i class="menu-arrow"></i>
             </a>
+
             <div class="collapse" id="ui-alerts">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="{{ route('set-reminder') }}">Set Reminder</a></li>

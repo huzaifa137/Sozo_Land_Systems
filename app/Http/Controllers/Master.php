@@ -1976,7 +1976,7 @@ class Master extends Controller
         $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
         $records_count = buyer::whereDate('next_installment_pay', $formattedDate)->count();
         $estates = Estate::all();
-        
+
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Sales.set-reminder', $data, compact(['records_count', 'records', 'estates']));
@@ -3642,5 +3642,191 @@ class Master extends Controller
 
         return Storage::disk('public')->download($buyer->buyer_pdf, 'land-sale-agreement.pdf');
     }
+
+    public function assignEmptyPlot(Request $request)
+    {
+        $currentDate = Carbon::now();
+
+        $formattedDate = $currentDate->format('Y/m/d');
+        $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
+        $records_count = buyer::whereDate('next_installment_pay', $formattedDate)->count();
+        $estates = Estate::all();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.Sales.assign-empty-plot', $data, compact(['records_count', 'records', 'estates']));
+    }
+
+    public function search_clients_to_transfer(Request $request)
+    {
+
+        $firstname = $request->firstname;
+        $lastname = $request->lastname;
+        $date_sold = $request->date_sold;
+        $end_date = $request->end_date;
+
+        $estate = $request->estate;
+        $land_plot = $request->land_plot;
+
+        if ($date_sold != null && $end_date != null) {
+
+            $startDate = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+            $endDate = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            $mergedResults = $startDate->merge($endDate);
+
+            return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+        } elseif ($date_sold != null && $end_date == null) {
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+        } elseif ($date_sold == null && $end_date != null) {
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+            return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+        }
+
+        if ($firstname != null && $lastname == null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $firstname . '%')->get();
+
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+
+        } elseif ($firstname == null && $lastname != null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $lastname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get();
+
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+        }
+
+        if ($firstname != null && $lastname != null) {
+
+            $firstname = DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get();
+            $lastname = DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get();
+            $mergedResults = $firstname->merge($lastname);
+
+            $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+            return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+
+        } else if ($estate != null) {
+
+            $result = DB::table('buyers')
+                ->where('estate', $estate, )
+                ->where('plot_number', $land_plot, )
+                ->first();
+
+            if (!$result) {
+                return back()->with('error', 'No Plot has been found with provided information');
+            } else {
+
+                $id = $result->id;
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+                $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+                $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+                $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+                $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+                $firstname = DB::table('buyers')->where('id', '=', $id)->get();
+
+                $mergedResults = $firstname;
+
+                return view('Admin.Search.multiple_results_empty_plot_transfer_set_up', $data, ['result' => $mergedResults]);
+            }
+        }
+    }
+
+    public function searchAvailableEmptyPlots(Request $request)
+    {
+
+        $estates = Estate::all();
+
+        // $estates = Estate::orderBy('estate_name','asc')->get();
+
+        $count_estates = Estate::all()->count();
+        // $number_plots = Estate::all()->sum('number_of_plots');
+
+        $number_plots = plot::all()
+            ->where('status', '=', 'Fully payed')->count();
+
+        $Not_fully_paid_plots = plot::all()
+            ->where('status', '=', 'Not taken')->count();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.Sales.available-estates-in-the-system', $data, compact(['estates', 'count_estates', 'number_plots', 'Not_fully_paid_plots']));
+    }
+
+    public function total_available_plots_in_estate($id)
+    {
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
+        $estate_data = plot::where('estate', $estate_name)
+            ->where('status', '=', 'Not taken')->get();
+
+        $count_estates_fully = plot::where('estate', $estate_name)
+            ->where('status', '=', 'Not taken')->count();
+
+        $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
+
+        return view('Admin.total_available_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
+    }
+
+
+    public function view_available_plots_in_estate($id)
+    {
+
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
+
+        $estate_pdf_info = $specific_estate->estate_pdf;
+
+        $estate_data = plot::where('estate', $estate_name)
+            ->where('status', '=', 'Not taken')->get();
+
+        $count_estates_fully = plot::where('estate', $estate_name)
+            ->where('status', '=', 'Not taken')->count();
+
+        $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
+
+        return view('Admin.Sales.view_specific_available_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
+    }
+
+    public function transfer(Request $request)
+    {
+        dd($request->all()); // This will output submitted data and stop execution
+    }
+
 
 }
