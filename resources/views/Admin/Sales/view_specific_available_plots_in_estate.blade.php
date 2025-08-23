@@ -28,13 +28,10 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
                                 <thead>
                                     <tr>
                                         <th>No.</th>
+                                        <th>Estate</th>
                                         <th> Plot No</th>
                                         <th> Plot Price</th>
                                         <th> Exceptional Amount</th>
-                                        <th> Width1 </th>
-                                        <th> Width2 </th>
-                                        <th> height1 </th>
-                                        <th> height2 </th>
                                         <th style="text-align: center;">Action</th>
                                     </tr>
                                 </thead>
@@ -43,6 +40,7 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
 
                                         <tr>
                                             <td>{{$key + 1}}</td>
+                                            <td> {{ $data->estate }} </td>
                                             <td> {{ $data->plot_number }} </td>
 
 
@@ -54,15 +52,13 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
                                                 <td> {{ $data->exceptional_amount}}</td>
                                             @endif
 
-                                            <td> {{ $data->width_1 }} </td>
-                                            <td> {{ $data->width_2 }} </td>
-                                            <td> {{ $data->height_1 }} </td>
-                                            <td> {{ $data->height_2 }} </td>
                                             <td>
                                                 <a href="javascript:void(0);" class="btn btn-success transfer-client-btn"
-                                                    data-id="{{ $data->id }}">
+                                                    data-id="{{ $data->id }}" data-estate="{{ $data->estate }}"
+                                                    data-plot="{{ $data->plot_number }}">
                                                     <i class="mdi mdi-map-marker-check"></i> Transfer Client
                                                 </a>
+
                                             </td>
 
                                         </tr>
@@ -86,52 +82,53 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-$(document).ready(function () {
-    $('.transfer-client-btn').click(function (e) {
-        e.preventDefault();
+        $(document).ready(function () {
+            $('.transfer-client-btn').click(function (e) {
+                e.preventDefault();
 
-        const clientId = $(this).data('id');
+                const clientId = $(this).data('id');
+                const estate = $(this).data('estate');
+                const plotNumber = $(this).data('plot');
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to transfer this client.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, transfer',
-            background: '#800080', // black background
-            color: '#fff',      // white text
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/transfer-client', // Replace with your actual route
-                    type: 'POST',
-                    data: {
-                        id: clientId,
-                        _token: '{{ csrf_token() }}' // CSRF token for Laravel
-                    },
-                    success: function (response) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Client has been transferred.',
-                            icon: 'success',
-                            background: '#000', // black background
-                            color: '#fff',      // white text
-                            confirmButtonColor: '#28a745'
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `You are about to transfer the client for Plot ${plotNumber} in ${estate} estate.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, transfer',
+                    background: '#800080',
+                    color: '#fff',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/transfer-client',
+                            type: 'POST',
+                            data: {
+                                id: clientId,
+                                estate: estate,
+                                plot_number: plotNumber,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Client has been transferred.',
+                                    icon: 'success',
+                                    background: '#000',
+                                    color: '#fff',
+                                    confirmButtonColor: '#28a745'
+                                });
+                            },
+                            error: function (data) {
+                                $('body').html(data.responseText);
+                            }
                         });
-                        // Optionally, refresh the page or update UI
-                    },
-                    error: function (data) {
-                        // Display Laravel dd() output
-                        $('body').html(data.responseText);
                     }
                 });
-            }
+            });
         });
-    });
-});
-
     </script>
 
 

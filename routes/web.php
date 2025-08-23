@@ -164,4 +164,6 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('view-available-estate-plots/{id}', [Master::class, 'view_available_plots_in_estate'])->name('view-available-estate-plots');
     Route::post('/transfer-client', [Master::class, 'transfer'])->name('client.transfer');
 
+    Route::get('get-all-estate-plots', [Master::class, 'updateBuyersBackOnMarketStatus'])->name('get-all-estate-plots');
+
 });

@@ -29,7 +29,6 @@ class Master extends Controller
     {
 
         $ipAddress = $request->ip();
-        // $user_registered_ip = DB::table('admin_registers')->where('ip_address',$ipAddress)->value('ip_address');
         $user_registered_ip = '127.0.0.1';
 
         return view('Login.login', compact(['user_registered_ip']));
@@ -43,8 +42,6 @@ class Master extends Controller
 
     public function register()
     {
-
-        // $admin_category = AdminRegister::where('id', $id)->value('admin_category');
 
         $admin_category = Session('LoggedAdmin');
 
@@ -388,10 +385,8 @@ class Master extends Controller
 
         $estates = Estate::all();
 
-        // $estates = Estate::orderBy('estate_name','asc')->get();
 
         $count_estates = Estate::all()->count();
-        // $number_plots = Estate::all()->sum('number_of_plots');
 
         $number_plots = plot::all()
             ->where('status', '=', 'Fully payed')->count();
@@ -472,20 +467,6 @@ class Master extends Controller
         $estate_name = $specific_estate->estate_name;
 
         $estate_pdf_info = $specific_estate->estate_pdf;
-
-        // $count_estates_fully = DB::table('plots')
-        //     ->where('estate', '=', $estate_name)
-        //     ->where('status', '=', "Fully payed")->count();
-
-        // $count_estates_not_fully = DB::table('plots')
-        //     ->where('estate', '=', $estate_name)
-        //     ->where('status', '!=', "Fully payed")->count();
-
-        // $plots = DB::table('plots')
-        //     ->select('plots.*', DB::raw('(SELECT COUNT(*) FROM plots WHERE plot_number LIKE "%h%") as total_count'))
-        //     ->where('plot_number', 'LIKE', '%h%')
-        //     ->orderBy('estate', 'asc')
-        //     ->get();
 
         $total_half_plots = DB::table('plots')
             ->where('plot_number', 'LIKE', '%h%')
@@ -1292,30 +1273,6 @@ class Master extends Controller
         return view('Admin.Receipts.add_receipt', $data, compact(['user_id']));
     }
 
-    //     public function view_reciept($id)
-//     {
-
-    //     $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
-
-    //     $user_information = DB::table('buyers')->where('id', '=', $id)->get();
-//     $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
-//     $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
-
-    //     $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
-//     $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
-
-    //     $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
-//     $User_access_right = $this->user_right_info();
-//     $user_resell_agreement = DB::table('resales')->where('user_id', '=', $id)->first();
-//     $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
-
-    //     if($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin' ||  $User_access_right == 'Sales') {
-//                 return view('Admin.Receipts.view_agreement', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
-//     } else {
-//         return redirect('estates');
-//     }
-// }
-
     public function view_reciept($id)
     {
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
@@ -1330,7 +1287,6 @@ class Master extends Controller
         $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
         $User_access_right = $this->user_right_info();
 
-        // Get the resell agreement and split the filenames
         $user_resell_agreement = DB::table('resales')->where('user_id', '=', $id)->orderBy('id', 'desc')->first();
         if ($user_resell_agreement && !empty($user_resell_agreement->seller_agreeement)) {
             $user_resell_agreement->seller_agreeement = explode(',', $user_resell_agreement->seller_agreeement); // Convert comma-separated file names to array
@@ -1614,10 +1570,6 @@ class Master extends Controller
 
         $plot_numbers = implode(', ', $interconnected_plots);
 
-        // if ($all_cash < $group_total) {
-        //     return back()->with('error', "The amount provided is less than required. The total for interconnected plots ($plot_numbers) is $group_total.");
-        // }
-
         if ($all_cash < $estate_price) {
             return back()->with('error', 'This amount paid is not enough to take this plot in this estate');
         }
@@ -1770,26 +1722,6 @@ class Master extends Controller
             'plot_number' => $plot_numb,
         ]);
 
-        // // Document formulation
-
-        // $user_info = buyer::where('id', $user_id)->first();
-        // $profile_pic = buyer::where('id', $user_id)->value('profile_pic');
-        // $profile_pic = public_path('profile_pic/' . $profile_pic);
-
-        // $day = $user_info->created_at->day;
-        // $month = $user_info->created_at->month;
-        // $year = $user_info->created_at->year;
-
-        // $pdf = PDF::loadView('agreement_pdf', compact(['user_amount_paid', 'user_info',
-        //     'all_cash', 'Date_of_payment', 'day', 'month', 'year', 'amount_in_words', 'profile_pic']));
-
-        // // $pdf = PDF::loadView('agreement_pdf',compact(['user_amount_paid','user_info','all_cash','Date_of_payment']));
-        // $filename = 'payment_agreement' . time() . '.pdf';
-
-        // $pdf->save(storage_path("app/public/agreements/{$filename}"));
-
-        // $post = new agreement();
-
         // Document formulation
         $user_info = buyer::where('id', $user_id)->first();
         $profile_pic = buyer::where('id', $user_id)->value('profile_pic');
@@ -1880,15 +1812,7 @@ class Master extends Controller
     public function different_weekly_sales_collection()
     {
 
-        // $allRecords = buyer::all();
 
-        // $recordsByWeek = $allRecords->groupBy(function ($record) {
-        //     return Carbon::parse($record->created_at)->startOfWeek();
-        // });
-
-        // $data=['LoggedAdminInfo'=>AdminRegister::where('id','=',session('LoggedAdmin'))->first()];
-
-        // return view('Admin.Sales.weekly',$data, ['recordsByWeek' => $recordsByWeek]);
     }
 
     public function all_sales()
@@ -2381,62 +2305,9 @@ class Master extends Controller
         return view('Admin.Resale.resale_amount', $data, compact(['asset_info', 'user_id']));
     }
 
-    // public function store_resale_amount(Request $request)
-    // {
-
-    //      $user_id = $request->user_id;
-    //     $purchase_type = $request->purchase_type;
-    //     $estate = $request->estate;
-    //     $plot_no = $request->plot_no;
-    //     $amount_resold = str_replace(',', '', $request->amount_resold);
-    //     $amount_to_be_sold = str_replace(',', '', $request->amount_to_be_sold);
-    //     $reciept = $request->reciept;
-
-    //     $post = new resale;
-
-    //     $post->user_id = $user_id;
-    //     $post->purchase_type = $purchase_type;
-    //     $post->estate = $estate;
-    //     $post->plot_number = $plot_no;
-    //     $post->reciept_resold = '-';
-
-    //     $post->amount_resold = $amount_resold;
-    //     $post->amount_to_be_sold = $amount_to_be_sold;
-    //     $post->paid_cash = $request->payment_method;
-
-    //     if ($request->payment_method == 1) {
-    //         $file = $request->seller_agreeement;
-    //         $filename = date('YmdHi') . $file->getClientOriginalName();
-    //         // $file->move('resoldPlots', $filename);
-    //         $file->move(public_path('public/resoldPlots'), $filename);
-    //         $post->seller_agreeement = $filename;
-    //     } else {
-    //         $post->seller_agreeement = '-';
-    //     }
-
-    //     $save = $post->save();
-
-    //     $whereConditions = [
-    //         'estate' => $estate,
-    //         'plot_number' => $plot_no,
-    //     ];
-
-    //     DB::table('plots')
-    //         ->where($whereConditions)
-    //         ->update(['status' => 'Not taken',
-    //             'exceptional_status' => 'Yes',
-    //             'exceptional_amount' => $amount_to_be_sold]);
-
-    //     if ($save) {
-    //         return redirect('search-land')->with('success', 'Reselling has been accomplished successfully, plot is back on market');
-    //     } else {
-    //         return redirect('search-land')->with('error', 'Reselling has not been accomplished ');
-
-    //     }
-    // }
-
     public function store_resale_amount(Request $request)
     {
+
         $user_id = $request->user_id;
         $purchase_type = $request->purchase_type;
         $estate = $request->estate;
@@ -2483,12 +2354,25 @@ class Master extends Controller
             'plot_number' => $plot_no,
         ];
 
+        $buyerWhereConditions = [
+            'id' => $user_id,
+            'estate' => $estate,
+            'plot_number' => $plot_no,
+        ];
+
         DB::table('plots')
             ->where($whereConditions)
             ->update([
                 'status' => 'Not taken',
                 'exceptional_status' => 'Yes',
-                'exceptional_amount' => $amount_to_be_sold
+                'exceptional_amount' => $amount_to_be_sold,
+                'buyer_id' => 0,
+            ]);
+
+        DB::table('buyers')
+            ->where($buyerWhereConditions)
+            ->update([
+                'back_on_market_status' => 1
             ]);
 
         if ($save) {
@@ -2527,12 +2411,6 @@ class Master extends Controller
         $info = $request->input('selectedValue');
 
         $whereConditions = ['plot_number' => $info];
-
-        //  $width_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_1');
-        //  $width_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('width_2');
-        //  $height_1 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_1');
-        //  $height_2 = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('height_2');
-        //  $location = DB::table('plots')->where($whereConditions)->where('status' ,'!=', "Fully payed")->value('location');
 
         $width_1 = DB::table('plots')->where($whereConditions)->value('width_1');
         $width_2 = DB::table('plots')->where($whereConditions)->value('width_2');
@@ -2639,7 +2517,7 @@ class Master extends Controller
 
     public function download_receipt_payment($filename)
     {
-        return response()->download(storage_path('public/pdf_receipts/' . $filePath));
+        return response()->download(storage_path('public/pdf_receipts/' . $filename));
     }
 
     public function add_expenditure()
@@ -2725,21 +2603,6 @@ class Master extends Controller
         return view('Admin.Search.search_module', $data, compact(['records']));
     }
 
-    // public function index()
-    // {
-
-    //     $data = [
-    //         'imagePath' => public_path('img/logo.jpg'),
-    //         'name' => 'John Doe',
-    //         'address' => 'USA',
-    //         'mobileNumber' => '000000000',
-    //         'email' => 'john.doe@email.com',
-    //     ];
-
-    //     $pdf = PDF::loadView('resume', $data);
-    //     return $pdf->stream('resume.pdf');
-    // }
-
     public function download_national_id(Request $request, $id)
     {
 
@@ -2792,11 +2655,6 @@ class Master extends Controller
         $estate_name = $specific_estate->estate_name;
 
         $estate_pdf_info = $specific_estate->estate_pdf;
-
-        // $estate_data = plot::where('estate', $estate_name)
-        //     ->where('status', '=', 'Fully payed')
-        //     ->orderBy('plot_number', 'asc')
-        //     ->get();
 
         $estate_data = buyer::where('estate', $estate_name)
             ->where('next_installment_pay', '=', 'Fully payed')
@@ -3518,21 +3376,6 @@ class Master extends Controller
             'profile_pic' => 'required|file|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        // $nationalIdFrontPath = null;
-        // if ($request->hasFile('national_id_front') && $request->file('national_id_front')->isValid()) {
-        //     $nationalIdFrontPath = $request->file('national_id_front')->store('uploads/national_ids', 'public');
-        // }
-
-        // $nationalIdBackPath = null;
-        // if ($request->hasFile('national_id_back') && $request->file('national_id_back')->isValid()) {
-        //     $nationalIdBackPath = $request->file('national_id_back')->store('uploads/national_ids', 'public');
-        // }
-
-        // $profilePicPath = null;
-        // if ($request->hasFile('profile_pic') && $request->file('profile_pic')->isValid()) {
-        //     $profilePicPath = $request->file('profile_pic')->store('uploads/profile_pics', 'public');
-        // }
-
         $nationalIdFrontPath = null;
         if ($request->hasFile('national_id_front') && $request->file('national_id_front')->isValid()) {
             $file = $request->file('national_id_front');
@@ -3725,8 +3568,8 @@ class Master extends Controller
         } else if ($estate != null) {
 
             $result = DB::table('buyers')
-                ->where('estate', $estate, )
-                ->where('plot_number', $land_plot, )
+                ->where('estate', $estate)
+                ->where('plot_number', $land_plot)
                 ->first();
 
             if (!$result) {
@@ -3823,10 +3666,85 @@ class Master extends Controller
         return view('Admin.Sales.view_specific_available_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
     }
 
+
     public function transfer(Request $request)
     {
-        dd($request->all()); // This will output submitted data and stop execution
+        
+        $userData = DB::table('buyers')->where('id',$request->id)->first();
+                
+        $user_id = $request->id;
+        $purchase_type = 'plot';
+        $estate = $request->estate;
+        $plot_no = $userData->plot_number;
+        $amount_resold = str_replace(',', '', $userData->amount_payed);
+        $amount_to_be_sold = str_replace(',', '', $userData->amount_payed);
+
+        $post = new resale;
+
+        $post->user_id = $user_id;
+        $post->purchase_type = $purchase_type;
+        $post->estate = $estate;
+        $post->plot_number = $plot_no;
+        $post->reciept_resold = '-';
+
+        $post->amount_resold = $amount_resold;
+        $post->amount_to_be_sold = $userData->amount_payed;
+        $post->paid_cash = 1;
+
+        $post->seller_agreeement = '-';
+
+        $save = $post->save();
+
+        $whereConditions = [
+            'estate' => $estate,
+            'plot_number' => $plot_no,
+        ];
+
+        $buyerWhereConditions = [
+            'id' => $user_id,
+            'estate' => $estate,
+            'plot_number' => $plot_no,
+        ];
+
+        DB::table('plots')
+            ->where($whereConditions)
+            ->update([
+                'status' => 'Not taken',
+                'exceptional_status' => 'Yes',
+                'exceptional_amount' => $amount_to_be_sold,
+                'buyer_id' => 0,
+            ]);
+
+        DB::table('buyers')
+            ->where($buyerWhereConditions)
+            ->update([
+                'back_on_market_status' => 1
+            ]);
+
+        if ($save) {
+            return redirect('assign-empty-plot')->with('success', 'Re-assigning has been accomplished successfully, plot is back on market');
+        } else {
+            return redirect('search-land')->with('error', 'Re-assigning has not been accomplished ');
+        }
     }
 
+    public function updateBuyersBackOnMarketStatus()
+    {
+
+        $resales = DB::table('resales')
+            ->select('estate', 'plot_number', 'user_id')
+            ->get();
+
+        foreach ($resales as $resale) {
+            DB::table('buyers')
+                ->where('estate', $resale->estate)
+                ->where('plot_number', $resale->plot_number)
+                ->where('id', $resale->user_id)
+                ->update(['back_on_market_status' => 1]);
+
+        }
+
+        return 'Buyers updated based on resales.';
+    }
 
 }

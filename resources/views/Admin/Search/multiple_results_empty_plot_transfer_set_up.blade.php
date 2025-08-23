@@ -67,7 +67,7 @@
           $userinformation = DB::table('buyers')
           ->where('id', $item->id)
           ->first();
-
+          
           $next_installment_pay = DB::table('buyers')
           ->where('estate', $item->estate)
           ->where('plot_number', $item->plot_number)

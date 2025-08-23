@@ -98,9 +98,11 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Name</th>
                                         <th> Estate</th>
                                         <th> Plot number</th>
                                         <th> Plot status </th>
+                                        <th> Transfer status </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -112,26 +114,43 @@
                                             ->where('estate', $item->estate)
                                             ->where('plot_number', $item->plot_number)
                                             ->first();
-                                        ?>
+
+                                            $username = $userinformation->firstname; 
+                                       ?>
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
+                                            <td> {{ $username }}</td>
                                             <td> {{ $item->estate }} </td>
                                             <td> {{ $item->plot_number }} </td>
+
                                             @if ($plot_status->status == 'Not taken')
                                                 <td>
                                                     <a href="javascript:void();"
-                                                       class="btn btn-outline-success btn-icon-text"> <!-- Green Color -->
+                                                       class="btn btn-outline-success btn-icon-text"> 
                                                         <i class="mdi mdi-check-circle btn-icon-prepend"></i> Plot available
                                                     </a>
                                                 </td>
                                             @else
                                                 <td>
                                                     <a href="javascript:void();"
-                                                       class="btn btn-outline-danger btn-icon-text"> <!-- Red Color -->
+                                                       class="btn btn-outline-danger btn-icon-text"> 
                                                         <i class="mdi mdi-close-circle btn-icon-prepend"></i> Already Resold
                                                     </a>
                                                 </td>
                                             @endif
+                                            
+                                                @if ($userinformation->shift_plot_status == 0)
+                                                    <td>
+                                                        -
+                                                    </td>
+                                                @else
+                                                    <td>
+                                                        <a href="javascript:void();"
+                                                            class="btn btn-outline-warning btn-icon-text"> 
+                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Transfered 
+                                                        </a>
+                                                    </td>
+                                                @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
