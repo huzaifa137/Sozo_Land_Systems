@@ -115,7 +115,8 @@
                                             ->where('plot_number', $item->plot_number)
                                             ->first();
 
-                                            $username = $userinformation->firstname; 
+                                            $username = @$userinformation->firstname; 
+
                                        ?>
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
@@ -139,7 +140,7 @@
                                                 </td>
                                             @endif
                                             
-                                                @if ($userinformation->shift_plot_status == 0)
+                                                @if (@$userinformation->shift_plot_status == 0)
                                                     <td>
                                                         -
                                                     </td>
@@ -147,7 +148,7 @@
                                                     <td>
                                                         <a href="javascript:void();"
                                                             class="btn btn-outline-warning btn-icon-text"> 
-                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Transfered 
+                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Relocated
                                                         </a>
                                                     </td>
                                                 @endif

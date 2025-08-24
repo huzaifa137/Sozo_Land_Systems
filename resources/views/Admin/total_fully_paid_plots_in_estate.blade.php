@@ -82,14 +82,14 @@
                                                 @if ($data->back_on_market_status == 0)
                                                     <td>
                                                         <a href="javascript:void();"
-                                                            class="btn btn-outline-success btn-icon-text"> 
+                                                            class="btn btn-outline-success btn-icon-text">
                                                             <i class="mdi mdi-check-circle btn-icon-prepend"></i> Normal
                                                         </a>
                                                     </td>
                                                 @else
                                                     <td>
                                                         <a href="javascript:void();"
-                                                            class="btn btn-outline-danger btn-icon-text"> 
+                                                            class="btn btn-outline-danger btn-icon-text">
                                                             <i class="mdi mdi-close-circle btn-icon-prepend"></i> Sold Back
                                                         </a>
                                                     </td>
@@ -97,16 +97,21 @@
 
 
 
-                                                @if ($data->shift_plot_status == 0)
-                                                    <td>
-                                                       -
-                                                    </td>
-                                                @else
+                                                @if ($data->shift_plot_status == 1 && $data->back_on_market_status == 1 && $data->shifted_to_status  == 0)
                                                     <td>
                                                         <a href="javascript:void();"
-                                                            class="btn btn-outline-warning btn-icon-text"> 
-                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Transfered
+                                                            class="btn btn-outline-warning btn-icon-text">
+                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Plot Relocated   </a>
+                                                    </td>
+                                                @elseif ($data->shift_plot_status == 0 && $data->back_on_market_status == 0 && $data->shifted_to_status == 2)
+                                                    <td>
+                                                        <a href="javascript:void();" class="btn btn-outline-info btn-icon-text">
+                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Plot Reassigned
                                                         </a>
+                                                    </td>
+                                                @else 
+                                                    <td>
+                                                        -
                                                     </td>
                                                 @endif
 

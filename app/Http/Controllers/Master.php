@@ -2690,7 +2690,7 @@ class Master extends Controller
         $estate_pdf_info = $specific_estate->estate_pdf;
 
         $estate_data = plot::where('estate', $estate_name)
-            ->where('status', '=', 'Not taken')->get();
+            ->where('status', '=', 'Not taken')->orderBy('plot_number', 'asc')->get();
 
         $count_estates_fully = plot::where('estate', $estate_name)
             ->where('status', '=', 'Not taken')->count();
@@ -3681,9 +3681,18 @@ class Master extends Controller
     public function transfer(Request $request)
     {
 
-        $userData = DB::table('buyers')->where('id', $request->id)->first();
+        $userData = DB::table('buyers')->where('id', Session('TransferedClient'))->first();
+        $originalBuyer = DB::table('buyers')->where('id', Session('TransferedClient'))->first();
 
-        $user_id = $request->id;
+        $estateId = DB::table('estates')->where('estate_name', $request->estate)->value('id');
+
+        if (!$originalBuyer) {
+            return response()->json([
+                'message' => 'Client doesnot exist to be transfered'
+            ], 400);
+        }
+
+        $user_id = Session('TransferedClient');
         $purchase_type = 'plot';
         $estate = $request->estate;
         $plot_no = $userData->plot_number;
@@ -3704,7 +3713,7 @@ class Master extends Controller
 
         $post->seller_agreeement = '-';
 
-        $save = $post->save();
+        $post->save();
 
         $whereConditions = [
             'estate' => $estate,
@@ -3716,6 +3725,7 @@ class Master extends Controller
             'estate' => $estate,
             'plot_number' => $plot_no,
         ];
+
 
         DB::table('plots')
             ->where($whereConditions)
@@ -3729,14 +3739,46 @@ class Master extends Controller
         DB::table('buyers')
             ->where($buyerWhereConditions)
             ->update([
-                'back_on_market_status' => 1
+                'back_on_market_status' => 1,
+                'shift_plot_status' => 1,
             ]);
 
-        if ($save) {
-            return redirect('assign-empty-plot')->with('success', 'Re-assigning has been accomplished successfully, plot is back on market');
-        } else {
-            return redirect('search-land')->with('error', 'Re-assigning has not been accomplished ');
-        }
+        // Assigning new plot to buyer and removing it from the available
+
+        $buyerData = (array) $originalBuyer;
+
+        $buyerData['estate'] = $request->estate;
+        $buyerData['plot_number'] = $request->plot_number;
+        $buyerData['shifted_to_status'] = 2;
+
+        unset(
+            $buyerData['id'],
+            $buyerData['created_at'],
+            $buyerData['updated_at']
+        );
+
+        $buyerData['created_at'] = now();
+        $buyerData['updated_at'] = now();
+
+        $newUserId = DB::table('buyers')->insertGetId($buyerData);
+
+        $plotsWhereConditions = [
+            'estate' => $request->estate,
+            'plot_number' => $request->plot_number,
+        ];
+
+        DB::table('plots')->where($plotsWhereConditions)->update(
+            [
+                'status' => 'Fully payed',
+                'buyer_id' => $newUserId,
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Client transferred successfully.',
+            'redirect_url' => url('/total-fully-paid-plots-in-estate/' . $estateId)
+        ]);
+
     }
 
     public function updateBuyersBackOnMarketStatus()

@@ -48,13 +48,14 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                 <tbody>
                   @foreach ($estates as $key => $item)
             <tr>
-            <td><a href="{{ url('view-estate/' . $item->id) }}"> {{$key + 1}} </a></td>
-            <td><a href="{{ url('view-estate/' . $item->id) }}"> {{$item->estate_name}} </a></td>
-            <td><a href="{{ url('view-estate/' . $item->id) }}"> {{$item->estate_price}} </a></td>
-            <td><a href="{{ url('view-estate/' . $item->id) }}"> {{$item->location}} </a></td>
-            <td><a href="{{ url('view-estate/' . $item->id) }}"> {{$item->number_of_plots}} </a></td>
+            <td><a href="{{ url('view-available-estate-plots/' . $item->id) }}"> {{$key + 1}} </a></td>
+            <td><a href="{{ url('view-available-estate-plots/' . $item->id) }}"> {{$item->estate_name}} </a></td>
+            <td><a href="{{ url('view-available-estate-plots/' . $item->id) }}"> {{$item->estate_price}} </a></td>
+            <td><a href="{{ url('view-available-estate-plots/' . $item->id) }}"> {{$item->location}} </a></td>
+            <td><a href="{{ url('view-available-estate-plots/' . $item->id) }}"> {{$item->number_of_plots}} </a></td>
             <td>
               <a href="{{ url('view-available-estate-plots/' . $item->id) }}" class="btn btn-success">
+                
               <i class="mdi mdi-map-marker-check"></i> Pick Plot
               </a>
             </td>

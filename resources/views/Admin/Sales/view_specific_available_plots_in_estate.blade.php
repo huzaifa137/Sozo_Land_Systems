@@ -116,9 +116,12 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
                                     title: 'Success!',
                                     text: 'Client has been transferred.',
                                     icon: 'success',
-                                    background: '#000',
+                                    background: '#800080',
                                     color: '#fff',
                                     confirmButtonColor: '#28a745'
+                                }).then(() => {
+                                    // Redirect after clicking "OK"
+                                    window.location.href = response.redirect_url;
                                 });
                             },
                             error: function (data) {

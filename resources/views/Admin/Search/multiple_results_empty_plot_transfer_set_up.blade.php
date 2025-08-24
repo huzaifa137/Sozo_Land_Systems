@@ -18,16 +18,16 @@
             @include('sweetalert::alert')
 
             @if (Session::get('success'))
-        <div class="alert alert-success">
-          {{Session::get('success')}}
-        </div>
-      @endif
+              <div class="alert alert-success">
+                {{Session::get('success')}}
+              </div>
+            @endif
 
             @if (Session::get('failed'))
-        <div class="alert alert-danger">
-          {{Session::get('danger')}}
-        </div>
-      @endif
+              <div class="alert alert-danger">
+                {{Session::get('danger')}}
+              </div>
+            @endif
 
 
             <?php 
@@ -35,91 +35,95 @@
 									?>
 
             @if ($result->isEmpty())
-        <div class="col-sm-12 col-md-12">
-          <div class="alert alert-warning" role="alert">
-          No clients Plots found from search results
-          </div>
-        </div>
-      @else
-        <div class="row ">
-          <div class="col-12 grid-margin">
-          <div class="card">
-            <div class="card-body">
-            <div class="table-responsive">
-              <table class="table">
-              <thead>
-                <tr>
-                <th>No.</th>
-                <th> Client Name </th>
-                <th> NIN No </th>
-                <th> Estate </th>
-                <th> Plot No </th>
-                <th> Location </th>
-                <th> Amount Payed </th>
-                <th colspan="2" style="text-align:center;"> Action </th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($result as $key => $item)
+              <div class="col-sm-12 col-md-12">
+                <div class="alert alert-warning" role="alert">
+                  No clients Plots found from search results
+                </div>
+              </div>
+            @else
+              <div class="row ">
+                <div class="col-12 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>No.</th>
+                              <th> Client Name </th>
+                              <th> NIN No </th>
+                              <th> Estate </th>
+                              <th> Plot No </th>
+                              <th> Location </th>
+                              <th> Amount Payed </th>
+                              <th colspan="2" style="text-align:center;"> Action </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @foreach ($result as $key => $item)
 
-                <?php
+                                                    <?php
 
-          $userinformation = DB::table('buyers')
-          ->where('id', $item->id)
-          ->first();
-          
-          $next_installment_pay = DB::table('buyers')
-          ->where('estate', $item->estate)
-          ->where('plot_number', $item->plot_number)
-          ->value('next_installment_pay');
-                ?>
+                              session()->put('TransferedClient', $item->id);
 
-                <tr>
 
-                <td><a href="{{'view-reciept/' . $item->id}}">{{$key + 1}}</a></td>
-                <td>
-                <span><a href="{{'view-reciept/' . $item->id}}">{{$item->firstname}}
-                  {{$item->lastname}}</a></span>
-                </td>
-                <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->NIN}}</a> </td>
-                <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->estate}}</a> </td>
-                <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->plot_number}}</a> </td>
-                <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->location}}</a> </td>
-                <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->amount_payed}}</a> </td>
+                              $userinformation = DB::table('buyers')
+                                ->where('id', $item->id)
+                                ->first();
 
-                <td><a href="{{'view-reciept/' . $item->id}}" class="btn btn-outline-info btn-icon-text">
-                <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
+                              $next_installment_pay = DB::table('buyers')
+                                ->where('estate', $item->estate)
+                                ->where('plot_number', $item->plot_number)
+                                ->value('next_installment_pay');
+                                          ?>
 
-                @if($userRight == 'SuperAdmin' || $userRight == 'Admin')
+                                                    <tr>
 
-              @if ($next_installment_pay != 'Fully payed')
-              <td><a href="{{'update-payment-reminder/' . $item->id}}"
-              class="btn btn-outline-primary btn-icon-text">
-              <i class="mdi mdi-eye btn-icon-prepend"></i> update Status </a>
-              </td>
-              @else
-              <td>
-                <a href="{{ route('search-available-empty-plots') }}" class="btn btn-outline-success btn-icon-text">
-                    <i class="mdi mdi-close-circle btn-icon-prepend"></i> Proceed to Transfer
-                </a>
-              </td>
-              @endif
+                                                      <td><a href="{{'view-reciept/' . $item->id}}">{{$key + 1}}</a></td>
+                                                      <td>
+                                                        <span><a href="{{'view-reciept/' . $item->id}}">{{$item->firstname}}
+                                                            {{$item->lastname}}</a></span>
+                                                      </td>
+                                                      <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->NIN}}</a> </td>
+                                                      <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->estate}}</a> </td>
+                                                      <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->plot_number}}</a> </td>
+                                                      <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->location}}</a> </td>
+                                                      <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->amount_payed}}</a> </td>
+
+                                                      <td><a href="{{'view-reciept/' . $item->id}}" class="btn btn-outline-info btn-icon-text">
+                                                          <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
+
+                                                      @if($userRight == 'SuperAdmin' || $userRight == 'Admin')
+
+                                                        @if ($next_installment_pay != 'Fully payed')
+                                                          <td><a href="{{'update-payment-reminder/' . $item->id}}"
+                                                              class="btn btn-outline-primary btn-icon-text">
+                                                              <i class="mdi mdi-eye btn-icon-prepend"></i> update Status </a>
+                                                          </td>
+                                                        @else
+                                                          <td>
+                                                            <a href="{{ route('search-available-empty-plots') }}"
+                                                              class="btn btn-outline-success btn-icon-text">
+                                                              <i class="mdi mdi-close-circle btn-icon-prepend"></i> Proceed to Transfer
+                                                            </a>
+                                                          </td>
+                                                        @endif
+                                                      @endif
+
+                                                    </tr>
+                                                    <tr>
+
+
+                            @endforeach
+
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             @endif
-
-                </tr>
-                <tr>
-
-
-        @endforeach
-
-              </tbody>
-              </table>
-            </div>
-            </div>
-          </div>
-          </div>
-        </div>
-      @endif
 
 
 
