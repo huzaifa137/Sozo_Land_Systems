@@ -339,8 +339,9 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
-               
+            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
+
                 <span class="menu-icon">
                     <i class="mdi mdi-security"></i>
                 </span>
@@ -403,17 +404,6 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
     @else
     @endif
 
-
-    <li class="nav-item menu-items">
-        <a class="nav-link" href="{{ route('search-module') }}">
-            <span class="menu-icon">
-                <i class="mdi mdi-magnify"></i>
-            </span>
-            <span class="menu-title">Search</span>
-        </a>
-    </li>
-
-
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
             <a class="nav-link " data-bs-toggle="collapse" href="#ui-user-module" aria-expanded="false"
@@ -434,6 +424,19 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
         </li>
     @else
     @endif
+
+
+    <li class="nav-item menu-items">
+        <a class="nav-link" href="{{ route('search-module') }}">
+            <span class="menu-icon">
+                <i class="mdi mdi-magnify"></i>
+            </span>
+            <span class="menu-title">Search</span>
+        </a>
+    </li>
+
+
+
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">

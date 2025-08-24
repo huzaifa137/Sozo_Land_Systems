@@ -48,11 +48,11 @@
                           <tr>
                             <th>No.</th>
                             <th> Client Name </th>
-                            <th> NIN No </th>
                             <th> Estate </th>
                             <th> Plot No </th>
                             <th> Location </th>
                             <th> Amount Payed </th>
+                            <th> Back on Market </th>
                             <th colspan="2" style="text-align:center;"> Action </th>
                           </tr>
                         </thead>
@@ -66,27 +66,40 @@
                       <span><a href="{{'view-reciept/' . $item->id}}">{{$item->firstname}}
                         {{$item->lastname}}</a></span>
                     </td>
-                    <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->NIN}}</a> </td>
                     <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->estate}}</a> </td>
                     <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->plot_number}}</a> </td>
                     <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->location}}</a> </td>
                     <td> <a href="{{'view-reciept/' . $item->id}}">{{$item->amount_payed}}</a> </td>
+
+                                                                    @if ($item->back_on_market_status == 0)
+                                                    <td>
+                                                        -
+                                                    </td>
+                                                @else
+                                                    <td>
+                                                        <a href="javascript:void();"
+                                                            class="btn btn-outline-danger btn-icon-text"> 
+                                                            <i class="mdi mdi-close-circle btn-icon-prepend"></i> Sold Back
+                                                        </a>
+                                                    </td>
+                                                @endif
 
                     <td><a href="{{'view-reciept/' . $item->id}}" class="btn btn-outline-info btn-icon-text">
                       <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
 
                     @if($userRight == 'SuperAdmin')
 
-              <td><a href="{{ 'edit/' . $item->id . '/' . $LoggedAdminInfo['id'] }}"
-                class="btn btn-outline-warning btn-icon-text">
-                <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
-              </td>
+                      <td><a href="{{ 'edit/' . $item->id . '/' . $LoggedAdminInfo['id'] }}"
+                        class="btn btn-outline-warning btn-icon-text">
+                        <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
+                      </td>
 
-              <td><a href="{{ 'delete/' . $item->id . '/' . $item->plot_number . '/' . $item->estate }}"
-                onclick=" return confirm('Please confirm you want to delete this record ?')"
-                class="btn btn-outline-danger btn-icon-text">
-                <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
-              @endif
+                      {{-- <td><a href="{{ 'delete/' . $item->id . '/' . $item->plot_number . '/' . $item->estate }}"
+                        onclick=" return confirm('Please confirm you want to delete this record ?')"
+                        class="btn btn-outline-danger btn-icon-text">
+                        <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
+                        </td> --}}
+                      @endif
 
                     </tr>
                     <tr>

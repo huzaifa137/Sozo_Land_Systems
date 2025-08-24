@@ -2043,30 +2043,41 @@ class Master extends Controller
             }
         } else if ($estate != null) {
 
+            // $result = DB::table('buyers')
+            //     ->where('estate', $estate, )
+            //     ->where('plot_number', $land_plot, )
+            //     ->first();
+
             $result = DB::table('buyers')
                 ->where('estate', $estate, )
                 ->where('plot_number', $land_plot, )
-                ->first();
+                ->get();
 
             if (!$result) {
                 return back()->with('error', 'No Plot has been found with provided information');
             } else {
 
-                $id = $result->id;
-                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
-                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                // $id = $result->id;
+                // $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                // $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                // $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+                // $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+                // $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+                // $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+                // $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+                // $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+                // $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+                // $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+                // return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
+
+                $mergedResults = $result;
+
                 $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-                $user_information = DB::table('buyers')->where('id', '=', $id)->get();
-                $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
-                $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
-                $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
-
-                $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
-                $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
-                $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
-
-                return view('Admin.Resale.show_info', $data, compact(['user_information', 'user_reciepts', 'id', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
+                return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
 
             }
         } else if ($date_of_birth != null) {
@@ -3669,9 +3680,9 @@ class Master extends Controller
 
     public function transfer(Request $request)
     {
-        
-        $userData = DB::table('buyers')->where('id',$request->id)->first();
-                
+
+        $userData = DB::table('buyers')->where('id', $request->id)->first();
+
         $user_id = $request->id;
         $purchase_type = 'plot';
         $estate = $request->estate;
