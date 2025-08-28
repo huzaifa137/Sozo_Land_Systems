@@ -73,7 +73,7 @@
                             <label class="col-sm-6 col-form-label">Plot no</label>
                             <div class="col-sm-12">
                               <div class="col-sm-12">
-                                <input type="number" name="plot_no" id="plot_no" class="form-control" placeholder="Enter plot no" required>
+                                <input type="text" name="plot_no" id="plot_no" class="form-control" placeholder="Enter plot no" required>
                               </div>
                             </div>
                           </div>

@@ -288,10 +288,6 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="{{ route('assign-empty-plot') }}">Transfer to new
                             plot</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Transfer Multiple
-                            Plots</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Interchange Clients</a>
-                    </li>
                 </ul>
             </div>
         </li>
