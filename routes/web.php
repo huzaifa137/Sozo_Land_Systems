@@ -166,4 +166,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::get('get-all-estate-plots', [Master::class, 'updateBuyersBackOnMarketStatus'])->name('get-all-estate-plots');
 
+
+    Route::get('insert-plots', [Master::class, 'insertPlots'])->name('insert-plots');
+
 });

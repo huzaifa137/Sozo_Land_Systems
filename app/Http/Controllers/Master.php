@@ -3800,4 +3800,27 @@ class Master extends Controller
         return 'Buyers updated based on resales.';
     }
 
+    public function insertPlots()
+    {
+        for ($i = 1; $i <= 143; $i++) {
+            DB::table('plots')->insert([
+                'estate' => 'kabimbiri',
+                'plot_number' => $i,
+                'width_1' => 20,
+                'width_2' => 20,
+                'height_1' => 40,
+                'height_2' => 40,
+                'status' => 'Not taken',
+                'location' => 'Mukono',
+                'half_or_full' => 0,
+                'buyer_id' => 0,
+                'exceptional_status' => 0,
+                'is_half' => 1,
+            ]);
+        }
+
+        dd('Records inserted successfully from plot 2 to 143.');
+
+    }
+
 }
