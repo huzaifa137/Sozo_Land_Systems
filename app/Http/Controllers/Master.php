@@ -1237,7 +1237,7 @@ class Master extends Controller
 
         $not_fully_paid = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
             ->get();
-
+        // dd($not_fully_paid);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Receipts.pending', $data, compact(['not_fully_paid', 'records']));
@@ -1409,7 +1409,7 @@ class Master extends Controller
 
         $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'admin_user_info', 'amount_in_words', 'user_info']));
         $filename = 'payment_reciepet' . time() . '.pdf';
-        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+        // $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
 
         $post->reciept = $filename;
         $post->user_id = $request->user_id;
@@ -3823,4 +3823,45 @@ class Master extends Controller
 
     }
 
+    public function updateRequestPermission(Request $request, $id)
+    {
+        try {
+            DB::table('buyers')->where('id', $id)->update([
+                'request_permission' => 1,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function confirmRequestPermission(Request $request, $id)
+    {
+        try {
+            DB::table('buyers')->where('id', $id)->update([
+                'request_permission' => 2,
+                'updated_at' => now()
+            ]);
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+        public function grantAgreementPermission()
+    {
+
+        $records = Estate::all();
+
+        $not_fully_paid = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
+        ->where('request_permission', '=', 1)
+            ->get();
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['not_fully_paid', 'records']));
+    }
 }

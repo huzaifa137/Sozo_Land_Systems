@@ -121,7 +121,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
       <div class="col-12 grid-margin">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title">Under payment Payments :</h4>
+            <h4 >Grant Permission</h4>
 
             @include('sweetalert::alert')
 
@@ -138,80 +138,77 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             <th> Estate </th>
                             <th> Plot No </th>
                             <th> Amount Payed </th>
-                            <th style="text-align: center"> Reciepts </th>
                             <th> Agreement</th>
                           </tr>
                         </thead>
                         <tbody>
-                          @foreach ($not_fully_paid as $key => $item)
+  @forelse ($not_fully_paid as $key => $item)
 
-                                                    <?php 
-                                                                                                          $estatePrice = DB::table('estates')
-                              ->where('estate_name', $item->estate)
-                              ->value('estate_price');
+    <?php 
+      $estatePrice = DB::table('estates')
+        ->where('estate_name', $item->estate)
+        ->value('estate_price');
 
-                            $cleanPrice = str_replace(',', '', $estatePrice);
+      $cleanPrice = str_replace(',', '', $estatePrice);
 
-                            // check for exceptional plots and exceptional amounts
+      $exceptionalPlot = DB::table('plots')
+        ->where('estate', $item->estate)
+        ->where('plot_number', $item->plot_number)
+        ->first();
 
-                            $exceptionalPlot = DB::table('plots')
-                              ->where('estate', $item->estate)
-                              ->where('plot_number', $item->plot_number)
-                              ->first();
+      if ($exceptionalPlot->exceptional_status == 'Yes') {
+        $exceptionalPrice = $exceptionalPlot->exceptional_amount;
+      } elseif ($exceptionalPlot->exceptional_status == 'No') {
+        $amount_payed = $item->amount_payed;
+      }
+    ?>
 
-                            if ($exceptionalPlot->exceptional_status == 'Yes') {
-                              $exceptionalPrice = $exceptionalPlot->exceptional_amount;
-                            } elseif ($exceptionalPlot->exceptional_status == 'No') {
-                              $amount_payed = $item->amount_payed;
-                            }
-                                                                                                      ?>
+    <tr>
+      <td>{{$key + 1}}</td>
+      <td>
+        <span>{{$item->firstname}} {{$item->lastname}}</span>
+      </td>
+      <td> {{$item->estate}} </td>
+      <td> {{$item->plot_number}} </td>
+      <td> {{$item->amount_payed}} </td>
 
-                                                    <tr>
-                                                      <td>{{$key + 1}}</td>
-                                                      <td>
-                                                        <span>{{$item->firstname}} {{$item->lastname}}</span>
-                                                      </td>
-                                                      <td> {{$item->estate}} </td>
-                                                      <td> {{$item->plot_number}} </td>
-                                                      <td> {{$item->amount_payed}} </td>
+      <td>
+        @if($item->request_permission == 0)
+          <button class="btn btn-warning btn-sm request-permission-btn" data-id="{{ $item->id }}"
+            data-exceptional-status="{{ $exceptionalPlot->exceptional_status }}"
+            data-exceptional-price="{{ $exceptionalPlot->exceptional_amount }}"
+            data-clean-price="{{ $cleanPrice }}" data-amount-payed="{{ $item->amount_payed }}"
+            data-firstname="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
+            <i class="mdi mdi-lock-question me-1"></i> Request Permission
+          </button>
 
+        @elseif($item->request_permission == 1)
+          @if ($User_access_right == 'SuperAdmin')
+            <button class="btn btn-primary btn-sm confirm-permission-btn" data-id="{{ $item->id }}"
+              data-name="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
+              <i class="mdi mdi-check-decagram me-1"></i> Confirm Permission
+            </button>
+          @else
+            <a href="javascript:void();" class="btn btn-primary btn-sm">
+              <i class="mdi mdi-clock-outline me-1"></i> Pending Confirmation
+            </a>
+          @endif
+        @elseif($item->request_permission == 2)
+          <a href="{{ url('add-agreement/' . $item->id) }}"
+            class="btn btn-outline-success btn-icon-text">
+            <i class="mdi mdi-eye btn-icon-prepend"></i> Make Agreement
+          </a>
+        @endif
+      </td>
+    </tr>
 
-                                                      <td><a href="{{'add-reciept/' . $item->id}}" class="btn btn-outline-info btn-icon-text">
-                                                          <i class="mdi mdi-eye btn-icon-prepend"></i> Make reciept </a> </td>
+  @empty
+    <tr>
+      <td colspan="6" class="text-center text-warning">No records found in the database.</td>
+    </tr>
+  @endforelse
+</tbody>
 
-                                                      <td>
-                                                        @if($item->request_permission == 0)
-                                                          <button class="btn btn-warning btn-sm request-permission-btn" data-id="{{ $item->id }}"
-                                                            data-exceptional-status="{{ $exceptionalPlot->exceptional_status }}"
-                                                            data-exceptional-price="{{ $exceptionalPlot->exceptional_amount }}"
-                                                            data-clean-price="{{ $cleanPrice }}" data-amount-payed="{{ $item->amount_payed }}"
-                                                            data-firstname="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
-                                                            <i class="mdi mdi-lock-question me-1"></i> Request Permission
-                                                          </button>
-
-                                                        @elseif($item->request_permission == 1)
-                                                            @if ($User_access_right == 'SuperAdmin')
-                                                          <button class="btn btn-primary   btn-sm confirm-permission-btn" data-id="{{ $item->id }}"
-                                                            data-name="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
-                                                            <i class="mdi mdi-check-decagram me-1"></i> Confirm Permission
-                                                          </button>
-                                                          @else
-                                                          <a href="javascript:void();" class="btn btn-primary btn-sm">
-                                                            <i class="mdi mdi-clock-outline me-1"></i> Pending Confirmation
-                                                          </a>
-                                                          @endif
-                                                        @elseif($item->request_permission == 2)
-                                                          <a href="{{ url('add-agreement/' . $item->id) }}"
-                                                            class="btn btn-outline-success btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Make Agreement
-                                                          </a>
-                                                        @endif
-                                                      </td>
-                                                    </tr>
-
-                          @endforeach
-
-                        </tbody>
                       </table>
                     </div>
                   </div>

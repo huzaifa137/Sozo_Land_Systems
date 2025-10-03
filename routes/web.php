@@ -169,4 +169,8 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::get('insert-plots', [Master::class, 'insertPlots'])->name('insert-plots');
 
+    Route::post('/update-request-permission/{id}', [Master::class, 'updateRequestPermission']);
+    Route::post('/confirm-request-permission/{id}', [Master::class, 'confirmRequestPermission']);
+    Route::get('/grant-agreement-permission', [Master::class, 'grantAgreementPermission'])->name('grant-agreement-permission');
+
 });

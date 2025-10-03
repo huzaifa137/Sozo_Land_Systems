@@ -195,6 +195,26 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
     @else
     @endif
 
+    @if ($User_access_right == 'SuperAdmin')
+        <li class="nav-item menu-items">
+            <a class="nav-link " data-bs-toggle="collapse" href="#ui-generate-agreement" aria-expanded="false"
+                aria-controls="ui-basic">
+                <span class="menu-icon">
+                    <i class="mdi mdi-animation"></i>
+                </span>
+                <span class="menu-title">Generate Agreement</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-generate-agreement">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('grant-agreement-permission') }}">Grant Access</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    @endif
+
+
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
@@ -274,7 +294,7 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
     @endif
 
 
-    @if ($User_access_right == 'SuperAdmin')
+    @if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin')
         <li class="nav-item menu-items">
             <a class="nav-link " data-bs-toggle="collapse" href="#ui-transfers" aria-expanded="false"
                 aria-controls="ui-basic">
