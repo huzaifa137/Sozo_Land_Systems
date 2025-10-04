@@ -106,7 +106,7 @@
       }
     </style>
 
-   <?php
+    <?php
 
 use App\Models\AdminRegister;
 $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
@@ -139,6 +139,9 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             <th> Plot No </th>
                             <th> Amount Payed </th>
                             <th style="text-align: center"> Reciepts </th>
+                            @if ($User_access_right == 'SuperAdmin')
+                            <th style="text-align: center"> View Reciepts </th>
+                            @endif
                             <th> Agreement</th>
                           </tr>
                         </thead>
@@ -146,7 +149,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                           @foreach ($not_fully_paid as $key => $item)
 
                                                     <?php 
-                                                                                                          $estatePrice = DB::table('estates')
+                                                                                                                                                              $estatePrice = DB::table('estates')
                               ->where('estate_name', $item->estate)
                               ->value('estate_price');
 
@@ -164,7 +167,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             } elseif ($exceptionalPlot->exceptional_status == 'No') {
                               $amount_payed = $item->amount_payed;
                             }
-                                                                                                      ?>
+                                                                                                                                                          ?>
 
                                                     <tr>
                                                       <td>{{$key + 1}}</td>
@@ -176,8 +179,21 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                       <td> {{$item->amount_payed}} </td>
 
 
-                                                      <td><a href="{{'add-reciept/' . $item->id}}" class="btn btn-outline-info btn-icon-text">
-                                                          <i class="mdi mdi-eye btn-icon-prepend"></i> Make reciept </a> </td>
+                                                      <td>
+                                                          <a href="{{ 'add-reciept/' . $item->id }}" class="btn btn-outline-info btn-icon-text">
+                                                              <i class="mdi mdi-file-plus btn-icon-prepend"></i> 
+                                                              Make Receipt
+                                                          </a>
+                                                      </td>
+
+                                                       @if ($User_access_right == 'SuperAdmin')
+                                                      <td>
+                                                          <a href="{{ url('/all-client-receipts/' . $item->id) }}" class="btn btn-outline-primary">
+                                                              <i class="mdi mdi-receipt me-2 text-primary"></i>
+                                                              Client Receipts
+                                                          </a>
+                                                      </td>
+                                                      @endif
 
                                                       <td>
                                                         @if($item->request_permission == 0)
@@ -190,15 +206,15 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                           </button>
 
                                                         @elseif($item->request_permission == 1)
-                                                            @if ($User_access_right == 'SuperAdmin')
-                                                          <button class="btn btn-primary   btn-sm confirm-permission-btn" data-id="{{ $item->id }}"
-                                                            data-name="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
-                                                            <i class="mdi mdi-check-decagram me-1"></i> Confirm Permission
-                                                          </button>
+                                                          @if ($User_access_right == 'SuperAdmin')
+                                                            <button class="btn btn-primary   btn-sm confirm-permission-btn" data-id="{{ $item->id }}"
+                                                              data-name="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
+                                                              <i class="mdi mdi-check-decagram me-1"></i> Confirm Permission
+                                                            </button>
                                                           @else
-                                                          <a href="javascript:void();" class="btn btn-primary btn-sm">
-                                                            <i class="mdi mdi-clock-outline me-1"></i> Pending Confirmation
-                                                          </a>
+                                                            <a href="javascript:void();" class="btn btn-primary btn-sm">
+                                                              <i class="mdi mdi-clock-outline me-1"></i> Pending Confirmation
+                                                            </a>
                                                           @endif
                                                         @elseif($item->request_permission == 2)
                                                           <a href="{{ url('add-agreement/' . $item->id) }}"
@@ -390,41 +406,41 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
               },
               body: JSON.stringify({ request_permission: 2 })
             })
-            .then(async (response) => {
-              const contentType = response.headers.get('Content-Type');
-              let data;
+              .then(async (response) => {
+                const contentType = response.headers.get('Content-Type');
+                let data;
 
-              if (contentType && contentType.includes('application/json')) {
-                data = await response.json();
-              } else {
-                const text = await response.text();
-                throw new Error(text);
-              }
+                if (contentType && contentType.includes('application/json')) {
+                  data = await response.json();
+                } else {
+                  const text = await response.text();
+                  throw new Error(text);
+                }
 
-              if (response.ok && data.success) {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Permission Confirmed',
-                  text: 'The request has been confirmed successfully.'
-                }).then(() => {
-                  location.reload();
-                });
-              } else {
+                if (response.ok && data.success) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Permission Confirmed',
+                    text: 'The request has been confirmed successfully.'
+                  }).then(() => {
+                    location.reload();
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Could not confirm permission.'
+                  });
+                }
+              })
+              .catch(error => {
                 Swal.fire({
                   icon: 'error',
-                  title: 'Error',
-                  text: data.message || 'Could not confirm permission.'
+                  title: 'Server Error',
+                  html: `<pre style="text-align: left;">${escapeHtml(error.message)}</pre>`
                 });
-              }
-            })
-            .catch(error => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Server Error',
-                html: `<pre style="text-align: left;">${escapeHtml(error.message)}</pre>`
+                console.error('Fetch error:', error);
               });
-              console.error('Fetch error:', error);
-            });
           }
         });
       });

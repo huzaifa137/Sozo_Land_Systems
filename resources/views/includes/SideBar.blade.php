@@ -20,6 +20,31 @@ $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first
         </div>
     </li>
 
+    <style>
+        @keyframes pulse-grow-shrink {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.25);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .badge-pulse {
+            animation: pulse-grow-shrink 1s infinite;
+            animation-delay: 0.8s;
+        }
+
+        .badge-sm {
+            font-size: 0.65rem;
+            padding: 0.25em 0.5em;
+        }
+    </style>
 
     <?php
 
@@ -163,9 +188,9 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
                     <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under
                             payments</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
+                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
                             Receipts</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </li>
@@ -186,33 +211,41 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
                     <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under
                             payments</a>
                     </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
+                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
                             Receipts</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </li>
     @else
     @endif
 
+    @php
+
+        $GrantAccessPending = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
+            ->where('request_permission', '=', 1)
+            ->count();
+    @endphp
+
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-generate-agreement" aria-expanded="false"
-                aria-controls="ui-basic">
+            <a class="nav-link" href="{{ route('grant-agreement-permission') }}">
                 <span class="menu-icon">
-                    <i class="mdi mdi-animation"></i>
+                    <i class="icon mdi mdi-account-key"></i>
                 </span>
-                <span class="menu-title">Generate Agreement</span>
-                <i class="menu-arrow"></i>
+                <span class="menu-title">Grant Access
+                    @if ($GrantAccessPending > 0)
+                        <span class="badge rounded-pill ms-2 animate__animated animate__bounceIn badge-pulse"
+                            style="background-color: #8f5fe8;">
+                            {{ $GrantAccessPending }}
+                        </span>
+
+                    @endif
+                </span>
             </a>
-            <div class="collapse" id="ui-generate-agreement">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('grant-agreement-permission') }}">Grant Access</a>
-                    </li>
-                </ul>
-            </div>
         </li>
     @endif
+
 
 
 
@@ -327,31 +360,7 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
         $reminderCount = \App\Models\buyer::whereDate('next_installment_pay', $today)->count();
     @endphp
 
-    <style>
-        @keyframes pulse-grow-shrink {
-            0% {
-                transform: scale(1);
-            }
 
-            50% {
-                transform: scale(1.25);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .badge-pulse {
-            animation: pulse-grow-shrink 1s infinite;
-            animation-delay: 0.8s;
-        }
-
-        .badge-sm {
-            font-size: 0.65rem;
-            padding: 0.25em 0.5em;
-        }
-    </style>
 
     @if ($User_access_right == 'SuperAdmin')
         <li class="nav-item menu-items">

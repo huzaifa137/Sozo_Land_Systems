@@ -1236,8 +1236,9 @@ class Master extends Controller
         $records = Estate::all();
 
         $not_fully_paid = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
+            ->orderBy('id', 'Desc')
             ->get();
-        // dd($not_fully_paid);
+
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Receipts.pending', $data, compact(['not_fully_paid', 'records']));
@@ -1268,9 +1269,10 @@ class Master extends Controller
     {
 
         $user_id = $id;
+        $userInformation = Buyer::find($id);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Receipts.add_receipt', $data, compact(['user_id']));
+        return view('Admin.Receipts.add_receipt', $data, compact(['user_id', 'userInformation']));
     }
 
     public function view_reciept($id)
@@ -1374,7 +1376,7 @@ class Master extends Controller
         return view('Admin.Receipts.view_agreement', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
     }
 
-    public function store_new_receipt(Request $request)
+        public function store_new_receipt(Request $request)
     {
 
         $request->validate([
@@ -1385,16 +1387,22 @@ class Master extends Controller
             'amount_in_words' => 'required',
         ]);
 
+        $amount_paid = str_replace(',', '', $request->amount_paid);
+        $amountPaidRaw = $request->amount_paid;
+        $balancePendingRaw = $request->balance_pending;
+        $balance_pending = str_replace(',', '', $request->balance_pending);
+
+        $AmountFormatted = number_format($amount_paid);
+        $BalanceFormatted = number_format($balance_pending);
+
         $user_email = $request->user_email;
         $user_name = $request->user_name;
         $user_id = $request->user_id;
         $Phonenumber = $request->phone_number;
         $amount_in_words = $request->amount_in_words;
-        $Amount = $request->amount_paid;
 
         $admin_user_spec_id = session('LoggedAdmin');
-
-        $admin_user_info = Adminregister::where('id', $admin_user_spec_id)->first();
+        $admin_user_info = AdminRegister::where('id', $admin_user_spec_id)->first();
         $user_info = buyer::where('id', $user_id)->first();
         $receipt_no = rand(10000, 50000);
 
@@ -1402,37 +1410,50 @@ class Master extends Controller
         $formattedDate = $currentDate->format('Y/m/d');
 
         $user_id = $request->user_id;
-        $amount_paid = $request->amount_paid;
-        $Balance = $request->balance_pending;
+        $amount_paid = $amount_paid;
+        $Balance = $BalanceFormatted;
+        $Amount = $amount_paid;
 
         $post = new reciept();
 
         $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'admin_user_info', 'amount_in_words', 'user_info']));
         $filename = 'payment_reciepet' . time() . '.pdf';
-        // $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+        // Make sure destination directory exists
+        $destinationDirectory = public_path("storage/pdf_receipts");
+        
+        if (!file_exists($destinationDirectory)) {
+            mkdir($destinationDirectory, 0755, true); // create folders recursively
+        }
+        
+        // Save PDF to Laravel's internal storage path
+        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+        
+        // Copy to public folder
+        copy(
+            storage_path("app/public/pdf_receipts/{$filename}"),
+            public_path("storage/pdf_receipts/{$filename}")
+        );
 
         $post->reciept = $filename;
         $post->user_id = $request->user_id;
-        $post->Amount = $request->amount_paid;
+        $post->Amount = $amount_paid;
         $post->Date_of_payment = $request->Date_of_payment;
-        $post->Balance = $request->balance_pending;
+        $post->Balance = $BalanceFormatted;
         $post->Phonenumber = $Phonenumber;
         $post->amount_in_words = $request->amount_in_words;
         $post->save();
 
         $original_amount = buyer::where('id', $user_id)->value('amount_payed');
 
-        $all_cash = $original_amount + $amount_paid;
+        $all_cash = $original_amount + str_replace(',', '', $AmountFormatted);
 
         $update_buyer_amount = buyer::where('id', $user_id)
             ->update([
                 'amount_payed' => $all_cash,
-                'balance' => $Balance,
+                'balance' => $BalanceFormatted,
             ]);
 
-        //    return $pdf->stream($filename);
-        return $pdf->download($filename);
-
+        return redirect()->back()->with('download_link', asset("storage/pdf_receipts/{$filename}"));
     }
 
     public function add_first_reciept($id)
@@ -1625,7 +1646,7 @@ class Master extends Controller
 
         $filename = 'payment_agreement' . time() . '.pdf';
 
-        $pdf->save(storage_path("app/public/agreements/{$filename}"));
+        // $pdf->save(storage_path("app/public/agreements/{$filename}"));
 
         $post = new agreement();
 
@@ -3851,17 +3872,33 @@ class Master extends Controller
         }
     }
 
-        public function grantAgreementPermission()
+    public function grantAgreementPermission()
     {
 
         $records = Estate::all();
 
         $not_fully_paid = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
-        ->where('request_permission', '=', 1)
+            ->where('request_permission', '=', 1)
             ->get();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Receipts.grant-agreement-permission', $data, compact(['not_fully_paid', 'records']));
+    }
+
+    public function allClientReciepts($id)
+    {
+        $user_id = $id;
+
+        $userInformation = Buyer::find($id);
+
+        $data = [
+            'LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first(),
+            'user_id' => $user_id,
+            'userInformation' => $userInformation,
+            'receipts' => Reciept::where('user_id', $user_id)->get(),
+        ];
+
+        return view('Admin.Receipts.all-client-reciepts', $data);
     }
 }
