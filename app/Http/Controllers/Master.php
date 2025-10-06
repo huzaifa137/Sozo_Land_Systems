@@ -6,6 +6,7 @@ use App\Models\AdminRegister;
 use App\Models\agreement;
 use App\Models\buyer;
 use App\Models\Estate;
+use App\Models\OldReceipt;
 use App\Models\expenditure;
 use App\Models\expenditure_service;
 use App\Models\house;
@@ -1376,7 +1377,7 @@ class Master extends Controller
         return view('Admin.Receipts.view_agreement', $data, compact(['user_information', 'user_reciepts', 'user_agreements', 'user_reciepts_pdf', 'user_agreements_pdf', 'user_agreements_uploaded']));
     }
 
-        public function store_new_receipt(Request $request)
+    public function store_new_receipt(Request $request)
     {
 
         $request->validate([
@@ -1420,14 +1421,14 @@ class Master extends Controller
         $filename = 'payment_reciepet' . time() . '.pdf';
         // Make sure destination directory exists
         $destinationDirectory = public_path("storage/pdf_receipts");
-        
+
         if (!file_exists($destinationDirectory)) {
             mkdir($destinationDirectory, 0755, true); // create folders recursively
         }
-        
+
         // Save PDF to Laravel's internal storage path
         $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
-        
+
         // Copy to public folder
         copy(
             storage_path("app/public/pdf_receipts/{$filename}"),
@@ -3897,8 +3898,24 @@ class Master extends Controller
             'user_id' => $user_id,
             'userInformation' => $userInformation,
             'receipts' => Reciept::where('user_id', $user_id)->get(),
+            'oldReceipts' => DB::table('oldreceipts')->where('buyer_id', $user_id)->get(),
         ];
 
         return view('Admin.Receipts.all-client-reciepts', $data);
     }
+
+    public function uploadOldReciepts(Request $request)
+    {
+
+        DB::table('oldreceipts')->insert([
+            'buyer_id' => $request->item_id,
+            'file_path' => $request->file('receipt')->store('receipts', 'public'),
+            'amount_paid' => $request->amount_paid,
+            'balance' => $request->balance,
+        ]);
+
+        return redirect()->back()->with('success', 'Receipt uploaded successfully.');
+    }
+
+
 }

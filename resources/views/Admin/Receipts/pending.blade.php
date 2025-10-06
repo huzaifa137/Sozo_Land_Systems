@@ -140,7 +140,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             <th> Amount Payed </th>
                             <th style="text-align: center"> Reciepts </th>
                             @if ($User_access_right == 'SuperAdmin')
-                            <th style="text-align: center"> View Reciepts </th>
+                              <th style="text-align: center"> View Reciepts </th>
                             @endif
                             <th> Agreement</th>
                           </tr>
@@ -149,7 +149,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                           @foreach ($not_fully_paid as $key => $item)
 
                                                     <?php 
-                                                                                                                                                              $estatePrice = DB::table('estates')
+                                                                                                                                                                                                                                                                                                                                                                                                                                  $estatePrice = DB::table('estates')
                               ->where('estate_name', $item->estate)
                               ->value('estate_price');
 
@@ -167,7 +167,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             } elseif ($exceptionalPlot->exceptional_status == 'No') {
                               $amount_payed = $item->amount_payed;
                             }
-                                                                                                                                                          ?>
+                                                                                                                                                                                                                                                                                                                                                                                                                              ?>
 
                                                     <tr>
                                                       <td>{{$key + 1}}</td>
@@ -178,21 +178,28 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                       <td> {{$item->plot_number}} </td>
                                                       <td> {{$item->amount_payed}} </td>
 
-
                                                       <td>
-                                                          <a href="{{ 'add-reciept/' . $item->id }}" class="btn btn-outline-info btn-icon-text">
-                                                              <i class="mdi mdi-file-plus btn-icon-prepend"></i> 
-                                                              Make Receipt
-                                                          </a>
+                                                        <a href="{{ 'add-reciept/' . $item->id }}" class="btn btn-outline-info btn-icon-text">
+                                                          <i class="mdi mdi-file-plus btn-icon-prepend"></i>
+                                                          Make Receipt
+                                                        </a>
+
+                                                        <!-- Button to open modal -->
+                                                        <a href="javascript:void(0);"
+                                                          class="btn btn-outline-success btn-icon-text open-receipt-modal"
+                                                          data-id="{{ $item->id }}" data-toggle="modal" data-target="#uploadReceiptModal">
+                                                          <i class="mdi mdi-camera btn-icon-prepend"></i>
+                                                          Upload Receipts
+                                                        </a>
                                                       </td>
 
-                                                       @if ($User_access_right == 'SuperAdmin')
-                                                      <td>
+                                                      @if ($User_access_right == 'SuperAdmin')
+                                                        <td>
                                                           <a href="{{ url('/all-client-receipts/' . $item->id) }}" class="btn btn-outline-primary">
-                                                              <i class="mdi mdi-receipt me-2 text-primary"></i>
-                                                              Client Receipts
+                                                            <i class="mdi mdi-receipt me-2 text-primary"></i>
+                                                            Client Receipts
                                                           </a>
-                                                      </td>
+                                                        </td>
                                                       @endif
 
                                                       <td>
@@ -229,6 +236,63 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
                         </tbody>
                       </table>
+
+                      <!-- Upload Receipt Modal -->
+                      <div class="modal fade" id="uploadReceiptModal" tabindex="-1" role="dialog"
+                        aria-labelledby="uploadReceiptModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <form id="receiptForm" method="POST" action="{{ route('receipt.upload') }}"
+                            enctype="multipart/form-data" novalidate>
+                            @csrf
+                            <input type="hidden" name="item_id" id="modal_item_id">
+                            <div class="modal-content" style="background-color: #343a40; color: #fff;">
+
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="uploadReceiptModalLabel">Upload Receipt</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+
+                              <div class="modal-body">
+                                <!-- Receipt File Upload -->
+                                <div class="form-group">
+                                  <label for="receipt">Attach Receipt</label>
+                                  <input type="file" class="form-control" id="receipt" name="receipt"
+                                    accept="image/*,application/pdf" required>
+                                  <div class="invalid-feedback">Please attach a receipt.</div>
+
+                                  <!-- Preview Image -->
+                                  <img id="receiptPreview" src="#" alt="Preview" class="img-fluid mt-2"
+                                    style="display: none; max-height: 200px;" />
+                                </div>
+
+                                <!-- Amount Paid -->
+                                <div class="form-group">
+                                  <label for="amount_paid">Amount Paid</label>
+                                  <input type="text" class="form-control" id="amount_paid" name="amount_paid" required>
+                                  <div class="invalid-feedback">Amount Paid is required.</div>
+                                </div>
+
+                                <!-- Balance -->
+                                <div class="form-group">
+                                  <label for="balance">Balance</label>
+                                  <input type="text" class="form-control" id="balance" name="balance" required>
+                                  <div class="invalid-feedback">Balance is required.</div>
+                                </div>
+
+                              </div>
+
+                              <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">
+                                  <i class="mdi mdi-content-save"></i> Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -262,6 +326,15 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 <script type="text/javascript"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -448,6 +521,99 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
   });
 </script>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('receiptForm');
+    const receiptInput = document.getElementById('receipt');
+    const receiptPreview = document.getElementById('receiptPreview');
+    const itemIdInput = document.getElementById('modal_item_id');
+    const amountPaidInput = document.getElementById('amount_paid');
+    const balanceInput = document.getElementById('balance');
+
+    // 🔁 Format number with commas (on input)
+    function formatNumberWithCommas(input) {
+      const value = input.value.replace(/,/g, '');
+      if (!isNaN(value) && value !== '') {
+        input.value = parseFloat(value).toLocaleString();
+      }
+    }
+
+    amountPaidInput.addEventListener('input', () => formatNumberWithCommas(amountPaidInput));
+    balanceInput.addEventListener('input', () => formatNumberWithCommas(balanceInput));
+
+    // 🖼️ Show receipt preview (image only)
+    receiptInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          receiptPreview.src = e.target.result;
+          receiptPreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        receiptPreview.style.display = 'none';
+        receiptPreview.src = '';
+      }
+    });
+
+    // 🧠 Update item_id in modal when button is clicked
+    document.querySelectorAll('.open-receipt-modal').forEach(button => {
+      button.addEventListener('click', function () {
+        const itemId = this.getAttribute('data-id');
+        itemIdInput.value = itemId;
+        form.reset();
+        receiptPreview.style.display = 'none';
+      });
+    });
+
+    // 🧪 Form submit with validation and SweetAlert confirmation
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Remove previous validation
+      form.classList.remove('was-validated');
+      let hasError = false;
+
+      // List of required field IDs
+      const requiredFields = ['receipt', 'amount_paid', 'balance'];
+
+      requiredFields.forEach(function (fieldId) {
+        const field = document.getElementById(fieldId);
+        const rawValue = field.value.replace(/,/g, '').trim();
+        if (!rawValue) {
+          field.classList.add('is-invalid');
+          hasError = true;
+        } else {
+          field.classList.remove('is-invalid');
+        }
+      });
+
+      if (hasError) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      // ✅ Confirm submission
+      Swal.fire({
+        title: 'Confirm Submission',
+        text: "Are you sure all details are correct?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Submit'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Remove commas before submitting the form
+          amountPaidInput.value = amountPaidInput.value.replace(/,/g, '');
+          balanceInput.value = balanceInput.value.replace(/,/g, '');
+          form.submit();
+        }
+      });
+    });
+  });
+</script>
 
 
 

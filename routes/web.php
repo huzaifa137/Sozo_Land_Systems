@@ -174,4 +174,6 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::get('/grant-agreement-permission', [Master::class, 'grantAgreementPermission'])->name('grant-agreement-permission');
     Route::get('/all-client-receipts/{id}', [Master::class, 'allClientReciepts'])->name('all-client-receipts');
 
+    Route::post('/receipt/upload', [Master::class, 'uploadOldReciepts'])->name('receipt.upload');
+
 });

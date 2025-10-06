@@ -109,10 +109,9 @@
                                                         <td>{{ \Carbon\Carbon::parse($receipt->Date_of_payment)->format('d M Y') }}
                                                         </td>
                                                         <td>{{ $receipt->Phonenumber }}</td>
-                                                       <td>
+                                                        <td>
                                                             <a href="{{ asset('storage/pdf_receipts/' . $receipt->reciept) }}"
-                                                            target="_blank"
-                                                            class="btn btn-outline-primary btn-md">
+                                                                target="_blank" class="btn btn-outline-primary btn-md">
                                                                 <i class="fas fa-file-pdf"></i>
                                                                 <span>Download Receipt {{ $index + 1 }}</span>
                                                             </a>
@@ -126,6 +125,46 @@
                                     <p class="text-center text-muted">No receipts found for this client.</p>
                                 @endif
                             </div>
+
+                            <div class="card-body">
+                                @if($oldReceipts->count())
+                                    <div class="table-responsive">
+                                        <h3 class="text-center text-primary">Older Reciepts</h3>
+                                        <table class="table table-bordered  align-middle">
+                                            <thead class="table-primary">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Amount Paid</th>
+                                                    <th>Balance</th>
+                                                    <th>Phone Number</th>
+                                                    <th>Download</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($oldReceipts as $index => $receipt)
+                                                    <tr style="color:#FFF;">
+                                                        <td style="width: 1px;">{{ $index + 1 }}</td>
+                                                        <td>{{ $receipt->amount_paid }}</td>
+                                                        <td>{{ $receipt->balance }}</td>
+                                                        </td>
+                                                        <td>{{ $userInformation->phonenumber }}</td>
+                                                        <td>
+                                                            <a href="{{ asset('storage/receipts/' . $receipt->file_path) }}"
+                                                                target="_blank" class="btn btn-outline-primary btn-md">
+                                                                <i class="fas fa-file-download"></i>
+                                                                <span>Download Receipt {{ $index + 1 }}</span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <p class="text-center text-muted">No receipts found for this client.</p>
+                                @endif
+                            </div>
+
                         </div>
 
                     </div>
@@ -136,7 +175,7 @@
         </div>
     </div>
 </div>
-    </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
