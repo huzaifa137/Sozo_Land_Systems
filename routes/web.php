@@ -165,15 +165,16 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('/transfer-client', [Master::class, 'transfer'])->name('client.transfer');
 
     Route::get('get-all-estate-plots', [Master::class, 'updateBuyersBackOnMarketStatus'])->name('get-all-estate-plots');
-
-
+    
     Route::get('insert-plots', [Master::class, 'insertPlots'])->name('insert-plots');
-
+    
     Route::post('/update-request-permission/{id}', [Master::class, 'updateRequestPermission']);
     Route::post('/confirm-request-permission/{id}', [Master::class, 'confirmRequestPermission']);
     Route::get('/grant-agreement-permission', [Master::class, 'grantAgreementPermission'])->name('grant-agreement-permission');
     Route::get('/all-client-receipts/{id}', [Master::class, 'allClientReciepts'])->name('all-client-receipts');
 
     Route::post('/receipt/upload', [Master::class, 'uploadOldReciepts'])->name('receipt.upload');
+
+
 
 });

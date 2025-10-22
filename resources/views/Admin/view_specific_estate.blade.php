@@ -50,12 +50,49 @@
                             </div>
                         </div>
                         <h6 class="text-muted font-weight-normal mt-3">Fully paid plots in
-                            {{ $specific_estate->estate_name }}</h6>
+                            {{ $specific_estate->estate_name }}
+                        </h6>
                     </div>
                 </a>
             </div>
         </div>
 
+        <?php 
+
+        $whereConditions = ['estate' => $specific_estate->estate_name];
+
+$not_fully_paid = DB::table('plots')->where($whereConditions)
+    ->where('status', '!=', 'Fully payed')
+    ->get();
+
+$fully_paid_half = DB::table('plots')->where($whereConditions)
+    ->where('status', '=', 'Fully payed')
+    ->where('half_or_full', '=', '1')
+    ->get();
+
+$unmatchedPlots = [];
+
+// Implementation of the confirm agreement payment agreement :
+
+foreach ($not_fully_paid as $plot) {
+    $buyer = DB::table('buyers')
+        ->where('plot_number', $plot->plot_number)
+        ->where('estate', $plot->estate)
+        ->where('next_installment_pay', '!=', 'Fully payed')
+        ->where('request_permission', 1)
+        ->first();
+
+    if (!$buyer) {
+        $unmatchedPlots[] = $plot;
+    }
+}
+
+$unmatchedPlotsCollection = collect($unmatchedPlots);
+
+$countAvailablePlots = $unmatchedPlotsCollection->merge($fully_paid_half);
+
+
+        ?>
 
         <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
             <div class="card">
@@ -64,22 +101,24 @@
                         <div class="row">
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
-                                    <!--<h3 class="mb-0">{{ $count_estates_not_fully }}</h3>-->
+
                                     @if ($connectedPlotsProcessedNotFullyPaid != 0)
                                         <h3 class="mb-0"> {{ $connectedPlotsProcessedNotFullyPaidjoined }}</h3>
                                     @else
-                                        <h3 class="mb-0">{{ $count_estates_not_fully }}</h3>
+                                        {{-- {{ $count_estates_not_fully }} --}}
+                                        <h3 class="mb-0">{{ count($countAvailablePlots) }}</h3>
                                     @endif
                                 </div>
                             </div>
                             <div class="col-3">
                                 {{-- <div class="icon icon-box-success">
-                                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                        </div> --}}
+                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
+                                </div> --}}
                             </div>
                         </div>
                         <h6 class="text-muted font-weight-normal mt-3">Not taken plots in
-                            {{ $specific_estate->estate_name }}</h6>
+                            {{ $specific_estate->estate_name }}
+                        </h6>
                     </div>
             </div>
             </a>
@@ -98,12 +137,13 @@
                             </div>
                             <div class="col-3">
                                 {{-- <div class="icon icon-box-success">
-                                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                                        </div> --}}
+                                    <span class="mdi mdi-arrow-top-right icon-item"></span>
+                                </div> --}}
                             </div>
                         </div>
                         <h6 class="text-muted font-weight-normal mt-3">Half plots in
-                            {{ $specific_estate->estate_name }}</h6>
+                            {{ $specific_estate->estate_name }}
+                        </h6>
                     </div>
             </div>
             </a>
@@ -130,7 +170,7 @@
                 <div class="card-body">
 
                     <?php
-                    $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->value('admin_category');
+$userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->value('admin_category');
                     ?>
 
                     <h4 class="card-title">Estate Information</h4>
@@ -150,7 +190,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                                 <link rel="stylesheet"
                                     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 

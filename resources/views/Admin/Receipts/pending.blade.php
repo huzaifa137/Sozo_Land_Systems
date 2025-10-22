@@ -126,6 +126,16 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
             @include('sweetalert::alert')
 
             <div class="row ">
+<<<<<<< HEAD
+=======
+                
+                                            @if (Session::get('success'))
+										<div class="alert alert-success">
+											{{Session::get('success')}}
+										</div>
+									@endif
+									
+>>>>>>> 0d7b925 (Implemented Grant Access plot count)
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
@@ -138,7 +148,13 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             <th> Estate </th>
                             <th> Plot No </th>
                             <th> Amount Payed </th>
+<<<<<<< HEAD
                             <th style="text-align: center"> Reciepts </th>
+=======
+                              @if ($User_access_right == 'Admin')
+                            <th style="text-align: center"> Reciepts </th>
+                             @endif
+>>>>>>> 0d7b925 (Implemented Grant Access plot count)
                             @if ($User_access_right == 'SuperAdmin')
                               <th style="text-align: center"> View Reciepts </th>
                             @endif
@@ -178,6 +194,14 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                       <td> {{$item->plot_number}} </td>
                                                       <td> {{$item->amount_payed}} </td>
 
+<<<<<<< HEAD
+=======
+                              <!--@if ($User_access_right == 'Admin')-->
+
+                                                      
+                              <!--                         @endif-->
+                              
+>>>>>>> 0d7b925 (Implemented Grant Access plot count)
                                                       <td>
                                                         <a href="{{ 'add-reciept/' . $item->id }}" class="btn btn-outline-info btn-icon-text">
                                                           <i class="mdi mdi-file-plus btn-icon-prepend"></i>
@@ -193,7 +217,11 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                         </a>
                                                       </td>
 
+<<<<<<< HEAD
                                                       @if ($User_access_right == 'SuperAdmin')
+=======
+                                                      @if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin')
+>>>>>>> 0d7b925 (Implemented Grant Access plot count)
                                                         <td>
                                                           <a href="{{ url('/all-client-receipts/' . $item->id) }}" class="btn btn-outline-primary">
                                                             <i class="mdi mdi-receipt me-2 text-primary"></i>

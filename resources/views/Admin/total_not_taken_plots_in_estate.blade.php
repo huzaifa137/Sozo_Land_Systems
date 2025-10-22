@@ -79,7 +79,7 @@
                                         @foreach ($estate_data as $key => $data)
                                                     
                                         <tr>
-                                            <!--<td>{{$key+1}}</td>-->
+                                            {{-- <td>{{$key+1}}</td> --}}
                                             <td> {{ $data->plot_number }} </td>
 
                                             

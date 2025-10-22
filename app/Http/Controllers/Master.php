@@ -6,7 +6,6 @@ use App\Models\AdminRegister;
 use App\Models\agreement;
 use App\Models\buyer;
 use App\Models\Estate;
-use App\Models\OldReceipt;
 use App\Models\expenditure;
 use App\Models\expenditure_service;
 use App\Models\house;
@@ -1435,6 +1434,7 @@ class Master extends Controller
             public_path("storage/pdf_receipts/{$filename}")
         );
 
+
         $post->reciept = $filename;
         $post->user_id = $request->user_id;
         $post->Amount = $amount_paid;
@@ -1647,7 +1647,7 @@ class Master extends Controller
 
         $filename = 'payment_agreement' . time() . '.pdf';
 
-        // $pdf->save(storage_path("app/public/agreements/{$filename}"));
+        $pdf->save(storage_path("app/public/agreements/{$filename}"));
 
         $post = new agreement();
 
@@ -2432,7 +2432,26 @@ class Master extends Controller
             ->where('half_or_full', '=', '1')
             ->get();
 
-        $info = $not_fully_paid->merge($fully_paid_half);
+        $unmatchedPlots = [];
+
+        // Implementation of the confirm agreement payment agreement :
+
+        foreach ($not_fully_paid as $plot) {
+            $buyer = DB::table('buyers')
+                ->where('plot_number', $plot->plot_number)
+                ->where('estate', $plot->estate)
+                ->where('next_installment_pay', '!=', 'Fully payed')
+                ->where('request_permission', 1)
+                ->first();
+
+            if (!$buyer) {
+                $unmatchedPlots[] = $plot;
+            }
+        }
+
+        $unmatchedPlotsCollection = collect($unmatchedPlots);
+
+        $info = $unmatchedPlotsCollection->merge($fully_paid_half);
 
         $data = $info->all();
 
@@ -2714,8 +2733,24 @@ class Master extends Controller
         $estate_data = plot::where('estate', $estate_name)
             ->where('status', '=', 'Not taken')->orderBy('plot_number', 'asc')->get();
 
-        $count_estates_fully = plot::where('estate', $estate_name)
-            ->where('status', '=', 'Not taken')->count();
+        // $count_estates_fully = plot::where('estate', $estate_name)
+        //     ->where('status', '=', 'Not taken')->count();
+
+        foreach ($estate_data as $plot) {
+            $buyer = DB::table('buyers')
+                ->where('plot_number', $plot->plot_number)
+                ->where('estate', $plot->estate)
+                ->where('next_installment_pay', '!=', 'Fully payed')
+                ->where('request_permission', 1)
+                ->first();
+
+            if (!$buyer) {
+                $unmatchedPlots[] = $plot;
+            }
+        }
+
+        $estate_data = $unmatchedPlots;
+        $count_estates_fully = count($unmatchedPlots);
 
         $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
 
@@ -3904,18 +3939,38 @@ class Master extends Controller
         return view('Admin.Receipts.all-client-reciepts', $data);
     }
 
+
+
     public function uploadOldReciepts(Request $request)
     {
+        $file = $request->file('receipt');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        $path = $file->storeAs('receipts', $filename, 'public');
+
+        copy(
+            storage_path("app/public/receipts/{$filename}"),
+            public_path("storage/receipts/{$filename}")
+        );
+
+        $original_amount = buyer::where('id', $request->item_id)->value('amount_payed');
 
         DB::table('oldreceipts')->insert([
             'buyer_id' => $request->item_id,
-            'file_path' => $request->file('receipt')->store('receipts', 'public'),
+            'file_path' => 'receipts/' . $filename, // Just save relative path
             'amount_paid' => $request->amount_paid,
             'balance' => $request->balance,
         ]);
 
+
+        $all_cash = $original_amount + $request->amount_paid;
+
+        $update_buyer_amount = buyer::where('id', $request->item_id)
+            ->update([
+                'amount_payed' => $all_cash,
+            ]);
+
         return redirect()->back()->with('success', 'Receipt uploaded successfully.');
     }
-
 
 }
