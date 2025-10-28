@@ -242,67 +242,117 @@ class Master extends Controller
 
     public function store_buyer_details(Request $request)
     {
-
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->format('Y/m/d');
 
-        // full_plot = 0;
-        // half plot = 1;
+        // --- Handle file uploads once ---
+        $frontFile = $request->file('national_id_front');
+        $backFile = $request->file('national_id_back');
+        $profileFile = $request->file('profile_pic');
 
-        $post = new buyer;
+        $frontName = $frontFile ? date('YmdHi') . $frontFile->getClientOriginalName() : null;
+        $backName = $backFile ? date('YmdHi') . $backFile->getClientOriginalName() : null;
+        $profileName = $profileFile ? date('YmdHi') . $profileFile->getClientOriginalName() : null;
 
-        $post->firstname = $request->firstname;
-        $post->lastname = $request->lastname;
-        $post->gender = $request->gender;
-        $post->date_of_birth = $request->date_of_birth;
-        $post->NIN = $request->NIN;
+        if ($frontFile)
+            $frontFile->move(public_path('public/national_id'), $frontName);
+        if ($backFile)
+            $backFile->move(public_path('public/national_id'), $backName);
+        if ($profileFile)
+            $profileFile->move(public_path('profile_pic'), $profileName);
 
-        $file = $request->national_id_front;
-        $filename = date('YmdHi') . $file->getClientOriginalName();
-        $file->move(public_path('public/national_id'), $filename);
-        $post->national_id_front = $filename;
+        // --- If multiple plots are being bought ---
+        // --- If multiple plots are being bought ---
+        if ($request->has('multiple_estates')) {
 
-        $file = $request->national_id_back;
-        $filename = date('YmdHi') . $file->getClientOriginalName();
-        $file->move(public_path('public/national_id'), $filename);
-        $post->national_id_back = $filename;
+            $multipleEstates = json_decode($request->multiple_estates, true);
 
-        $file = $request->profile_pic;
-        $filename = date('YmdHi') . $file->getClientOriginalName();
-        $file->move(public_path('profile_pic'), $filename);
-        $post->profile_pic = $filename;
+            if (is_array($multipleEstates)) {
+                foreach ($multipleEstates as $estateData) {
 
-        $post->card_number = $request->card_number;
-        $post->land_poster = $request->land_poster;
-        $post->phonenumber = $request->phonenumber;
-        $post->method_payment = $request->payment_method;
-        $post->purchase_type = $request->purchase_type;
-        $post->estate = $request->estate;
-        $post->location = $request->location;
+                    $buyer = new buyer();
 
-        $post->width_1 = $request->width_1;
-        $post->width_2 = $request->width_2;
-        $post->height_1 = $request->height_1;
-        $post->height_2 = $request->height_2;
+                    $buyer->firstname = $request->firstname;
+                    $buyer->lastname = $request->lastname;
+                    $buyer->gender = $request->gender;
+                    $buyer->date_of_birth = $request->date_of_birth;
+                    $buyer->NIN = $request->NIN;
+                    $buyer->national_id_front = $frontName;
+                    $buyer->national_id_back = $backName;
+                    $buyer->profile_pic = $profileName;
+                    $buyer->card_number = $request->card_number;
+                    $buyer->land_poster = $request->land_poster;
+                    $buyer->phonenumber = $request->phonenumber;
+                    $buyer->method_payment = $request->payment_method;
+                    $buyer->purchase_type = $request->purchase_type;
+                    $buyer->half_or_full = $request->half_or_full;
+                    $buyer->amount_payed = $request->amount_payed ?? 0;
+                    $buyer->balance = $request->balance ?? 0;
+                    $buyer->reciepts = $request->receipt_img ?? '0';
+                    $buyer->agreement = $request->agreement ?? 'Pending';
+                    $buyer->next_installment_pay = $request->next_installment_pay;
+                    $buyer->added_by = $request->hidden_user_name;
+                    $buyer->date_sold = $formattedDate;
 
-        $post->plot_number = $request->plot_number;
-        $post->amount_payed = $request->amount_payed;
-        $post->balance = $request->balance;
-        $post->reciepts = $request->receipt_img;
-        $post->agreement = $request->agreement;
-        $post->date_sold = $formattedDate;
-        $post->half_or_full = $request->half_or_full;
-        $post->next_installment_pay = $request->next_installment_pay;
-        $post->added_by = $request->hidden_user_name;
+                    // Estate-specific details
+                    $buyer->estate = $estateData['estate'] ?? null;
+                    $buyer->location = $estateData['location'] ?? 'Mukono';
+                    $buyer->plot_number = $estateData['plot_number'] ?? null;
+                    $buyer->width_1 = $estateData['width_1'] ?? null;
+                    $buyer->width_2 = $estateData['width_2'] ?? null;
+                    $buyer->height_1 = $estateData['height_1'] ?? null;
+                    $buyer->height_2 = $estateData['height_2'] ?? null;
 
-        $save = $post->save();
+                    $buyer->save();
+                }
+
+                return response()->json([
+                    "status" => true,
+                    "message" => "Multiple plots have been successfully recorded.",
+                ]);
+            }
+        }
+
+        // --- Single plot purchase ---
+        $buyer = new buyer();
+
+        $buyer->firstname = $request->firstname;
+        $buyer->lastname = $request->lastname;
+        $buyer->gender = $request->gender;
+        $buyer->date_of_birth = $request->date_of_birth;
+        $buyer->NIN = $request->NIN;
+        $buyer->national_id_front = $frontName;
+        $buyer->national_id_back = $backName;
+        $buyer->profile_pic = $profileName;
+        $buyer->card_number = $request->card_number;
+        $buyer->land_poster = $request->land_poster;
+        $buyer->phonenumber = $request->phonenumber;
+        $buyer->method_payment = $request->payment_method;
+        $buyer->purchase_type = $request->purchase_type;
+        $buyer->estate = $request->estate;
+        $buyer->location = $request->location;
+        $buyer->width_1 = $request->width_1;
+        $buyer->width_2 = $request->width_2;
+        $buyer->height_1 = $request->height_1;
+        $buyer->height_2 = $request->height_2;
+        $buyer->plot_number = $request->plot_number;
+        $buyer->amount_payed = $request->amount_payed ?? 0;
+        $buyer->balance = $request->balance ?? 0;
+        $buyer->reciepts = $request->receipt_img ?? '0';
+        $buyer->agreement = $request->agreement ?? 'Pending';
+        $buyer->date_sold = $formattedDate;
+        $buyer->half_or_full = $request->half_or_full;
+        $buyer->next_installment_pay = $request->next_installment_pay;
+        $buyer->added_by = $request->hidden_user_name;
+
+        $buyer->save();
 
         return response()->json([
             "status" => true,
-            "message" => "Sale has been done successfull",
+            "message" => "Sale has been successfully recorded.",
         ]);
-
     }
+
 
     public function edit_sales(Request $request, $id, $user_id)
     {
