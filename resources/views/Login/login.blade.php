@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
-    {{-- <link rel="stylesheet" href="/assets/css/style.css"> --}}
     <link rel="shortcut icon" href="/img/favicon.jpg" />
     <title>..:: SOZO LAND SYSTEM LOGIN ::..</title>
 </head>
@@ -22,8 +21,7 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="signup-form">
-                    <form action="{{ route('admin-send') }}" class="mt-5 border p-4 bg-light shadow"
-                        method="POST">
+                    <form action="{{ route('admin-send') }}" class="mt-5 border p-4 bg-light shadow" method="POST">
                         @csrf
                         <h2 class="mb-2 text-primary" style="text-align: center">SOZO LAND SYSTEMS <br> LOGIN</h2>
 
@@ -60,28 +58,29 @@
 
                             @if ($user_registered_ip == null)
 
-                            <!--<div class="mb-4 col-md-12">-->
-                            <!--    <label class="mb-1">Captcha<span class="text-danger">*</span></label>-->
-                            <!--        <input type="text" name="captcha" id="captcha" class="form-control" placeholder="Enter captcha" required>-->
-                            <!--        <span class="text-danger">@error('captcha'){{$message}}@enderror</span>-->
-                            <!--</div>-->
+                                <!--<div class="mb-4 col-md-12">-->
+                                <!--    <label class="mb-1">Captcha<span class="text-danger">*</span></label>-->
+                                <!--        <input type="text" name="captcha" id="captcha" class="form-control" placeholder="Enter captcha" required>-->
+                                <!--        <span class="text-danger">@error('captcha'){{$message}}@enderror</span>-->
+                                <!--</div>-->
 
-                            <!--<div class="mb-1 col-md-12">-->
-                            <!--    <div class="captcha">-->
-                            <!--        <span style="width: 50%; height: 50%;">{!! captcha_img('flat') !!}</span>-->
-                            <!--        <button type="button" class="btn btn-danger reload" id="reload">&#x21bb;</button>                                    -->
-                            <!--    </div>-->
-                            <!--</div>-->
+                                <!--<div class="mb-1 col-md-12">-->
+                                <!--    <div class="captcha">-->
+                                <!--        <span style="width: 50%; height: 50%;">{!! captcha_img('flat') !!}</span>-->
+                                <!--        <button type="button" class="btn btn-danger reload" id="reload">&#x21bb;</button>                                    -->
+                                <!--    </div>-->
+                                <!--</div>-->
 
                             @endif
 
                             <div class="col-md-12">
-                                <button class="btn btn-primary float-end" >Login</button>
+                                <button class="btn btn-primary float-end">Login</button>
                             </div>
                         </div>
                     </form>
-                    {{-- <p class="text-center mt-3 text-secondary">If you don't have account, Please <a href="{{route('supplier-registration') }}">Signup
-                    Now</a></p> --}}
+                    {{-- <p class="text-center mt-3 text-secondary">If you don't have account, Please <a
+                            href="{{route('supplier-registration') }}">Signup
+                            Now</a></p> --}}
                 </div>
             </div>
         </div>

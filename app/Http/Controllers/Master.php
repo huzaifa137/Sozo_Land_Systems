@@ -3859,9 +3859,9 @@ class Master extends Controller
 
     public function insertPlots()
     {
-        for ($i = 1; $i <= 143; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
             DB::table('plots')->insert([
-                'estate' => 'kabimbiri',
+                'estate' => 'Namalili_phase_one',
                 'plot_number' => $i,
                 'width_1' => 20,
                 'width_2' => 20,
@@ -3872,11 +3872,11 @@ class Master extends Controller
                 'half_or_full' => 0,
                 'buyer_id' => 0,
                 'exceptional_status' => 0,
-                'is_half' => 1,
+                'is_half' => 0,
             ]);
         }
 
-        dd('Records inserted successfully from plot 2 to 143.');
+        dd('Records inserted successfully from plot 1 to 50.');
 
     }
 
