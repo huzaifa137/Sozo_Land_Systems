@@ -125,6 +125,42 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
             @include('sweetalert::alert')
 
+             @if (Session::get('success'))
+              <div class="alert alert-success">
+                {{Session::get('success')}}
+              </div>
+            @endif
+
+            @if (Session::get('error'))
+              <div class="alert alert-danger">
+                {{Session::get('error')}}
+              </div>
+            @endif
+
+            @if(session('download_agreement_link'))
+              <div id="receipt-alert" class="alert alert-success mt-3 d-flex justify-content-between align-items-center">
+                <span>Agreement saved successfully.</span>
+                <a href="{{ session('download_agreement_link') }}" target="_blank" class="btn btn-sm btn-primary">
+                  <i class="bi bi-download"></i> Download Agreement
+                </a>
+              </div>
+
+              <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Agreement Generated!',
+                    text: 'You can download the agreement below.',
+                    timer: 9000,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end'
+                  });
+                });
+              </script>
+            @endif
+
             <div class="row ">
                 
                                             @if (Session::get('success'))

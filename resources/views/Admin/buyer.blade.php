@@ -4,6 +4,7 @@
     <div class="content-wrapper">
 
         <div class="row">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
             <div class="col-12 grid-margin">
                 <div class="card">
@@ -439,7 +440,7 @@
                                     <div id="plot_items_container">
                                         <!-- dynamic plot item blocks go here -->
                                     </div>
-                                    <button type="button" id="add_plot_item" class="btn btn-sm btn-primary mt-2">+ Add
+                                    <button type="button" id="add_plot_item" class="btn btn-sm btn-primary mt-2 mb-2">+ Add
                                         Another Plot</button>
                                 </div>
 
@@ -841,10 +842,15 @@
         });
 
         // add new plot item
-        $('#add_plot_item').click(function () {
-            const index = $('.plot-item').length;
-            const newBlock = `
-        <div class="plot-item border p-2 mb-2 rounded">
+       $('#add_plot_item').click(function () {
+    const index = $('.plot-item').length;
+    const newBlock = `
+        <div class="plot-item border p-2 mb-2 rounded position-relative">
+            <button type="button" class="btn btn-sm btn-danger remove-plot-item" 
+                    style="position:absolute; top:5px; right:4px;">
+                        <i class="fas fa-times"></i>
+            </button>
+
             <div class="row mb-2">
                 <div class="col-md-6">
                     <label>Estate</label>
@@ -862,6 +868,7 @@
                     </select>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-3"><input type="number" name="plots[${index}][width1]" class="form-control width1" placeholder="Width1"></div>
                 <div class="col-md-3"><input type="number" name="plots[${index}][width2]" class="form-control width2" placeholder="Width2"></div>
@@ -869,8 +876,15 @@
                 <div class="col-md-3"><input type="number" name="plots[${index}][height2]" class="form-control height2" placeholder="Height2"></div>
             </div>
         </div>`;
-            $('#plot_items_container').append(newBlock);
-        });
+    
+    $('#plot_items_container').append(newBlock);
+});
+
+
+$(document).on('click', '.remove-plot-item', function () {
+    $(this).closest('.plot-item').remove();
+});
+
 
         // event delegation for dynamically added blocks
         $(document).on('change', '.estate-select', function () {

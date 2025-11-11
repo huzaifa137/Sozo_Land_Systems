@@ -183,7 +183,7 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
             </a>
             <div class="collapse" id="ui-reciepts">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('accomplished') }}">Full purchased</a>
+                    <li class="nav-item"> <a class="nav-link" href="{{ route('accomplished') }}">Fully purchased</a>
                     </li>
                     <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under
                             payments</a>

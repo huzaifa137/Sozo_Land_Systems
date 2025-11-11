@@ -175,6 +175,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::post('/receipt/upload', [Master::class, 'uploadOldReciepts'])->name('receipt.upload');
 
+    Route::get('download-old-agreement/{id}', [Master::class, 'downloadOldAgreement']);
 
 
 });
