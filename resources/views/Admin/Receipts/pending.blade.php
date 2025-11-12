@@ -125,7 +125,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
             @include('sweetalert::alert')
 
-             @if (Session::get('success'))
+            @if (Session::get('success'))
               <div class="alert alert-success">
                 {{Session::get('success')}}
               </div>
@@ -162,13 +162,13 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
             @endif
 
             <div class="row ">
-                
-                                            @if (Session::get('success'))
-										<div class="alert alert-success">
-											{{Session::get('success')}}
-										</div>
-									@endif
-									
+
+              @if (Session::get('success'))
+                <div class="alert alert-success">
+                  {{Session::get('success')}}
+                </div>
+              @endif
+
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
@@ -181,9 +181,9 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             <th> Estate </th>
                             <th> Plot No </th>
                             <th> Amount Payed </th>
-                              @if ($User_access_right == 'Admin')
-                            <th style="text-align: center"> Reciepts </th>
-                             @endif
+                            @if ($User_access_right == 'Admin')
+                              <th style="text-align: center"> Reciepts </th>
+                            @endif
                             @if ($User_access_right == 'SuperAdmin')
                               <th style="text-align: center"> View Reciepts </th>
                             @endif
@@ -194,7 +194,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                           @foreach ($not_fully_paid as $key => $item)
 
                                                     <?php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                  $estatePrice = DB::table('estates')
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $estatePrice = DB::table('estates')
                               ->where('estate_name', $item->estate)
                               ->value('estate_price');
 
@@ -212,7 +212,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             } elseif ($exceptionalPlot->exceptional_status == 'No') {
                               $amount_payed = $item->amount_payed;
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                              ?>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ?>
 
                                                     <tr>
                                                       <td>{{$key + 1}}</td>
@@ -223,11 +223,11 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                       <td> {{$item->plot_number}} </td>
                                                       <td> {{$item->amount_payed}} </td>
 
-                              <!--@if ($User_access_right == 'Admin')-->
+                                                      <!--@if ($User_access_right == 'Admin')-->
 
-                                                      
-                              <!--                         @endif-->
-                              
+
+                                                      <!--                         @endif-->
+
                                                       <td>
                                                         <a href="{{ 'add-reciept/' . $item->id }}" class="btn btn-outline-info btn-icon-text">
                                                           <i class="mdi mdi-file-plus btn-icon-prepend"></i>
@@ -395,28 +395,25 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
       button.addEventListener('click', function () {
         const exceptionalStatus = this.dataset.exceptionalStatus;
         const exceptionalPrice = parseFloat(this.dataset.exceptionalPrice.replace(/,/g, '') || 0);
-        const cleanPrice = parseFloat(this.dataset.cleanPrice.replace(/,/g, '') || 0);
+        const cleanPrice  = parseFloat(this.dataset.cleanPrice.replace(/,/g, '') || 0);
+        const EstatePrice = cleanPrice; // ✅ re-assign value
         const amountPayed = parseFloat(this.dataset.amountPayed.replace(/,/g, '') || 0);
         const clientName = this.dataset.firstname;
         const plotNumber = this.dataset.plot;
         const itemId = this.dataset.id; // Add this in HTML (explained below)
-
         let isValid = false;
         let errorMessage = '';
         let alertType = '';
 
         if (exceptionalStatus === 'Yes') {
-          if (exceptionalPrice < cleanPrice) {
-            errorMessage = `This is an exceptional plot (${plotNumber}) for ${clientName}. Required amount is Ugx${exceptionalPrice.toLocaleString()}, which is less than the expected estate price.`;
+          if ( amountPayed < exceptionalPrice) {
+            errorMessage = `This is an exceptional plot (${plotNumber}) for ${clientName}. Required amount is Ugx${exceptionalPrice.toLocaleString()}, which is less than the amount paid: Ugx${amountPayed.toLocaleString()}.`;
             alertType = 'error';
-          } else if (amountPayed < exceptionalPrice) {
-            errorMessage = `This is an <b>exceptional plot</b> (${plotNumber}).<br>Required amount: Ugx${exceptionalPrice.toLocaleString()}<br>Amount paid: Ugx${amountPayed.toLocaleString()}`;
-            alertType = 'warning';
-          } else {
+          }else {
             isValid = true;
           }
         } else {
-          if (amountPayed < cleanPrice) {
+          if (amountPayed < EstatePrice) {
             errorMessage = `Amount paid (Ugx${amountPayed.toLocaleString()}) is not enough for estate price (Ugx${cleanPrice.toLocaleString()}).`;
             alertType = 'warning';
           } else {
@@ -502,73 +499,91 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
   });
 
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
 
-    confirmButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        const itemId = this.dataset.id;
-        const clientName = this.dataset.name;
-        const plotNumber = this.dataset.plot;
+document.addEventListener('DOMContentLoaded', function () {
+  const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
 
-        Swal.fire({
-          title: 'Confirm Permission?',
-          html: `Are you sure you want to confirm permission for <b>${clientName}</b> (Plot ${plotNumber})?`,
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, confirm it'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch(`/confirm-request-permission/${itemId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-              },
-              body: JSON.stringify({ request_permission: 2 })
-            })
-              .then(async (response) => {
-                const contentType = response.headers.get('Content-Type');
-                let data;
+  confirmButtons.forEach(button => {
+    button.addEventListener('click', function () {
+      const itemId = this.dataset.id;
+      const clientName = this.dataset.name;
+      const plotNumber = this.dataset.plot;
 
-                if (contentType && contentType.includes('application/json')) {
-                  data = await response.json();
-                } else {
-                  const text = await response.text();
-                  throw new Error(text);
-                }
+      Swal.fire({
+        title: 'Confirm Permission?',
+        html: `Are you sure you want to confirm permission for <b>${clientName}</b> (Plot ${plotNumber})?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, confirm it'
+      }).then((result) => {
+        if (result.isConfirmed) {
 
-                if (response.ok && data.success) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Permission Confirmed',
-                    text: 'The request has been confirmed successfully.'
-                  }).then(() => {
-                    location.reload();
-                  });
-                } else {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message || 'Could not confirm permission.'
-                  });
-                }
-              })
-              .catch(error => {
+          // Step 1: Show "Generating Agreement..." loading alert
+          Swal.fire({
+            title: 'Generating Agreement...',
+            text: 'Please wait while we generate the agreement.',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
+          // Step 2: Send AJAX request
+          $.ajax({
+            url: `/confirm-request-permission/${itemId}`,
+            type: 'POST',
+            data: JSON.stringify({ request_permission: 2 }),
+            contentType: 'application/json',
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            success: function (response) {
+              Swal.close();
+
+              if (response.status === 'success') {
                 Swal.fire({
-                  icon: 'error',
-                  title: 'Server Error',
-                  html: `<pre style="text-align: left;">${escapeHtml(error.message)}</pre>`
+                  title: 'Agreement Generated!',
+                  text: response.message,
+                  icon: 'success',
+                  confirmButtonText: 'OK'
+                }).then(() => {
+                  // Redirect when user clicks OK
+                  window.location.href = '/accomplished';
                 });
-                console.error('Fetch error:', error);
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  text: response.message || 'Something went wrong!',
+                  icon: 'error'
+                });
+              }
+            },
+            error: function (xhr) {
+              Swal.close();
+
+              let msg = 'An unexpected error occurred.';
+              if (xhr.responseJSON && xhr.responseJSON.message) {
+                msg = xhr.responseJSON.message;
+              }
+
+              Swal.fire({
+                title: 'Error!',
+                text: msg,
+                icon: 'error'
               });
-          }
-        });
+            }
+          });
+        }
       });
     });
   });
+});
+
+
+
+
 </script>
 
 <script>

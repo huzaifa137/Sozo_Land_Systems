@@ -95,10 +95,11 @@
         /* Ensure space from the navbar */
         padding-bottom: 2rem;
     }
-    
+
     /* NEW CSS ADDED: Border for Sidebar Separation */
     .sidebar {
-        border-right: 1px solid rgba(255, 255, 255, 0.08); /* Subtle, dark-theme appropriate border */
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        /* Subtle, dark-theme appropriate border */
     }
 </style>
 
@@ -141,26 +142,26 @@ $User_access_right = AdminRegister::where('id', '=', $current_user_id)->value('a
 ?>
 
                         @if ($User_access_right == 'SuperAdmin')
-                        <li class="nav-item dropdown d-none d-lg-block">
-                            <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">+ Manage Admins</a>
-                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                                aria-labelledby="createbuttonDropdown">
-                                <h6 class="p-3 mb-0" style="text-align: center">Sozo Properties</h6>
-                                <div class="dropdown-divider"></div>
+                            <li class="nav-item dropdown d-none d-lg-block">
+                                <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">+ Manage Admins</a>
+                                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                                    aria-labelledby="createbuttonDropdown">
+                                    <h6 class="p-3 mb-0" style="text-align: center">Sozo Properties</h6>
+                                    <div class="dropdown-divider"></div>
 
-                                <a class="dropdown-item preview-item" href="{{ url('/admin-register') }}">
-                                    <div class="preview-thumbnail">
-                                        <div class="preview-icon bg-dark rounded-circle">
-                                            <i class="mdi mdi-plus text-primary"></i>
+                                    <a class="dropdown-item preview-item" href="{{ url('/admin-register') }}">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-plus text-primary"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="preview-item-content">
-                                        <p class="preview-subject ellipsis mb-1"> Add new Admin</p>
-                                    </div>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                        </li>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1"> Add new Admin</p>
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                            </li>
                         @endif
 
                         <?php
@@ -208,13 +209,13 @@ $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first
 
                     <script>
                         @if(session('error'))
-              Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: '{{ session('error') }}',
-                confirmButtonText: 'OK'
-              });
-            @endif
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: '{{ session('error') }}',
+                                confirmButtonText: 'OK'
+                            });
+                        @endif
                     </script>
 
                     <div class="agreement-card">
@@ -238,59 +239,64 @@ $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first
 
                 <script>
                     document.getElementById('generateBtn').addEventListener('click', function () {
-            Swal.fire({
-                title: 'Confirm Agreement',
-                text: 'Are you sure you want to generate this agreement?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, generate it!',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true,
-                focusCancel: true,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const btn = this;
-                    btn.disabled = true;
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating...';
+                        Swal.fire({
+                            title: 'Confirm Agreement',
+                            text: 'Are you sure you want to generate this agreement?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, generate it!',
+                            cancelButtonText: 'Cancel',
+                            reverseButtons: true,
+                            focusCancel: true,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const btn = this;
+                                btn.disabled = true;
+                                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating...';
 
-                    // AJAX form submission
-                    $.ajax({
-                        url: $('#agreementForm').attr('action'),
-                        type: $('#agreementForm').attr('method'),
-                        data: $('#agreementForm').serialize(),
-                        success: function (response) {
-                            Swal.fire({
-                                title: 'Success!',
-                                text: response.message,
-                                icon: 'success',
-                                showCancelButton: true,
-                                confirmButtonText: 'Download Agreement',
-                                cancelButtonText: 'Close'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Open the PDF in a new tab
-                                    window.open(response.download_link, '_blank');
-                                    // Optional: redirect after download
-                                    window.location.href = '/pending-buyers';
-                                } else {
-                                    // Redirect if user clicks "Close"
-                                    window.location.href = '/pending-buyers';
-                                }
+                                // AJAX form submission
+                                $.ajax({
+                                    url: $('#agreementForm').attr('action'),
+                                    type: $('#agreementForm').attr('method'),
+                                    data: $('#agreementForm').serialize(),
+                                    success: function (response) {
+                                        Swal.fire({
+                                            title: 'Success!',
+                                            text: response.message,
+                                            icon: 'success',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Download Agreement',
+                                            cancelButtonText: 'Close'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                // Open the PDF in a new tab
+                                                window.open(response.download_link, '_blank');
+                                                // Optional: redirect after download
+                                                window.location.href = '/pending-buyers';
+                                            } else {
+                                                // Redirect if user clicks "Close"
+                                                window.location.href = '/pending-buyers';
+                                            }
 
-                                // Re-enable button
-                                $('#generateBtn').prop('disabled', false).html('<i class="fas fa-file-contract me-2"></i> Generate Agreement');
-                            });
-                        },
+                                            // Re-enable button
+                                            $('#generateBtn').prop('disabled', false).html('<i class="fas fa-file-contract me-2"></i> Generate Agreement');
+                                        });
+                                    },
 
-                        error: function (xhr) {
-                            let errorMsg = xhr.responseJSON?.message || 'Something went wrong!';
-                            Swal.fire('Error', errorMsg, 'error');
-                            $('#generateBtn').prop('disabled', false).html('<i class="fas fa-file-contract me-2"></i> Generate Agreement');
-                        }
-                    });
-                }
-            });
-        });
+                                    //                         error: function (xhr) {
+                                    //                             let errorMsg = xhr.responseJSON?.message || 'Something went wrong!';
+                                    //                             Swal.fire('Error', errorMsg, 'error');
+                                    //                             $('#generateBtn').prop('disabled', false).html('<i class="fas fa-file-contract me-2"></i> Generate Agreement');
+                                    //                         }
+
+                                    error: function (data) {
+                                        $('body').html(data.responseText);
+                                    }
+
+                                });
+                            }
+                        });
+                    });
                 </script>
             </div>
         </div>
