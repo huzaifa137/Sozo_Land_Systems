@@ -224,7 +224,6 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
               </div>
             </div>
 
-
           </div>
         </div>
       </div>
@@ -251,122 +250,8 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 <script type="text/javascript"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const buttons = document.querySelectorAll('.request-permission-btn');
-
-    buttons.forEach(button => {
-      button.addEventListener('click', function () {
-        const exceptionalStatus = this.dataset.exceptionalStatus;
-        const exceptionalPrice = parseFloat(this.dataset.exceptionalPrice.replace(/,/g, '') || 0);
-        const cleanPrice = parseFloat(this.dataset.cleanPrice.replace(/,/g, '') || 0);
-        const amountPayed = parseFloat(this.dataset.amountPayed.replace(/,/g, '') || 0);
-        const clientName = this.dataset.firstname;
-        const plotNumber = this.dataset.plot;
-        const itemId = this.dataset.id; // Add this in HTML (explained below)
-
-        let isValid = false;
-        let errorMessage = '';
-        let alertType = '';
-
-        if (exceptionalStatus === 'Yes') {
-          if (exceptionalPrice < cleanPrice) {
-            errorMessage = `This is an exceptional plot (${plotNumber}) for ${clientName}. Required amount is Ugx${exceptionalPrice.toLocaleString()}, which is less than the expected estate price.`;
-            alertType = 'error';
-          } else if (amountPayed < exceptionalPrice) {
-            errorMessage = `This is an <b>exceptional plot</b> (${plotNumber}).<br>Required amount: Ugx${exceptionalPrice.toLocaleString()}<br>Amount paid: Ugx${amountPayed.toLocaleString()}`;
-            alertType = 'warning';
-          } else {
-            isValid = true;
-          }
-        } else {
-          if (amountPayed < cleanPrice) {
-            errorMessage = `Amount paid (Ugx${amountPayed.toLocaleString()}) is not enough for estate price (Ugx${cleanPrice.toLocaleString()}).`;
-            alertType = 'warning';
-          } else {
-            isValid = true;
-          }
-        }
-
-        if (!isValid) {
-          Swal.fire({
-            icon: alertType,
-            title: alertType === 'error' ? 'Exceptional Plot' : 'Payment Not Enough',
-            html: errorMessage
-          });
-          return;
-        }
-
-        Swal.fire({
-          title: 'Are you sure?',
-          text: "Do you want to request permission to generate agreement?",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, request it!'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch(`/update-request-permission/${itemId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-              },
-              body: JSON.stringify({ request_permission: 1 })
-            })
-              .then(async (response) => {
-                const contentType = response.headers.get('Content-Type');
-                let data;
-
-                if (contentType && contentType.includes('application/json')) {
-                  data = await response.json();
-                } else {
-                  const text = await response.text();
-                  throw new Error(text);
-                }
-
-                if (response.ok) {
-                  if (data.success) {
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Permission Requested',
-                      text: 'Request has been submitted successfully.'
-                    }).then(() => {
-                      location.reload();
-                    });
-                  } else {
-                    // Backend returned success: false with an error message
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: data.message || 'Failed to update request. Please try again.'
-                    });
-                  }
-                } else {
-                  // Response is not OK (like 500 or 400)
-                  throw new Error(data.message || 'Server returned an error response.');
-                }
-              })
-              .catch((error) => {
-                // Show actual error message (like HTML or Laravel exception)
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Server Error',
-                  html: `<pre style="text-align: left;">${escapeHtml(error.message)}</pre>`
-                });
-
-                console.error('Fetch error:', error);
-              });
-          }
-        });
-
-      });
-    });
-  });
-
 
   document.addEventListener('DOMContentLoaded', function () {
     const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
@@ -377,7 +262,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
         const clientName = this.dataset.name;
         const plotNumber = this.dataset.plot;
 
-        Swal.fire({
+        Swal.fire({$not_fully_paid
           title: 'Confirm Permission?',
           html: `Are you sure you want to confirm permission for <b>${clientName}</b> (Plot ${plotNumber})?`,
           icon: 'question',

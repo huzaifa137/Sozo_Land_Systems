@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Master extends Controller
 {
@@ -208,19 +209,6 @@ class Master extends Controller
         } else {
             return redirect('estates');
         }
-
-        return view('Admin.dashboard', $data, compact([
-            'all_sales',
-            'totalAmount',
-            'totalweekSales',
-            'totalmonthSales'
-            ,
-            'plots_fully_paid',
-            'under_payment',
-            'amount_in_debts',
-            'User_access_right',
-            'paid_not_in_cash'
-        ]));
     }
 
     public function admin_buyer()
@@ -240,12 +228,13 @@ class Master extends Controller
         }
     }
 
+
     public function store_buyer_details(Request $request)
     {
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->format('Y/m/d');
 
-        // --- Handle file uploads once ---
+        // --- Uploads ---
         $frontFile = $request->file('national_id_front');
         $backFile = $request->file('national_id_back');
         $profileFile = $request->file('profile_pic');
@@ -261,17 +250,20 @@ class Master extends Controller
         if ($profileFile)
             $profileFile->move(public_path('profile_pic'), $profileName);
 
-        // --- If multiple plots are being bought ---
-        // --- If multiple plots are being bought ---
+        // --- MULTIPLE PURCHASE HANDLING ---
         if ($request->has('multiple_estates')) {
 
             $multipleEstates = json_decode($request->multiple_estates, true);
 
             if (is_array($multipleEstates)) {
-                foreach ($multipleEstates as $estateData) {
 
+                // 🔥 Generate one shared ID for the whole batch
+                $multipleUserId = Str::uuid();  // or rand()
+
+                foreach ($multipleEstates as $estateData) {
                     $buyer = new buyer();
 
+                    // Common fields
                     $buyer->firstname = $request->firstname;
                     $buyer->lastname = $request->lastname;
                     $buyer->gender = $request->gender;
@@ -294,7 +286,7 @@ class Master extends Controller
                     $buyer->added_by = $request->hidden_user_name;
                     $buyer->date_sold = $formattedDate;
 
-                    // Estate-specific details
+                    // Estate-specific
                     $buyer->estate = $estateData['estate'] ?? null;
                     $buyer->location = $estateData['location'] ?? 'Mukono';
                     $buyer->plot_number = $estateData['plot_number'] ?? null;
@@ -302,6 +294,9 @@ class Master extends Controller
                     $buyer->width_2 = $estateData['width_2'] ?? null;
                     $buyer->height_1 = $estateData['height_1'] ?? null;
                     $buyer->height_2 = $estateData['height_2'] ?? null;
+
+                    // 🔥 Assign same group ID
+                    $buyer->multiple_user_id = $multipleUserId;
 
                     $buyer->save();
                 }
@@ -313,7 +308,7 @@ class Master extends Controller
             }
         }
 
-        // --- Single plot purchase ---
+        // --- SINGLE PURCHASE ---
         $buyer = new buyer();
 
         $buyer->firstname = $request->firstname;
@@ -342,7 +337,10 @@ class Master extends Controller
         $buyer->agreement = $request->agreement ?? 'Pending';
         $buyer->date_sold = $formattedDate;
         $buyer->half_or_full = $request->half_or_full;
-        $buyer->next_installment_pay = "2024-11-12";        $buyer->added_by = $request->hidden_user_name;
+        $buyer->next_installment_pay = "2024-11-12";
+        $buyer->added_by = $request->hidden_user_name;
+
+        // ℹ️ No need to set multiple_user_id (will stay NULL)
 
         $buyer->save();
 
@@ -351,6 +349,7 @@ class Master extends Controller
             "message" => "Sale has been successfully recorded.",
         ]);
     }
+
 
 
     public function edit_sales(Request $request, $id, $user_id)
@@ -3972,16 +3971,11 @@ class Master extends Controller
 
     public function confirmRequestPermission(Request $request, $id)
     {
-        // try {
+
         DB::table('buyers')->where('id', $id)->update([
             'request_permission' => 2,
             'updated_at' => now()
         ]);
-
-        //     return response()->json(['success' => true]);
-        // } catch (\Exception $e) {
-        //     return response()->json(['success' => false, 'message' => $e->getMessage()]);
-        // }
 
         $amount_in_words = $request->amount_in_words;
 
@@ -4137,10 +4131,19 @@ class Master extends Controller
             ->where('request_permission', '=', 1)
             ->get();
 
+        // $not_fully_paid = DB::table('buyers')
+        //     ->select('multiple_user_id', DB::raw('COUNT(*) as plots'), DB::raw('SUM(amount_payed) as total_paid'))
+        //     ->where('next_installment_pay', '!=', "Fully payed")
+        //     ->where('request_permission', '=', 1)
+        //     ->groupBy('multiple_user_id')
+        //     ->get();
+
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Receipts.grant-agreement-permission', $data, compact(['not_fully_paid', 'records']));
     }
+
+
 
     public function allClientReciepts($id)
     {
