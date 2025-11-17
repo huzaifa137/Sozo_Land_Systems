@@ -3970,6 +3970,105 @@ class Master extends Controller
         }
     }
 
+    public function grantAgreementPermission()
+    {
+        $records = Estate::all();
+
+        $not_fully_paid = DB::table('buyers')
+            ->select(
+                'multiple_user_id',
+                DB::raw('COUNT(*) as plots_count'),
+                DB::raw('SUM(amount_payed) as total_paid'),
+                'firstname',
+                'lastname',
+                'request_permission'
+            )
+            ->where('next_installment_pay', '!=', "Fully payed")
+            ->where('request_permission', '!=', 0)
+            ->groupBy('multiple_user_id', 'firstname', 'lastname', 'request_permission')
+            ->get();
+
+        $all_pending_buyers = DB::table('buyers')
+            ->where('next_installment_pay', '!=', "Fully payed")
+            ->whereIn('request_permission', [1, 2]) // Get pending (1) and confirmed (2)
+            ->get();
+
+        $grouped_buyers = $all_pending_buyers->groupBy('multiple_user_id');
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['grouped_buyers', 'records']));
+    }
+
+
+    public function allClientReciepts($id)
+    {
+        $user_id = $id;
+
+        $userInformation = Buyer::find($id);
+
+        $data = [
+            'LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first(),
+            'user_id' => $user_id,
+            'userInformation' => $userInformation,
+            'receipts' => Reciept::where('user_id', $user_id)->get(),
+            'oldReceipts' => DB::table('oldreceipts')->where('buyer_id', $user_id)->get(),
+        ];
+
+        return view('Admin.Receipts.all-client-reciepts', $data);
+    }
+
+
+
+    public function uploadOldReciepts(Request $request)
+    {
+        $file = $request->file('receipt');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        $path = $file->storeAs('receipts', $filename, 'public');
+
+        copy(
+            storage_path("app/public/receipts/{$filename}"),
+            public_path("storage/receipts/{$filename}")
+        );
+
+        $original_amount = buyer::where('id', $request->item_id)->value('amount_payed');
+
+        DB::table('oldreceipts')->insert([
+            'buyer_id' => $request->item_id,
+            'file_path' => 'receipts/' . $filename, // Just save relative path
+            'amount_paid' => $request->amount_paid,
+            'balance' => $request->balance,
+        ]);
+
+
+        $all_cash = $original_amount + $request->amount_paid;
+
+        $update_buyer_amount = buyer::where('id', $request->item_id)
+            ->update([
+                'amount_payed' => $all_cash,
+            ]);
+
+        return redirect()->back()->with('success', 'Receipt uploaded successfully.');
+    }
+
+    public function downloadOldAgreement($id)
+    {
+        $agreement = DB::table('agreements')->where('user_id', $id)->latest()->first();
+
+        if (!$agreement) {
+            return back()->with('error', 'Agreement not found.');
+        }
+
+        $path = storage_path('app/public/agreements/' . $agreement->agreement);
+
+        if (!file_exists($path)) {
+            return back()->with('error', 'Agreement file not found.');
+        }
+
+        return response()->download($path);
+    }
+
     public function confirmRequestPermission(Request $request, $id)
     {
 
@@ -4125,7 +4224,17 @@ class Master extends Controller
 
     public function confirmGroupPermission(Request $request, $group_id)
     {
+        // 1️⃣ Get all buyers in this group
+        $buyers = buyer::where('multiple_user_id', $group_id)->get();
 
+        if ($buyers->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No buyers found in this group.'
+            ], 404);
+        }
+
+        // 2️⃣ Update request_permission for ALL buyers first
         DB::table('buyers')
             ->where('multiple_user_id', $group_id)
             ->update([
@@ -4133,108 +4242,155 @@ class Master extends Controller
                 'updated_at' => now()
             ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'All plots in this group have been confirmed.'
-        ]);
-    }
+        // 3️⃣ Loop through each buyer and execute the full logic
+        foreach ($buyers as $b) {
 
-    public function grantAgreementPermission()
-    {
-        $records = Estate::all();
+            $id = $b->id;
 
-        $not_fully_paid = DB::table('buyers')
-            ->select(
-                'multiple_user_id',
-                DB::raw('COUNT(*) as plots_count'),
-                DB::raw('SUM(amount_payed) as total_paid'),
-                'firstname',
-                'lastname',
-                'request_permission'
-            )
-            ->where('next_installment_pay', '!=', "Fully payed")
-            ->where('request_permission', '!=', 0)
-            ->groupBy('multiple_user_id', 'firstname', 'lastname', 'request_permission')
-            ->get();
+            // === BEGIN ORIGINAL LOGIC =========================================
 
-        $all_pending_buyers = DB::table('buyers')
-            ->where('next_installment_pay', '!=', "Fully payed")
-            ->whereIn('request_permission', [1, 2]) // Get pending (1) and confirmed (2)
-            ->get();
+            $amount_in_words = $request->amount_in_words ?? '-';
+            $original_amount = $b->amount_payed;
+            $half_or_full = $b->half_or_full;
 
-        $grouped_buyers = $all_pending_buyers->groupBy('multiple_user_id');
+            $plot_number = $b->plot_number;
+            $estate_name = $b->estate;
 
-        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+            $estate_price = Estate::where('estate_name', $estate_name)->value('estate_price');
 
-        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['grouped_buyers', 'records']));
-    }
+            $user_amount_paid = $request->amount_paid ?? 0;
+            $all_cash = $original_amount + $user_amount_paid;
 
+            $group_id_plot = plot::where('plot_number', $plot_number)
+                ->where('estate', $estate_name)
+                ->value('group_id');
 
-    public function allClientReciepts($id)
-    {
-        $user_id = $id;
+            $group_total = Plot::where('group_id', $group_id_plot)->sum('exceptional_amount');
 
-        $userInformation = Buyer::find($id);
+            $interconnected_plots = Plot::where('group_id', $group_id_plot)->pluck('plot_number')->toArray();
+            $plot_numbers = implode(', ', $interconnected_plots);
 
-        $data = [
-            'LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first(),
-            'user_id' => $user_id,
-            'userInformation' => $userInformation,
-            'receipts' => Reciept::where('user_id', $user_id)->get(),
-            'oldReceipts' => DB::table('oldreceipts')->where('buyer_id', $user_id)->get(),
-        ];
+            // Validation
+            if ($all_cash < $estate_price) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Client does not have enough money paid to purchase estate {$estate_name}."
+                ], 400);
+            }
 
-        return view('Admin.Receipts.all-client-reciepts', $data);
-    }
+            // Exceptional plot check
+            $exceptional_status = plot::where('plot_number', $plot_number)
+                ->where('estate', $estate_name)->value('exceptional_status');
 
+            if ($exceptional_status == "Yes") {
 
+                $exceptional_amount = plot::where('plot_number', $plot_number)
+                    ->where('estate', $estate_name)->value('exceptional_amount');
 
-    public function uploadOldReciepts(Request $request)
-    {
-        $file = $request->file('receipt');
-        $filename = time() . '_' . $file->getClientOriginalName();
+                if ($all_cash < $exceptional_amount) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Amount paid is less than required for this exceptional plot.'
+                    ], 400);
+                }
+            }
 
-        $path = $file->storeAs('receipts', $filename, 'public');
+            // Prepare agreement PDF
+            $user_info = $b;
+            $profile_pic_path = public_path('profile_pic/' . $b->profile_pic);
 
-        copy(
-            storage_path("app/public/receipts/{$filename}"),
-            public_path("storage/receipts/{$filename}")
-        );
+            $day = $b->created_at->day;
+            $month = $b->created_at->month;
+            $year = $b->created_at->year;
 
-        $original_amount = buyer::where('id', $request->item_id)->value('amount_payed');
-
-        DB::table('oldreceipts')->insert([
-            'buyer_id' => $request->item_id,
-            'file_path' => 'receipts/' . $filename, // Just save relative path
-            'amount_paid' => $request->amount_paid,
-            'balance' => $request->balance,
-        ]);
+            $user_receipt = '-';
+            $balance = 0;
 
 
-        $all_cash = $original_amount + $request->amount_paid;
+            // ⭐⭐⭐ NEW LOGIC — GET MULTIPLE PLOTS FOR THIS GROUP ⭐⭐⭐
+            $plots = Plot::where('group_id', $group_id)
+                ->where('estate', $b->estate)
+                ->get();
 
-        $update_buyer_amount = buyer::where('id', $request->item_id)
-            ->update([
-                'amount_payed' => $all_cash,
+
+            // Load PDF with updated data
+            $pdf = PDF::loadView('agreement_pdf', [
+                'user_amount_paid' => $user_amount_paid,
+                'user_info' => $user_info,
+                'all_cash' => $all_cash,
+                'day' => $day,
+                'month' => $month,
+                'year' => $year,
+                'amount_in_words' => $amount_in_words,
+                'profile_pic' => $profile_pic_path,
+                'plots' => $plots    // <---- NEW
             ]);
 
-        return redirect()->back()->with('success', 'Receipt uploaded successfully.');
-    }
 
-    public function downloadOldAgreement($id)
-    {
-        $agreement = DB::table('agreements')->where('user_id', $id)->latest()->first();
+            $filename = 'payment_agreement_' . $id . '_' . time() . '.pdf';
+            $publicPath = public_path('agreements');
 
-        if (!$agreement) {
-            return back()->with('error', 'Agreement not found.');
+            if (!file_exists($publicPath)) {
+                mkdir($publicPath, 0775, true);
+            }
+
+            $pdf->save("{$publicPath}/{$filename}");
+
+            // Save agreement record
+            $post = new agreement();
+            $post->user_id = $id;
+            $post->Amount_paid = $original_amount;
+            $post->Date_of_payment = now();
+            $post->reciept = '-';
+            $post->agreement = $filename;
+            $post->save();
+
+            // Update buyer record
+            buyer::where('id', $id)->update([
+                'next_installment_pay' => "Fully payed",
+                'reciepts' => '-',
+                'agreement' => $filename,
+                'amount_payed' => $all_cash,
+                'balance' => $balance
+            ]);
+
+            // Update plot record
+            DB::table('plots')
+                ->where(['estate' => $estate_name, 'plot_number' => $plot_number])
+                ->update(['status' => 'Fully payed']);
+
+            // Insert receipt
+            DB::insert(
+                'insert into reciepts (user_id, amount, balance, reciept, Date_of_payment, Phonenumber, amount_in_words)
+             values (?, ?, ?, ?, ?, ?, ?)',
+                [$id, $user_amount_paid, $balance, '-', now(), '-', $amount_in_words]
+            );
+
+            // Half/full logic
+            $half_plot_or_full_plot = plot::where([
+                'estate' => $estate_name,
+                'plot_number' => $plot_number
+            ])->value('half_or_full');
+
+            $full_payed_or_not = plot::where([
+                'estate' => $estate_name,
+                'plot_number' => $plot_number
+            ])->value('status');
+
+            if ($half_plot_or_full_plot == '1' && $full_payed_or_not == "Fully payed") {
+                DB::table('plots')
+                    ->where(['estate' => $estate_name, 'plot_number' => $plot_number])
+                    ->update(['half_or_full' => '0']);
+            }
+
+            // === END ORIGINAL LOGIC =========================================
         }
 
-        $path = storage_path('app/public/agreements/' . $agreement->agreement);
-
-        if (!file_exists($path)) {
-            return back()->with('error', 'Agreement file not found.');
-        }
-
-        return response()->download($path);
+        // Final success after processing all buyers
+        return response()->json([
+            'success' => true,
+            'message' => 'All agreements for this group have been successfully generated!'
+        ]);
     }
+
 }
