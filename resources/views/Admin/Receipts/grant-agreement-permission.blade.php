@@ -125,104 +125,127 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
             @include('sweetalert::alert')
 
-            <div class="row ">
+          <div class="row">
               <div class="col-12 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>No.</th>
-                            <th> Client Name </th>
-                            <th> Estate </th>
-                            <th> Plot No </th>
-                            <th> Amount Paid </th>
-                            <th style="text-align: center;">Receipts</th>
-                            <th> Grant Permission</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @forelse ($not_fully_paid as $key => $item)
+                  <div class="card">
+                      <div class="card-body">
+                          <div class="table-responsive">
+                              <table class="table table-hover">
+                                  <thead>
+                                    <tr>
+                                        <th class="text-center">No.</th>
+                                        <th class="text-center">Client Name</th>
+                                        <th class="text-center">Total Plots</th>
+                                        <th class="text-center">Total Amount Paid</th>
+                                    </tr>
+                                </thead>
+                                  <tbody>
+                                      @forelse ($grouped_buyers as $multiple_user_id => $plots)
+                                          @php
+                                              $main_item = $plots->first();
+                                              $key = $loop->index;
+                                              $total_plots = $plots->count();
+                                              $total_paid = $plots->sum('amount_payed');
+                                              $group_status = $main_item->request_permission;
 
-                                                    <?php 
-                                $estatePrice = DB::table('estates')
-                              ->where('estate_name', $item->estate)
-                              ->value('estate_price');
+                                              // dd($main_item);
+                                          @endphp
+                                          
+                                          <tr class="table-primary" style="border-top: 2px solid #007bff;">
+                                              <td class="text-center">{{ $key + 1 }}</td>
+                                              <td class="text-center">
+                                                  <i class="mdi mdi-account-group me-2 text-primary"></i>
+                                                  <strong>{{ $main_item->firstname }} {{ $main_item->lastname }}</strong>
+                                              </td>
+                                              <td class="text-center">
+                                                  <span class="badge bg-info text-dark">{{ $total_plots }} Plots</span>
+                                              </td>
+                                              <td class="text-center">
+                                                  <strong>{{ number_format($total_paid, 2) }}</strong>
+                                              </td>
+                                              <td class="text-center">
+                                                  @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) == 'SuperAdmin')
+                                                      <button class="btn btn-primary btn-sm confirm-permission-btn" data-id="{{ $multiple_user_id }}"
+                                                          data-name="{{ $main_item->firstname }}" data-plot-count="{{ $total_plots }}">
+                                                          <i class="mdi mdi-check-decagram me-1"></i> Confirm Agreement for All ({{ $total_plots }})
+                                                      </button>
+                                                  @elseif ($group_status == 2)
+                                                      <a href="{{ url('add-agreement/' . $multiple_user_id) }}" 
+                                                          class="btn btn-success btn-icon-text btn-sm">
+                                                          <i class="mdi mdi-file-document-box me-1"></i> Make Agreement for All ({{ $total_plots }})
+                                                      </a>
+                                                  @else
+                                                  @endif
+                                              </td>
+                                                 <td></td>
+                                          </tr>
+                                          
+                                         @foreach ($plots as $plot_item)
+                                            <tr class="table-light" style="color: #000 !important;">
+                                                <td style="color: #000 !important;"></td>
 
-                            $cleanPrice = str_replace(',', '', $estatePrice);
+                                                <td style="color: #000 !important;">
+                                                    <small class="text-muted fst-italic" style="color: #000 !important;">Details:</small>
+                                                </td>
 
-                            $exceptionalPlot = DB::table('plots')
-                              ->where('estate', $item->estate)
-                              ->where('plot_number', $item->plot_number)
-                              ->first();
+                                                <td style="color: #000 !important;">{{ $plot_item->estate }}</td>
 
-                            if ($exceptionalPlot->exceptional_status == 'Yes') {
-                              $exceptionalPrice = $exceptionalPlot->exceptional_amount;
-                            } elseif ($exceptionalPlot->exceptional_status == 'No') {
-                              $amount_payed = $item->amount_payed;
-                            }
-                              ?>
+                                                <td style="color: #000 !important;">
+                                                    <strong style="color: #000 !important;">Plot No:</strong> {{ $plot_item->plot_number }}
+                                                </td>
 
-                                                    <tr>
-                                                      <td>{{$key + 1}}</td>
-                                                      <td>
-                                                        <span>{{$item->firstname}} {{$item->lastname}}</span>
-                                                      </td>
-                                                      <td> {{$item->estate}} </td>
-                                                      <td> {{$item->plot_number}} </td>
-                                                      <td> {{$item->amount_payed}} </td>
+                                                <td style="color: #000 !important;">
+                                                    <strong style="color: #000 !important;">Paid:</strong> {{ $plot_item->amount_payed }}
+                                                </td>
 
-                                                       <td style="text-align: center;">
-                                                          <a href="{{ url('/all-client-receipts/' . $item->id) }}" class="btn btn-outline-primary">
-                                                              <i class="mdi mdi-receipt me-2 text-primary"></i>
-                                                              View Receipts
-                                                          </a>
-                                                      </td>
+                                                <td class="text-center" style="color: #000 !important;">
+                                                    <a href="{{ url('/all-client-receipts/' . $plot_item->id) }}"
+                                                      class="btn btn-outline-info btn-xs"
+                                                      style="color: #000 !important; border-color: #0d6efd;">
+                                                        <i class="mdi mdi-receipt" style="color: #000 !important;"></i>
+                                                        View Receipts
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                          @endforeach
 
-                                                      <td>
-                                                        @if($item->request_permission == 0)
-                                                          <button class="btn btn-warning btn-sm request-permission-btn" data-id="{{ $item->id }}"
-                                                            data-exceptional-status="{{ $exceptionalPlot->exceptional_status }}"
-                                                            data-exceptional-price="{{ $exceptionalPlot->exceptional_amount }}"
-                                                            data-clean-price="{{ $cleanPrice }}" data-amount-payed="{{ $item->amount_payed }}"
-                                                            data-firstname="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
-                                                            <i class="mdi mdi-lock-question me-1"></i> Request Permission
-                                                          </button>
+                                            @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) != 'SuperAdmin')
+                                            <tr style="
+                                                background-color:#f8f9fa;
+                                                color:#000;
+                                                --bs-table-hover-color:#000 !important;
+                                                --bs-table-hover-bg:#e9ecef !important;
+                                            "
+                                                onmouseover="this.style.backgroundColor='#e9ecef';"
+                                                onmouseout="this.style.backgroundColor='#f8f9fa';">
 
-                                                        @elseif($item->request_permission == 1)
-                                                          @if ($User_access_right == 'SuperAdmin')
-                                                            <button class="btn btn-primary btn-sm confirm-permission-btn" data-id="{{ $item->id }}"
-                                                              data-name="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
-                                                              <i class="mdi mdi-check-decagram me-1"></i> Confirm Permission
-                                                            </button>
-                                                          @else
-                                                            <a href="javascript:void();" class="btn btn-primary btn-sm">
-                                                              <i class="mdi mdi-clock-outline me-1"></i> Pending Confirmation
-                                                            </a>
-                                                          @endif
-                                                        @elseif($item->request_permission == 2)
-                                                          <a href="{{ url('add-agreement/' . $item->id) }}"
-                                                            class="btn btn-outline-success btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Make Agreement
-                                                          </a>
-                                                        @endif
-                                                      </td>
-                                                    </tr>
+                                                <td colspan="6" class="text-center">
+                                                    <a href="javascript:void(0);" 
+                                                      class="btn btn-primary btn-sm confirm-permission-btn"
+                                                      data-id="{{ $multiple_user_id }}"
+                                                      data-name="{{ $main_item->firstname }}"
+                                                      data-plot-count="{{ $total_plots }}">
+                                                        <i class="mdi mdi-check-decagram me-1"></i> 
+                                                        Confirm Permission
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            @endif
 
-                          @empty
-                            <tr>
-                              <td colspan="7" class="text-center text-warning">No records found in the database.</td>
-                            </tr>
-                          @endforelse
-                        </tbody>
-
-                      </table>
-                    </div>
+                                      @empty
+                                          <tr>
+                                              <td colspan="5" class="text-center text-warning py-4">
+                                                  <i class="mdi mdi-alert-circle me-2"></i> No records requiring agreement permission found.
+                                              </td>
+                                          </tr>
+                                      @endforelse
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
                   </div>
-                </div>
               </div>
-            </div>
+          </div>
 
           </div>
         </div>
@@ -247,81 +270,95 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 <!-- page-body-wrapper ends -->
 </div>
 
-<script type="text/javascript"></script>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
 
-  document.addEventListener('DOMContentLoaded', function () {
     const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
 
     confirmButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        const itemId = this.dataset.id;
-        const clientName = this.dataset.name;
-        const plotNumber = this.dataset.plot;
+        button.addEventListener('click', function () {
 
-        Swal.fire({$not_fully_paid
-          title: 'Confirm Permission?',
-          html: `Are you sure you want to confirm permission for <b>${clientName}</b> (Plot ${plotNumber})?`,
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, confirm it'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch(`/confirm-request-permission/${itemId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-              },
-              body: JSON.stringify({ request_permission: 2 })
-            })
-              .then(async (response) => {
-                const contentType = response.headers.get('Content-Type');
-                let data;
+            const groupId = this.dataset.id;
+            const clientName = this.dataset.name;
+            const plotCount = this.dataset.plotCount;
 
-                if (contentType && contentType.includes('application/json')) {
-                  data = await response.json();
-                } else {
-                  const text = await response.text();
-                  throw new Error(text);
+            Swal.fire({
+                title: 'Confirm All Plots?',
+                html: `Are you sure you want to confirm agreement permission for <b>${clientName}</b> (All ${plotCount} plots)?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, confirm all',
+                cancelButtonColor: '#d33'
+            }).then(result => {
+                if (result.isConfirmed) {
+
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Please wait.',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    fetch(`/confirm-group-permission/${groupId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(async (res) => {
+
+                        const contentType = res.headers.get("content-type");
+
+                        if (contentType && contentType.includes("text/html")) {
+                            // Laravel dd() output (HTML)
+                            const html = await res.text();
+                            document.body.innerHTML = html;
+                            return;
+                        }
+
+                        // If JSON
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (!data) return;
+
+                        Swal.close();
+
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Confirmed!',
+                                text: data.message,
+                                icon: 'success'
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: data.message || 'Something went wrong!',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Server Error',
+                            text: err.message || 'Something went wrong!',
+                            icon: 'error'
+                        });
+                    });
+
                 }
+            });
 
-                if (response.ok && data.success) {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Permission Confirmed',
-                    text: 'The request has been confirmed successfully.'
-                  }).then(() => {
-                    location.reload();
-                  });
-                } else {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message || 'Could not confirm permission.'
-                  });
-                }
-              })
-              .catch(error => {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Server Error',
-                  html: `<pre style="text-align: left;">${escapeHtml(error.message)}</pre>`
-                });
-                console.error('Fetch error:', error);
-              });
-          }
         });
-      });
     });
-  });
-</script>
 
+});
+</script>
 
 
 

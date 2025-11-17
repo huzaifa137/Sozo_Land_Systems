@@ -171,6 +171,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('/update-request-permission/{id}', [Master::class, 'updateRequestPermission']);
     Route::post('/confirm-request-permission/{id}', [Master::class, 'confirmRequestPermission']);
     Route::get('/grant-agreement-permission', [Master::class, 'grantAgreementPermission'])->name('grant-agreement-permission');
+    Route::post('/confirm-group-permission/{group_id}', [Master::class, 'confirmGroupPermission']);
     Route::get('/all-client-receipts/{id}', [Master::class, 'allClientReciepts'])->name('all-client-receipts');
 
     Route::post('/receipt/upload', [Master::class, 'uploadOldReciepts'])->name('receipt.upload');

@@ -2326,6 +2326,7 @@ class Master extends Controller
                 return back()->with('error', 'No House has been found with provided information');
             } else {
                 $user_id = $result->id;
+                $id = $result->id;
 
                 $user_information = DB::table('buyers')->where('id', '=', $id)->get();
                 $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
@@ -4122,27 +4123,51 @@ class Master extends Controller
         ]);
     }
 
-    public function grantAgreementPermission()
+    public function confirmGroupPermission(Request $request, $group_id)
     {
 
+        DB::table('buyers')
+            ->where('multiple_user_id', $group_id)
+            ->update([
+                'request_permission' => 2,
+                'updated_at' => now()
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All plots in this group have been confirmed.'
+        ]);
+    }
+
+    public function grantAgreementPermission()
+    {
         $records = Estate::all();
 
-        $not_fully_paid = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
-            ->where('request_permission', '=', 1)
+        $not_fully_paid = DB::table('buyers')
+            ->select(
+                'multiple_user_id',
+                DB::raw('COUNT(*) as plots_count'),
+                DB::raw('SUM(amount_payed) as total_paid'),
+                'firstname',
+                'lastname',
+                'request_permission'
+            )
+            ->where('next_installment_pay', '!=', "Fully payed")
+            ->where('request_permission', '!=', 0)
+            ->groupBy('multiple_user_id', 'firstname', 'lastname', 'request_permission')
             ->get();
 
-        // $not_fully_paid = DB::table('buyers')
-        //     ->select('multiple_user_id', DB::raw('COUNT(*) as plots'), DB::raw('SUM(amount_payed) as total_paid'))
-        //     ->where('next_installment_pay', '!=', "Fully payed")
-        //     ->where('request_permission', '=', 1)
-        //     ->groupBy('multiple_user_id')
-        //     ->get();
+        $all_pending_buyers = DB::table('buyers')
+            ->where('next_installment_pay', '!=', "Fully payed")
+            ->whereIn('request_permission', [1, 2]) // Get pending (1) and confirmed (2)
+            ->get();
+
+        $grouped_buyers = $all_pending_buyers->groupBy('multiple_user_id');
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['not_fully_paid', 'records']));
+        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['grouped_buyers', 'records']));
     }
-
 
 
     public function allClientReciepts($id)
