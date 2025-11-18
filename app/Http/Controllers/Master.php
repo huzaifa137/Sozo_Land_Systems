@@ -308,6 +308,8 @@ class Master extends Controller
             }
         }
 
+        $multipleUserId = Str::uuid();
+
         // --- SINGLE PURCHASE ---
         $buyer = new buyer();
 
@@ -339,6 +341,7 @@ class Master extends Controller
         $buyer->half_or_full = $request->half_or_full;
         $buyer->next_installment_pay = "2024-11-12";
         $buyer->added_by = $request->hidden_user_name;
+        $buyer->multiple_user_id = $multipleUserId;
 
         // ℹ️ No need to set multiple_user_id (will stay NULL)
 
@@ -3971,7 +3974,7 @@ class Master extends Controller
     }
 
     public function grantAgreementPermission()
-    {
+    {        
         $records = Estate::all();
 
         $not_fully_paid = DB::table('buyers')
@@ -3996,7 +3999,7 @@ class Master extends Controller
         $grouped_buyers = $all_pending_buyers->groupBy('multiple_user_id');
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
-
+    
         return view('Admin.Receipts.grant-agreement-permission', $data, compact(['grouped_buyers', 'records']));
     }
 
@@ -4224,6 +4227,7 @@ class Master extends Controller
 
     public function confirmGroupPermission(Request $request, $group_id)
     {
+
         // 1️⃣ Get all buyers in this group
         $buyers = buyer::where('multiple_user_id', $group_id)->get();
 
