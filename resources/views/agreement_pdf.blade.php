@@ -161,21 +161,24 @@
         </div>
 
         <div class="property-details">
-            <p>
-                LAND (KIBANJA) AT {{ $user_info->estate }} Estate
-                – Plots:
-                @foreach($plots as $p)
-                    <strong>{{ $p->plot_number }}</strong>@if(!$loop->last), @endif
-                @endforeach
-                – {{ $user_info->location }} District
-            </p>
+
+            <p><strong>LAND (KIBANJA) AT:</strong></p>
+
+            @foreach($groupedEstates as $estateName => $estatePlots)
+                <p>
+                    • <strong>{{ $estateName }}</strong> —
+                    @foreach($estatePlots as $p)
+                        Plot {{ $p->plot_number }}
+                        ({{ $p->width_1 }}, {{ $p->width_2 }}, {{ $p->height_1 }}, {{ $p->height_2 }} Ft)
+                        @if(!$loop->last), @endif
+                    @endforeach
+                </p>
+            @endforeach
 
             <p><strong>District:</strong> {{ $user_info->location }}</p>
 
-            <p>MEASURING ({{ $user_info->width_1 }}, {{ $user_info->width_2 }}, {{ $user_info->height_1 }},
-                {{ $user_info->height_2 }}) FT
-            </p>
         </div>
+
 
         <div class="header">
             <p class="document-title">LAND (KIBANJA) SALE AGREEMENT</p>
