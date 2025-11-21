@@ -95,6 +95,8 @@
                                                     </td>
                                                 @endif
 
+
+
                                                 @if ($data->shift_plot_status == 1 && $data->back_on_market_status == 1 && $data->shifted_to_status  == 0)
                                                     <td>
                                                         <a href="javascript:void();"
