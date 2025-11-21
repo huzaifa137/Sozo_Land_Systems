@@ -29,6 +29,11 @@
                         a{
                             color: white;
                         }
+
+                        .bg-white {
+                          --bs-bg-opacity: 1;
+                          background-color: rgb(84 78 78) !important;
+                      }
                     </style>
                     
                     
@@ -43,14 +48,9 @@
                                                     <tr>
                                                       <th>No.</th>
                                                       <th> Client Name </th>
-                                                      <th> NIN No </th>
                                                       <th> Estate </th>
                                                       <th> Plot No </th>
-                                                      <th> Location </th>
-                                                      <th> Amount Payed </th>
-                                                      <th> Status </th>
-                                                      <th style="text-align: center"> Reciepts </th>
-                                                      <th>Agreement</th>
+                                                      <th colspan="2" style="text-align: center;"> Receipts & Agreements </th>
                                                     </tr>
                                                   </thead>
                                                   <tbody>
@@ -63,21 +63,20 @@
                                                         <span >{{$item->firstname}} {{$item->lastname}}</span>
                                                         </a>
                                                       </td>
-                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->NIN}}  </a></td>
                                                       <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->estate}} </a></td>
                                                       <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->plot_number}} </a> </td>
-                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->location}} </a></td>
-                                                      <td><a href="{{ 'view-agreement/' . $item->id }}"> {{$item->amount_payed}} </a> </td>
-                                                      <td>
-                                                        <div class="badge badge-outline-warning">Full paid</div>
-                                                      </td>
-
+                                               
                                                         <td><a href="{{'view-agreement/'.$item->id}}" class="btn btn-outline-info btn-icon-text">
                                                             <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
                                                         
+                                                        <td>
+                                                            <a href="{{ route('download.agreement', $item->id) }}" 
+   class="btn btn-outline-primary btn-icon-text">
+   <i class="mdi mdi-download btn-icon-prepend"></i> Download
+</a>
 
-                                                        <td><a href="{{'attach-agreement/'.$item->id}}" class="btn btn-outline-primary btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> upload</a> </td>
+                                                        </td>
+
                                                         </tr>
                                                     <tr>
 

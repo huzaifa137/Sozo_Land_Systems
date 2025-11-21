@@ -1469,11 +1469,12 @@ class Master extends Controller
         $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'admin_user_info', 'amount_in_words', 'user_info']));
         $filename = 'payment_reciepet' . time() . '.pdf';
         // Make sure destination directory exists
-        $destinationDirectory = public_path("storage/pdf_receipts");
+        $destinationDirectory = storage_path("app/public/pdf_receipts");
 
         if (!file_exists($destinationDirectory)) {
             mkdir($destinationDirectory, 0755, true); // create folders recursively
         }
+
 
         // Save PDF to Laravel's internal storage path
         $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
@@ -1697,7 +1698,18 @@ class Master extends Controller
 
         $filename = 'payment_agreement' . time() . '.pdf';
 
-        $pdf->save(storage_path("app/public/agreements/{$filename}"));
+        // $pdf->save(storage_path("app/public/agreements/{$filename}"));
+
+        $filename = 'payment_agreement' . time() . '.pdf';
+
+        // Ensure the folder exists
+        if (!file_exists(public_path('agreements'))) {
+            mkdir(public_path('agreements'), 0775, true);
+        }
+
+        // Save directly in public folder
+        $pdf->save(public_path("agreements/{$filename}"));
+
 
         $post = new agreement();
 
@@ -2748,26 +2760,34 @@ class Master extends Controller
         return view('Admin.total_plots_list_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
 
-    public function total_fully_paid_plots_in_estate($id)
-    {
-        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+public function total_fully_paid_plots_in_estate($id)
+{
+    $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
-        $estate_id = $id;
-        $estate_name = $specific_estate->estate_name;
+    $specific_estate = Estate::find($id);
+    $estate_id = $id;
+    $estate_name = $specific_estate->estate_name;
 
-        $estate_pdf_info = $specific_estate->estate_pdf;
+    $estate_pdf_info = $specific_estate->estate_pdf;
 
-        $estate_data = buyer::where('estate', $estate_name)
-            ->where('next_installment_pay', '=', 'Fully payed')
-            ->orderBy('plot_number', 'asc')
-            ->get();
+    // Fetch only fully paid plots that are NOT sold back
+    $estate_data = buyer::where('estate', $estate_name)
+        ->where('next_installment_pay', 'Fully payed')
+        ->where('back_on_market_status', 0)   // <-- Exclude sold back
+        ->orderBy('plot_number', 'asc')
+        ->get();
 
-        $count_estates_fully = plot::where('estate', $estate_name)
-            ->where('status', '=', 'Fully payed')->count();
+    $count_estates_fully = plot::where('estate', $estate_name)
+        ->where('status', 'Fully payed')
+        ->count();
 
-        return view('Admin.total_fully_paid_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
-    }
+    return view(
+        'Admin.total_fully_paid_plots_in_estate',
+        $data,
+        compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info'])
+    );
+}
+
 
     public function total_not_taken_plots_in_estate($id)
     {
@@ -4022,5 +4042,24 @@ class Master extends Controller
 
         return redirect()->back()->with('success', 'Receipt uploaded successfully.');
     }
+
+public function download_agreement($id)
+{
+    $agreement = \App\Models\agreement::where('user_id', $id)->first();
+
+    if (!$agreement || !$agreement->agreement) {
+        return back()->with('error', 'Agreement file not found.');
+    }
+
+    $filePath = public_path('agreements/' . $agreement->agreement);
+
+    if (!file_exists($filePath)) {
+        return back()->with('error', 'File does not exist on the server.');
+    }
+
+    return response()->download($filePath, $agreement->agreement);
+}
+
+
 
 }
