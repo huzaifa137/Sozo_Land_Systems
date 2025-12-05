@@ -737,7 +737,8 @@ class Master extends Controller
             'connectedPlotsProcessedFullyPaid',
             'connectedPlotsProcessedNotFullyPaid',
             'connectedPlotsProcessedFullyPaidJoined',
-            'connectedPlotsProcessedNotFullyPaidjoined'
+            'connectedPlotsProcessedNotFullyPaidjoined',
+            'all_plot_estates_not_fully'
         ]));
     }
 
@@ -2760,33 +2761,33 @@ class Master extends Controller
         return view('Admin.total_plots_list_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
 
-public function total_fully_paid_plots_in_estate($id)
-{
-    $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+    public function total_fully_paid_plots_in_estate($id)
+    {
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-    $specific_estate = Estate::find($id);
-    $estate_id = $id;
-    $estate_name = $specific_estate->estate_name;
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
 
-    $estate_pdf_info = $specific_estate->estate_pdf;
+        $estate_pdf_info = $specific_estate->estate_pdf;
 
-    // Fetch only fully paid plots that are NOT sold back
-    $estate_data = buyer::where('estate', $estate_name)
-        ->where('next_installment_pay', 'Fully payed')
-        ->where('back_on_market_status', 0)   // <-- Exclude sold back
-        ->orderBy('plot_number', 'asc')
-        ->get();
+        // Fetch only fully paid plots that are NOT sold back
+        $estate_data = buyer::where('estate', $estate_name)
+            ->where('next_installment_pay', 'Fully payed')
+            ->where('back_on_market_status', 0)   // <-- Exclude sold back
+            ->orderBy('plot_number', 'asc')
+            ->get();
 
-    $count_estates_fully = plot::where('estate', $estate_name)
-        ->where('status', 'Fully payed')
-        ->count();
+        $count_estates_fully = plot::where('estate', $estate_name)
+            ->where('status', 'Fully payed')
+            ->count();
 
-    return view(
-        'Admin.total_fully_paid_plots_in_estate',
-        $data,
-        compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info'])
-    );
-}
+        return view(
+            'Admin.total_fully_paid_plots_in_estate',
+            $data,
+            compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info'])
+        );
+    }
 
 
     public function total_not_taken_plots_in_estate($id)
@@ -3929,10 +3930,20 @@ public function total_fully_paid_plots_in_estate($id)
 
     public function insertPlots()
     {
-        for ($i = 1; $i <= 50; $i++) {
-            DB::table('plots')->insert([
-                'estate' => 'Namalili_phase_one',
-                'plot_number' => $i,
+
+        $ungroupedPlots = [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 54, 55, 56, 57, 58,
+            59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77
+        ];
+
+        $insertData = [];
+
+        foreach ($ungroupedPlots as $plotNumber) {
+            $insertData[] = [
+                'estate' => 'Nakifuma_Kawuku',
+                'plot_number' => $plotNumber,
                 'width_1' => 20,
                 'width_2' => 20,
                 'height_1' => 40,
@@ -3943,11 +3954,47 @@ public function total_fully_paid_plots_in_estate($id)
                 'buyer_id' => 0,
                 'exceptional_status' => 0,
                 'is_half' => 0,
-            ]);
+            ];
         }
 
-        dd('Records inserted successfully from plot 1 to 50.');
+        DB::table('plots')->insert($insertData);
 
+        dd('Records inserted successfully from plot Nakifuma_Kawuku.');
+        
+        // Grouped Plots
+        $groupedPlots = [
+            [13, 80],
+            [28, 27],
+            [51, 78],
+            [52, 79]
+        ];
+
+        $insertData = [];
+
+        foreach ($groupedPlots as $plotGroup) {
+            // Convert the array of numbers to a string like "1_43" or "42_52_53"
+            $plotNumberString = implode('_', $plotGroup);
+
+            $insertData[] = [
+                'estate' => 'Nakifuma_Kawuku',
+                'plot_number' => $plotNumberString,
+                'width_1' => 20,
+                'width_2' => 20,
+                'height_1' => 40,
+                'height_2' => 40,
+                'status' => 'Not taken',
+                'location' => 'Mukono',
+                'half_or_full' => 0,
+                'buyer_id' => 0,
+                'exceptional_status' => 1,
+                'exceptional_amount' => 1500000,
+                'is_half' => 0,
+            ];
+        }
+
+        DB::table('plots')->insert($insertData);
+
+        dd('Records inserted successfully from plot Nakifuma_Kawuku.');
     }
 
     public function updateRequestPermission(Request $request, $id)
@@ -4043,22 +4090,22 @@ public function total_fully_paid_plots_in_estate($id)
         return redirect()->back()->with('success', 'Receipt uploaded successfully.');
     }
 
-public function download_agreement($id)
-{
-    $agreement = \App\Models\agreement::where('user_id', $id)->first();
+    public function download_agreement($id)
+    {
+        $agreement = \App\Models\agreement::where('user_id', $id)->first();
 
-    if (!$agreement || !$agreement->agreement) {
-        return back()->with('error', 'Agreement file not found.');
+        if (!$agreement || !$agreement->agreement) {
+            return back()->with('error', 'Agreement file not found.');
+        }
+
+        $filePath = public_path('agreements/' . $agreement->agreement);
+
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'File does not exist on the server.');
+        }
+
+        return response()->download($filePath, $agreement->agreement);
     }
-
-    $filePath = public_path('agreements/' . $agreement->agreement);
-
-    if (!file_exists($filePath)) {
-        return back()->with('error', 'File does not exist on the server.');
-    }
-
-    return response()->download($filePath, $agreement->agreement);
-}
 
 
 
