@@ -2211,87 +2211,89 @@ class Master extends Controller
     //     }
     // }
 
-public function search_land_db(Request $request)
-{
-    $firstname = $request->firstname;
-    $lastname = $request->lastname;
-    $NIN = $request->NIN;
-    $date_of_birth = $request->date_of_birth;
-    $date_sold = $request->date_sold;
-    $end_date = $request->end_date;
+    public function search_land_db(Request $request)
+    {
+        $firstname = $request->firstname;
+        $lastname = $request->lastname;
+        $NIN = $request->NIN;
+        $date_of_birth = $request->date_of_birth;
+        $date_sold = $request->date_sold;
+        $end_date = $request->end_date;
 
-    $estate = $request->estate;
-    $land_plot = $request->land_plot;
+        $estate = $request->estate;
+        $land_plot = $request->land_plot;
 
-    $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-    // Determine results based on request filters
-    if ($date_sold && $end_date) {
-        $startDate = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
-        $endDate = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
-        $mergedResults = $startDate->merge($endDate);
-    } elseif ($date_sold) {
-        $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
-    } elseif ($end_date) {
-        $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
-    } elseif ($firstname || $lastname) {
-        $firstResults = $firstname ? DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get() : collect();
-        $lastResults = $lastname ? DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get() : collect();
-        $mergedResults = $firstResults->merge($lastResults);
-    } elseif ($NIN) {
-        $result = DB::table('buyers')->where('NIN', $NIN)->first();
-        if (!$result) return back()->with('error', 'No record has been found with provided information');
-        return $this->showBuyerInfo($result->id);
-    } elseif ($estate) {
-        $mergedResults = DB::table('buyers')->where('estate', $estate)
-            ->where('plot_number', $land_plot)->get();
-    } elseif ($date_of_birth) {
-        $result = DB::table('buyers')->where('date_of_birth', $date_of_birth)->first();
-        if (!$result) return back()->with('error', 'No record has been found with provided information');
-        return $this->showBuyerInfo($result->id);
-    } else {
-        $mergedResults = collect(); // default empty collection
+        // Determine results based on request filters
+        if ($date_sold && $end_date) {
+            $startDate = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+            $endDate = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
+            $mergedResults = $startDate->merge($endDate);
+        } elseif ($date_sold) {
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $date_sold . '%')->get();
+        } elseif ($end_date) {
+            $mergedResults = DB::table('buyers')->where('created_at', 'like', '%' . $end_date . '%')->get();
+        } elseif ($firstname || $lastname) {
+            $firstResults = $firstname ? DB::table('buyers')->where('firstname', 'like', '%' . $firstname . '%')->get() : collect();
+            $lastResults = $lastname ? DB::table('buyers')->where('lastname', 'like', '%' . $lastname . '%')->get() : collect();
+            $mergedResults = $firstResults->merge($lastResults);
+        } elseif ($NIN) {
+            $result = DB::table('buyers')->where('NIN', $NIN)->first();
+            if (!$result)
+                return back()->with('error', 'No record has been found with provided information');
+            return $this->showBuyerInfo($result->id);
+        } elseif ($estate) {
+            $mergedResults = DB::table('buyers')->where('estate', $estate)
+                ->where('plot_number', $land_plot)->get();
+        } elseif ($date_of_birth) {
+            $result = DB::table('buyers')->where('date_of_birth', $date_of_birth)->first();
+            if (!$result)
+                return back()->with('error', 'No record has been found with provided information');
+            return $this->showBuyerInfo($result->id);
+        } else {
+            $mergedResults = collect(); // default empty collection
+        }
+
+        // Attach agreement_file safely to each buyer
+        foreach ($mergedResults as $item) {
+            $agreement = DB::table('agreements')->where('user_id', $item->id)->latest()->first();
+            $item->agreement_file = $agreement ? $agreement->agreement : null;
+        }
+
+        return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
     }
 
-    // Attach agreement_file safely to each buyer
-    foreach ($mergedResults as $item) {
-        $agreement = DB::table('agreements')->where('user_id', $item->id)->latest()->first();
-        $item->agreement_file = $agreement ? $agreement->agreement : null;
+    /**
+     * Extracted method to show detailed buyer info
+     */
+    private function showBuyerInfo($id)
+    {
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+        $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
+        $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
+        $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
+
+        $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
+        $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
+        $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
+
+        return view(
+            'Admin.Resale.show_info',
+            $data,
+            compact(
+                'user_information',
+                'user_reciepts',
+                'id',
+                'user_agreements',
+                'user_reciepts_pdf',
+                'user_agreements_pdf',
+                'user_agreements_uploaded'
+            )
+        );
     }
-
-    return view('Admin.Search.multiple_results', $data, ['result' => $mergedResults]);
-}
-
-/**
- * Extracted method to show detailed buyer info
- */
-private function showBuyerInfo($id)
-{
-    $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
-
-    $user_information = DB::table('buyers')->where('id', '=', $id)->get();
-    $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
-    $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
-    $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
-
-    $agreement_reference_in_buyer = DB::table('buyers')->where('id', '=', $id)->value('agreement');
-    $user_agreements_uploaded = DB::table('agreements')->where('user_id', '=', $agreement_reference_in_buyer)->get();
-    $user_agreements_pdf = DB::table('agreements')->where('user_id', '=', $id)->get();
-
-    return view(
-        'Admin.Resale.show_info',
-        $data,
-        compact(
-            'user_information',
-            'user_reciepts',
-            'id',
-            'user_agreements',
-            'user_reciepts_pdf',
-            'user_agreements_pdf',
-            'user_agreements_uploaded'
-        )
-    );
-}
 
     public function search_clients_to_setup_reminders(Request $request)
     {
@@ -2850,8 +2852,9 @@ private function showBuyerInfo($id)
         $estate_pdf_info = $specific_estate->estate_pdf;
 
         $estate_data = plot::where('estate', $estate_name)
-            ->orderBy('plot_number', 'asc')
+            ->orderByRaw('CAST(plot_number AS UNSIGNED) ASC')
             ->get();
+
 
         $count_estates_fully = DB::table('buyers')
             ->where('estate', '=', $estate_name)
@@ -2860,33 +2863,33 @@ private function showBuyerInfo($id)
         return view('Admin.total_plots_list_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
 
-public function total_fully_paid_plots_in_estate($id)
-{
-    $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+    public function total_fully_paid_plots_in_estate($id)
+    {
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-    $specific_estate = Estate::find($id);
-    $estate_id = $id;
-    $estate_name = $specific_estate->estate_name;
+        $specific_estate = Estate::find($id);
+        $estate_id = $id;
+        $estate_name = $specific_estate->estate_name;
 
-    $estate_pdf_info = $specific_estate->estate_pdf;
+        $estate_pdf_info = $specific_estate->estate_pdf;
 
-    // Fetch only fully paid plots that are NOT sold back
-    $estate_data = buyer::where('estate', $estate_name)
-        ->where('next_installment_pay', 'Fully payed')
-        ->where('back_on_market_status', 0)   // <-- Exclude sold back
-        ->orderBy('plot_number', 'asc')
-        ->get();
+        // Fetch only fully paid plots that are NOT sold back
+        $estate_data = buyer::where('estate', $estate_name)
+            ->where('next_installment_pay', 'Fully payed')
+            ->where('back_on_market_status', 0)   // <-- Exclude sold back
+            ->orderBy('plot_number', 'asc')
+            ->get();
 
-    $count_estates_fully = plot::where('estate', $estate_name)
-        ->where('status', 'Fully payed')
-        ->count();
+        $count_estates_fully = plot::where('estate', $estate_name)
+            ->where('status', 'Fully payed')
+            ->count();
 
-    return view(
-        'Admin.total_fully_paid_plots_in_estate',
-        $data,
-        compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info'])
-    );
-}
+        return view(
+            'Admin.total_fully_paid_plots_in_estate',
+            $data,
+            compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info'])
+        );
+    }
 
 
     public function total_not_taken_plots_in_estate($id)
@@ -2901,7 +2904,10 @@ public function total_fully_paid_plots_in_estate($id)
         $estate_pdf_info = $specific_estate->estate_pdf;
 
         $estate_data = plot::where('estate', $estate_name)
-            ->where('status', '=', 'Not taken')->orderBy('plot_number', 'asc')->get();
+            ->where('status', 'Not taken')
+            ->orderByRaw('CAST(plot_number AS UNSIGNED) ASC')
+            ->get();
+
 
         // $count_estates_fully = plot::where('estate', $estate_name)
         //     ->where('status', '=', 'Not taken')->count();
@@ -4032,58 +4038,12 @@ public function total_fully_paid_plots_in_estate($id)
     public function insertPlots()
     {
 
-        //       $ungroupedPlots = [
-        //     1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        //     11, 12, 13, 14, 16, 17, 18, 19, 20, 21,
-        //     22, 23, 24, 25, 26, 27, 28, 30, 31, 32,
-        //     33, 34, 35, 36, 37, 38, 39, 40, 42, 43
-        // ];
-
-        // $insertData = [];
-
-        // foreach ($ungroupedPlots as $plotNumber) {
-        //     $insertData[] = [
-        //         'estate' => 'Nabulooto_phase_8',
-        //         'plot_number' => $plotNumber,
-        //         'width_1' => 20,
-        //         'width_2' => 20,
-        //         'height_1' => 40,
-        //         'height_2' => 40,
-        //         'status' => 'Not taken',
-        //         'location' => 'Mukono',
-        //         'half_or_full' => 0,
-        //         'buyer_id' => 0,
-        //         'exceptional_status' => 0,
-        //         'is_half' => 0,
-        //     ];
-        // }
-
-        // DB::table('plots')->insert($insertData);
-
-        // dd('Records inserted successfully from plot Nabulooto_phase_8.');
-        
-        // Grouped Plots
-        
-            $groupedPlots = [
-                [29, 54],
-                [41, 50],
-                [15, 55],
-                [44, 51],
-                [45, 49],
-                [46, 48],
-                [47, 52, 53]
-            ];
-
-
         $insertData = [];
 
-        foreach ($groupedPlots as $plotGroup) {
-            // Convert the array of numbers to a string like "1_43" or "42_52_53"
-            $plotNumberString = implode('_', $plotGroup);
-
+        foreach (range(1, 326) as $plotNumber) {
             $insertData[] = [
-                'estate' => 'Nabulooto_phase_8',
-                'plot_number' => $plotNumberString,
+                'estate' => 'Namaliiri_phase_four',
+                'plot_number' => $plotNumber,
                 'width_1' => 20,
                 'width_2' => 20,
                 'height_1' => 40,
@@ -4092,15 +4052,79 @@ public function total_fully_paid_plots_in_estate($id)
                 'location' => 'Mukono',
                 'half_or_full' => 0,
                 'buyer_id' => 0,
-                'exceptional_status' => 1,
-                'exceptional_amount' => 1500000,
+                'exceptional_status' => 0,
                 'is_half' => 0,
             ];
         }
 
         DB::table('plots')->insert($insertData);
 
-        dd('Records inserted successfully from plot Nabulooto_phase_8.');
+        dd('Plots 1 to 326 inserted successfully.');
+
+        //   $ungroupedPlots =[55, 54, 50, 51, 49, 48, 52, 53];
+
+        //     $insertData = [];
+
+        //     foreach ($ungroupedPlots as $plotNumber) {
+        //         $insertData[] = [
+        //             'estate' => 'Namalili_phase_four',
+        //             'plot_number' => $plotNumber,
+        //             'width_1' => 20,
+        //             'width_2' => 20,
+        //             'height_1' => 40,
+        //             'height_2' => 40,
+        //             'status' => 'Not taken',
+        //             'location' => 'Mukono',
+        //             'half_or_full' => 0,
+        //             'buyer_id' => 0,
+        //             'exceptional_status' => 0,
+        //             'is_half' => 0,
+        //         ];
+        //     }
+
+        //     DB::table('plots')->insert($insertData);
+
+        //     dd('Records inserted successfully from plot Nabulooto_phase_8.');
+
+        // Grouped Plots
+
+        //     $groupedPlots = [
+        //         [29, 54],
+        //         [41, 50],
+        //         [15, 55],
+        //         [44, 51],
+        //         [45, 49],
+        //         [46, 48],
+        //         [47, 52, 53]
+        //     ];
+
+
+        // $insertData = [];
+
+        // foreach ($groupedPlots as $plotGroup) {
+        //     // Convert the array of numbers to a string like "1_43" or "42_52_53"
+        //     $plotNumberString = implode('_', $plotGroup);
+
+        //     $insertData[] = [
+        //         'estate' => 'Nabulooto_phase_8',
+        //         'plot_number' => $plotNumberString,
+        //         'width_1' => 20,
+        //         'width_2' => 20,
+        //         'height_1' => 40,
+        //         'height_2' => 40,
+        //         'status' => 'Not taken',
+        //         'location' => 'Mukono',
+        //         'half_or_full' => 0,
+        //         'buyer_id' => 0,
+        //         'exceptional_status' => 1,
+        //         'exceptional_amount' => 1500000,
+        //         'is_half' => 0,
+        //     ];
+        // }
+
+        // DB::table('plots')->insert($insertData);
+
+        // dd('Records inserted successfully from plot Nabulooto_phase_8.');
     }
 
     public function updateRequestPermission(Request $request, $id)
@@ -4280,7 +4304,7 @@ public function total_fully_paid_plots_in_estate($id)
             $agreement->user_id = $b->id;
             $agreement->Amount_paid = $b->amount_payed;
             $agreement->Date_of_payment = now();
-            $agreement->agreement = $filename; 
+            $agreement->agreement = $filename;
             $agreement->reciept = '-'; // Save the generated PDF filename here
             $agreement->save();
 
@@ -4309,4 +4333,45 @@ public function total_fully_paid_plots_in_estate($id)
             'message' => 'General agreement for the entire group generated.'
         ]);
     }
+
+
+    public function revokeGroupedPermission(Request $request, $group_id)
+    {
+
+        $updated = buyer::where('multiple_user_id', $group_id)
+            ->update(['request_permission' => 0]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Permissions revoked successfully from client  .'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No records were updated.'
+        ], 400);
+    }
+
+    public function deleteUserGroupedByPermission(Request $request, $group_id)
+    {
+
+        $count = buyer::where('multiple_user_id', $group_id)->count();
+
+        if ($count === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No users found to delete.'
+            ], 404);
+        }
+
+        buyer::where('multiple_user_id', $group_id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully deleted the user and their {$count} associated plot records."
+        ]);
+    }
+
 }
