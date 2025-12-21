@@ -8,53 +8,6 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <a href="{{ url('total-plots-in-estate/' . $estate_id) }}">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-9">
-                                    <div class="d-flex align-items-center align-self-start">
-                                        <h3 class="mb-0">{{ $specific_estate->number_of_plots }}</h3>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-
-                                </div>
-                            </div>
-                            <h6 class="text-muted font-weight-normal mt-3">Plots in {{ $estate_name }} Estate</h6>
-                        </div>
-                </a>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-            <div class="card">
-                <a href="{{ url('total-fully-paid-plots-in-estate/' . $estate_id) }}">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <div class="d-flex align-items-center align-self-start">
-                                    @if ($connectedPlotsProcessedFullyPaid != 0)
-                                        <h3 class="mb-0"> {{ $connectedPlotsProcessedFullyPaidJoined }}</h3>
-                                    @else
-                                        <h3 class="mb-0">{{ $count_estates_fully }}</h3>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-3">
-
-                            </div>
-                        </div>
-                        <h6 class="text-muted font-weight-normal mt-3">Fully paid plots in
-                            {{ $specific_estate->estate_name }}
-                        </h6>
-                    </div>
-                </a>
-            </div>
-        </div>
-
         <?php 
 
         $whereConditions = ['estate' => $specific_estate->estate_name];
@@ -67,6 +20,12 @@ $fully_paid_half = DB::table('plots')->where($whereConditions)
     ->where('status', '=', 'Fully payed')
     ->where('half_or_full', '=', '1')
     ->get();
+
+
+$fully_paid_and_taken_plots_count = DB::table('plots')
+    ->where($whereConditions)
+    ->where('status', '=', 'Fully payed')
+    ->count();
 
 $unmatchedPlots = [];
 
@@ -92,6 +51,57 @@ $countAvailablePlots = $unmatchedPlotsCollection->merge($fully_paid_half);
 
         ?>
 
+
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <a href="{{ url('total-plots-in-estate/' . $estate_id) }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <div class="d-flex align-items-center align-self-start">
+                                        <h3 class="mb-0">{{ $specific_estate->number_of_plots }}</h3>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+
+                                </div>
+                            </div>
+                            <h6 class="text-muted font-weight-normal mt-3">Plots in {{ $estate_name }} Estate</h6>
+                        </div>
+                </a>
+            </div>
+        </div>
+
+
+
+        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card">
+                <a href="{{ url('total-fully-paid-plots-in-estate/' . $estate_id) }}">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-9">
+                                <div class="d-flex align-items-center align-self-start">
+                                    <!--@if ($connectedPlotsProcessedFullyPaid != 0)-->
+                                    <!--    <h3 class="mb-0"> {{ $connectedPlotsProcessedFullyPaidJoined }}</h3>-->
+                                    <!--@else-->
+                                    <!--    <h3 class="mb-0">{{ $fully_paid_and_taken_plots_count }}</h3>-->
+                                    <!--@endif-->
+                                    <h3 class="mb-0">{{ $fully_paid_and_taken_plots_count }}</h3>
+                                </div>
+                            </div>
+                            <div class="col-3">
+
+                            </div>
+                        </div>
+                        <h6 class="text-muted font-weight-normal mt-3">Fully paid plots in
+                            {{ $specific_estate->estate_name }}
+                        </h6>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
             <div class="card">
                 <a href="{{ url('total-not-taken-plots-in-estate/' . $estate_id) }}">
@@ -100,12 +110,14 @@ $countAvailablePlots = $unmatchedPlotsCollection->merge($fully_paid_half);
                             <div class="col-9">
                                 <div class="d-flex align-items-center align-self-start">
 
-                                    @if ($connectedPlotsProcessedNotFullyPaid != 0)
-                                        <h3 class="mb-0"> {{ $connectedPlotsProcessedNotFullyPaidjoined }}</h3>
-                                    @else
-                                        {{-- {{ $count_estates_not_fully }} --}}
-                                        <h3 class="mb-0">{{ count($countAvailablePlots) }}</h3>
-                                    @endif
+                                    <!--@if ($connectedPlotsProcessedNotFullyPaid != 0)-->
+                                    <!--    <h3 class="mb-0"> {{ $connectedPlotsProcessedNotFullyPaidjoined }}</h3>-->
+                                    <!--@else-->
+                                    <!--    {{-- {{ $count_estates_not_fully }} --}}-->
+                                    <!--    <h3 class="mb-0">{{ count($countAvailablePlots) }}</h3>-->
+                                    <!--@endif-->
+
+                                    <h3 class="mb-0">{{ count($all_plot_estates_not_fully) }}</h3>
                                 </div>
                             </div>
                             <div class="col-3">
@@ -181,6 +193,7 @@ $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->v
                                     <th> Location </th>
                                     <th> Number of plots </th>
                                     <th> Download Sketch</th>
+                                    <th> View Sketch</th>
                                     @if ($userInfo == 'SuperAdmin')
                                         <th> Action </th>
                                     @endif
@@ -210,6 +223,13 @@ $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->v
                                         </button>
                                     </td>
 
+                                    <td>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#pdfModal">
+                                            View PDF
+                                        </button>
+                                    </td>
+
                                     @if ($userInfo == 'SuperAdmin')
                                         <td><a class="text-white btn btn-primary"
                                                 href="{{ url('edit-estate-information/' . $specific_estate->id) }}"
@@ -221,6 +241,26 @@ $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->v
 
                             </tbody>
                         </table>
+                      
+                        <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Estate Document</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            style="color: white; background-color: white;"></button>                                    </div>
+
+                                    <div class="modal-body p-0">
+                                        <iframe
+                                            src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                            width="100%" height="600px" style="border: none;">
+                                        </iframe>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,112 +1,112 @@
 @include('includes.header')
 <!-- partial -->
 <div class="main-panel">
-  <div class="content-wrapper">
+    <div class="content-wrapper">
 
-    <style>
-      .form-control {
-        color: #fff !important;
-      }
+        <style>
+            .form-control {
+                color: #fff !important;
+            }
 
-      .swal2-popup {
-        background: #2c2f33 !important;
-        color: #ffffff !important;
-        border-radius: 10px;
-        font-family: 'Segoe UI', sans-serif;
-      }
+            .swal2-popup {
+                background: #2c2f33 !important;
+                color: #ffffff !important;
+                border-radius: 10px;
+                font-family: 'Segoe UI', sans-serif;
+            }
 
-      .swal2-title {
-        color: #ffffff !important;
-      }
+            .swal2-title {
+                color: #ffffff !important;
+            }
 
-      .swal2-html-container {
-        color: #cccccc !important;
-      }
+            .swal2-html-container {
+                color: #cccccc !important;
+            }
 
-      .swal2-icon {
-        color: #00bcd4 !important;
-        border-color: #00bcd4 !important;
-        margin: 1.25em auto 1em auto !important;
-      }
+            .swal2-icon {
+                color: #00bcd4 !important;
+                border-color: #00bcd4 !important;
+                margin: 1.25em auto 1em auto !important;
+            }
 
-      .swal2-confirm {
-        background-color: #3085d6 !important;
-        color: #fff !important;
-      }
+            .swal2-confirm {
+                background-color: #3085d6 !important;
+                color: #fff !important;
+            }
 
-      .swal2-cancel {
-        background-color: #d33 !important;
-        color: #fff !important;
-      }
+            .swal2-cancel {
+                background-color: #d33 !important;
+                color: #fff !important;
+            }
 
-      .swal2-styled.swal2-confirm:focus,
-      .swal2-styled.swal2-cancel:focus {
-        box-shadow: none !important;
-      }
+            .swal2-styled.swal2-confirm:focus,
+            .swal2-styled.swal2-cancel:focus {
+                box-shadow: none !important;
+            }
 
-      .select2-container .select2-selection--single {
-        height: 38px !important;
-        padding: 6px 12px;
-        display: flex;
-        align-items: center;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        font-size: 14px;
-      }
+            .select2-container .select2-selection--single {
+                height: 38px !important;
+                padding: 6px 12px;
+                display: flex;
+                align-items: center;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                font-size: 14px;
+            }
 
-      .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: normal !important;
-        padding-left: 0;
-        margin-left: 0;
-        color: #495057;
-      }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: normal !important;
+                padding-left: 0;
+                margin-left: 0;
+                color: #495057;
+            }
 
-      .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 38px !important;
-        top: 0px !important;
-        right: 10px;
-      }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 38px !important;
+                top: 0px !important;
+                right: 10px;
+            }
 
-      .dropdown-item:hover,
-      .dropdown-item:focus {
-        color: #16181b;
-        text-decoration: none;
-        background-color: #f8f9fa;
-      }
+            .dropdown-item:hover,
+            .dropdown-item:focus {
+                color: #16181b;
+                text-decoration: none;
+                background-color: #f8f9fa;
+            }
 
-      .role-search-add-group .dropdown-item:hover,
-      .role-search-add-group .dropdown-item:focus {
-        color: #000;
-        text-decoration: none;
-        background-color: #FFF;
-      }
+            .role-search-add-group .dropdown-item:hover,
+            .role-search-add-group .dropdown-item:focus {
+                color: #000;
+                text-decoration: none;
+                background-color: #FFF;
+            }
 
-      .dropdown-item:hover p {
-        color: black !important;
-      }
+            .dropdown-item:hover p {
+                color: black !important;
+            }
 
-      thead th {
-        background-color: #343a40;
-        /* Dark grey */
-        border-bottom: 2px solid #495057;
-        padding: 12px 15px;
-      }
+            thead th {
+                background-color: #343a40;
+                /* Dark grey */
+                border-bottom: 2px solid #495057;
+                padding: 12px 15px;
+            }
 
-      tbody td {
-        padding: 12px 15px;
-      }
+            tbody td {
+                padding: 12px 15px;
+            }
 
-      .table-hover tbody tr:hover {
-        background-color: #495057;
-        color: #fff !important;
-      }
+            .table-hover tbody tr:hover {
+                background-color: #495057;
+                color: #fff !important;
+            }
 
-      .table-hover tbody tr:hover td {
-        color: #fff !important;
-      }
-    </style>
+            .table-hover tbody tr:hover td {
+                color: #fff !important;
+            }
+        </style>
 
-    <?php
+        <?php
 
 use App\Models\AdminRegister;
 $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
@@ -116,181 +116,242 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
     ?>
 
 
-    <div class="row">
+        <div class="row">
 
-      <div class="col-12 grid-margin">
-        <div class="card">
-          <div class="card-body">
-            <h4>Grant Permission</h4>
+            <div class="col-12 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Grant Permission</h4>
 
-            @include('sweetalert::alert')
+                        @include('sweetalert::alert')
 
-          <div class="row">
-              <div class="col-12 grid-margin">
-                  <div class="card">
-                      <div class="card-body">
-                          <div class="table-responsive">
-                              <table class="table table-hover">
-                                  <thead>
-                                    <tr>
-                                        <th class="text-center">No.</th>
-                                        <th class="text-center">Client Name</th>
-                                        <th class="text-center">Total Plots</th>
-                                        <th class="text-center">Total Amount Paid</th>
-                                    </tr>
-                                </thead>
-                                  <tbody>
-                                      @forelse ($grouped_buyers as $multiple_user_id => $plots)
-                                          @php
-                                              $main_item = $plots->first();
-                                              $key = $loop->index;
-                                              $total_plots = $plots->count();
-                                              $total_paid = $plots->sum('amount_payed');
-                                              $group_status = $main_item->request_permission;
+                        <div class="row">
+                            <div class="col-12 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr class="table-header-colored">
+                                                        <th class="text-center">No.</th>
+                                                        <th class="text-center">Client Name</th>
+                                                        <th class="text-center">Total Plots</th>
+                                                        <th class="text-center">Total Amount Paid</th>
+                                                        <th class="text-center">Actions</th>
+                                                        <th class="text-center">View Receipts</th>
+                                                        <th class="text-center">Sketches</th>
+                                                    </tr>
+                                                </thead>
 
-                                              // dd($main_item);
-                                          @endphp
-                                          
-                                          <tr class="table-primary" style="border-top: 2px solid #007bff;">
-                                              <td class="text-center">{{ $key + 1 }}</td>
-                                              <td class="text-center">
-                                                  <i class="mdi mdi-account-group me-2 text-primary"></i>
-                                                  <strong>{{ $main_item->firstname }} {{ $main_item->lastname }}</strong>
-                                              </td>
-                                              <td class="text-center">
-                                                  <span class="badge bg-info text-dark">{{ $total_plots }} Plots</span>
-                                              </td>
-                                              <td class="text-center">
-                                                  <strong>{{ number_format($total_paid, 2) }}</strong>
-                                              </td>
-                                              <td class="text-center">
-                                                  @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) == 'SuperAdmin')
-                                                      <button class="btn btn-primary btn-sm confirm-permission-btn" data-id="{{ $multiple_user_id }}"
-                                                          data-name="{{ $main_item->firstname }}" data-plot-count="{{ $total_plots }}">
-                                                          <i class="mdi mdi-check-decagram me-1"></i> Confirm Agreement for All ({{ $total_plots }})
-                                                      </button>
-                                                  @elseif ($group_status == 2)
-                                                      <a href="{{ url('add-agreement/' . $multiple_user_id) }}" 
-                                                          class="btn btn-success btn-icon-text btn-sm">
-                                                          <i class="mdi mdi-file-document-box me-1"></i> Make Agreement for All ({{ $total_plots }})
-                                                      </a>
-                                                  @else
-                                                  @endif
-                                              </td>
-                                                 <td></td>
-                                          </tr>
-                                          
-                                         @foreach ($plots as $plot_item)
-                                            <tr class="table-light" style="color: #000 !important;">
-                                                <td style="color: #000 !important;"></td>
+                                                <tbody>
+                                                    @forelse ($grouped_buyers as $multiple_user_id => $plots)
+                                                        @php
+                                                            $main_item = $plots->first();
+                                                            $key = $loop->index;
+                                                            $total_plots = $plots->count();
+                                                            $total_paid = $plots->sum('amount_payed');
+                                                            $group_status = $main_item->request_permission;
+                                                        @endphp
+                                                        <tr class="table-primary" style="border-top: 2px solid #007bff;">
+                                                            <td class="text-center">{{ $key + 1 }}</td>
+                                                            <td class="text-center">
+                                                                <i class="mdi mdi-account-group me-2 text-primary"></i>
+                                                                <strong>{{ $main_item->firstname }}
+                                                                    {{ $main_item->lastname }}</strong>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span class="badge bg-info text-dark">{{ $total_plots }}
+                                                                    Plots</span>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <strong>{{ number_format($total_paid, 2) }}</strong>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) == 'SuperAdmin')
+                                                                    <button
+                                                                        class="btn btn-primary btn-sm confirm-permission-btn"
+                                                                        data-id="{{ $multiple_user_id }}"
+                                                                        data-name="{{ $main_item->firstname }}"
+                                                                        data-plot-count="{{ $total_plots }}">
+                                                                        <i class="mdi mdi-check-decagram me-1"></i> Confirm
+                                                                        Agreement for All ({{ $total_plots }})
+                                                                    </button>
+                                                                @elseif ($group_status == 2)
+                                                                    <a href="{{ url('add-agreement/' . $multiple_user_id) }}"
+                                                                        class="btn btn-success btn-icon-text btn-sm">
+                                                                        <i class="mdi mdi-file-document-box me-1"></i> Make
+                                                                        Agreement for All ({{ $total_plots }})
+                                                                    </a>
+                                                                @endif
+                                                            </td>
+                                                            <td colspan="2"></td>
+                                                        </tr>
 
-                                                <td style="color: #000 !important;">
-                                                    <small class="text-muted fst-italic" style="color: #000 !important;">Details:</small>
-                                                </td>
+                                                        @foreach ($plots as $plot_item)
+                                                       
+                                                            <tr class="table-light" style="color: #000 !important;">
+                                                                <td style="color: #000 !important;"></td>
+                                                                <td style="color: #000 !important;">
+                                                                    <small class="text-muted fst-italic"
+                                                                        style="color: #000 !important;">Details:</small>
+                                                                </td>
+                                                                <td style="color: #000 !important;">{{ $plot_item->estate }}
+                                                                </td>
+                                                                <td style="color: #000 !important;">
+                                                                    <strong style="color: #000 !important;">Plot No:</strong>
+                                                                    {{ $plot_item->plot_number }}
+                                                                </td>
+                                                                <td style="color: #000 !important;">
+                                                                    <strong style="color: #000 !important;">Paid:</strong>
+                                                                    {{ $plot_item->amount_payed }}
+                                                                </td>
+                                                                <td class="text-center" style="color: #000 !important;">
+                                                                    <a href="{{ url('/all-client-receipts/' . $plot_item->id) }}"
+                                                                        class="btn btn-outline-info btn-xs"
+                                                                        style="color: #000 !important; border-color: #0d6efd;">
+                                                                        <i class="mdi mdi-receipt"
+                                                                            style="color: #000 !important;"></i>
+                                                                        View Receipts
+                                                                    </a>
+                                                                </td>
+                                                                
+                                                                 <?php
+                                                                $estate_pdf = DB::table('estates')->where('estate_name',$plot_item->estate)->value('estate_pdf');
+                                                                ?>
+                                                            
+                                                                <td>
+                                                                    <button type="button"
+                                                                        class="btn btn-primary open-pdf"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#pdfModal"
+                                                                        data-pdf="{{ asset('/public/estate_pdf/' . $estate_pdf) }}">
+                                                                        <i class="fas fa-file-pdf"></i> View Sketch
+                                                                    </button>
 
-                                                <td style="color: #000 !important;">{{ $plot_item->estate }}</td>
+                                                                </td>
+                                                            </tr>
+                                                            
+                                                            <link
+                                                                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+                                                                rel="stylesheet">
 
-                                                <td style="color: #000 !important;">
-                                                    <strong style="color: #000 !important;">Plot No:</strong> {{ $plot_item->plot_number }}
-                                                </td>
+                                                        @endforeach
+                                                        
+                                                        
+                                                        <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                                                <div class="modal-content">
+                                                        
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Estate Document</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            style="color: white; background-color: white;"></button>  
+                                                                    </div>
+                                                        
+                                                                    <div class="modal-body p-0">
+                                                                        <iframe id="pdfFrame"
+                                                                            width="100%"
+                                                                            height="600px"
+                                                                            style="border:none;">
+                                                                        </iframe>
+                                                                    </div>
+                                                        
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
-                                                <td style="color: #000 !important;">
-                                                    <strong style="color: #000 !important;">Paid:</strong> {{ $plot_item->amount_payed }}
-                                                </td>
+                                                        <script>
+    document.querySelectorAll('.open-pdf').forEach(button => {
+        button.addEventListener('click', function () {
+            const pdfUrl = this.dataset.pdf + '#toolbar=0&navpanes=0&scrollbar=0';
+            document.getElementById('pdfFrame').src = pdfUrl;
+        });
+    });
 
-                                                <td class="text-center" style="color: #000 !important;">
-                                                    <a href="{{ url('/all-client-receipts/' . $plot_item->id) }}"
-                                                      class="btn btn-outline-info btn-xs"
-                                                      style="color: #000 !important; border-color: #0d6efd;">
-                                                        <i class="mdi mdi-receipt" style="color: #000 !important;"></i>
-                                                        View Receipts
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                          @endforeach
+    // Clear iframe when modal closes
+    document.getElementById('pdfModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('pdfFrame').src = '';
+    });
+</script>
 
-                                            @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) != 'SuperAdmin')
-                                            <tr style="
-                                                background-color:#f8f9fa;
-                                                color:#000;
-                                                --bs-table-hover-color:#000 !important;
-                                                --bs-table-hover-bg:#e9ecef !important;
-                                            "
-                                                onmouseover="this.style.backgroundColor='#e9ecef';"
-                                                onmouseout="this.style.backgroundColor='#f8f9fa';">
 
-                                                <td colspan="6" class="text-center">
-                                                    <a href="javascript:void(0);" 
-                                                      class="btn btn-primary btn-sm confirm-permission-btn"
-                                                      data-id="{{ $multiple_user_id }}"
-                                                      data-name="{{ $main_item->firstname }}"
-                                                      data-plot-count="{{ $total_plots }}">
-                                                        <i class="mdi mdi-check-decagram me-1"></i> 
-                                                        Confirm Permission
-                                                    </a>
-<<<<<<< HEAD
-                                                </td>
-                                            </tr>
-                                            @endif
+                                                        @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) != 'SuperAdmin')
+                                                            <tr style="
+                                                                                        background-color:#f8f9fa;
+                                                                                        color:#000;
+                                                                                        --bs-table-hover-color:#000 !important;
+                                                                                        --bs-table-hover-bg:#e9ecef !important;
+                                                                                    "
+                                                                onmouseover="this.style.backgroundColor='#e9ecef';"
+                                                                onmouseout="this.style.backgroundColor='#f8f9fa';">
+                                                                <!-- Update colspan to 7 to match all columns -->
+                                                                <td colspan="7" class="text-center">
+                                                                    <a href="javascript:void(0);"
+                                                                        class="btn btn-primary btn-sm confirm-permission-btn"
+                                                                        data-id="{{ $multiple_user_id }}"
+                                                                        data-name="{{ $main_item->firstname }}"
+                                                                        data-plot-count="{{ $total_plots }}">
+                                                                        <i class="mdi mdi-check-decagram me-1"></i>
+                                                                        Confirm Permission
+                                                                    </a>
 
-=======
+                                                                    <a href="javascript:void(0);"
+                                                                        class="btn btn-warning btn-sm confirm-revoke-btn text-white"
+                                                                        data-id="{{ $multiple_user_id }}"
+                                                                        data-name="{{ $main_item->firstname }}"
+                                                                        data-action="revoke"
+                                                                        data-plot-count="{{ $total_plots }}">
+                                                                        <i class="mdi mdi-shield-off-outline me-1"></i>
+                                                                        Revoke Permission
+                                                                    </a>
 
-                                                    <a href="javascript:void(0);" 
-                                                      class="btn btn-warning btn-sm confirm-revoke-btn text-white"
-                                                      data-id="{{ $multiple_user_id }}"
-                                                      data-name="{{ $main_item->firstname }}"
-                                                      data-action="revoke"
-                                                      data-plot-count="{{ $total_plots }}">
-                                                        <i class="mdi mdi-shield-off-outline me-1"></i> 
-                                                        Revoke Permission
-                                                    </a>
+                                                                    <a href="javascript:void(0);"
+                                                                        class="btn btn-danger btn-sm confirm-delete-user"
+                                                                        data-id="{{ $multiple_user_id }}"
+                                                                        data-name="{{ $main_item->firstname }}"
+                                                                        data-action="delete"
+                                                                        data-plot-count="{{ $total_plots }}">
+                                                                        <i class="mdi mdi-account-remove-outline me-1"></i>
+                                                                        Delete User
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="7" class="text-center text-warning py-4">
+                                                                <i class="mdi mdi-alert-circle me-2"></i> No records
+                                                                requiring agreement permission found.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
 
-                                                    <a href="javascript:void(0);" 
-                                                      class="btn btn-danger btn-sm confirm-delete-user"
-                                                      data-id="{{ $multiple_user_id }}"
-                                                      data-name="{{ $main_item->firstname }}"
-                                                      data-action="delete"
-                                                      data-plot-count="{{ $total_plots }}">
-                                                        <i class="mdi mdi-account-remove-outline me-1"></i> 
-                                                        Delete User
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
->>>>>>> 10926ab109fe6be323aaeb9349a7d3cacaef6b17
-                                      @empty
-                                          <tr>
-                                              <td colspan="5" class="text-center text-warning py-4">
-                                                  <i class="mdi mdi-alert-circle me-2"></i> No records requiring agreement permission found.
-                                              </td>
-                                          </tr>
-                                      @endforelse
-                                  </tbody>
-                              </table>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
 
 
-  <footer class="footer">
-    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-      <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © SozoPropertiesLimited.com
-        2023</span>
-      <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon <a
-          href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
-    </div>
-  </footer>
-  <!-- partial -->
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
+                SozoPropertiesLimited.com
+                2023</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon <a
+                    href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
+        </div>
+    </footer>
+    <!-- partial -->
 </div>
 <!-- main-panel ends -->
 </div>
@@ -302,212 +363,209 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
+        const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
 
-    confirmButtons.forEach(button => {
-        button.addEventListener('click', function () {
+        confirmButtons.forEach(button => {
+            button.addEventListener('click', function () {
 
-            const groupId = this.dataset.id;
-            const clientName = this.dataset.name;
-            const plotCount = this.dataset.plotCount;
-            
-            Swal.fire({
-                title: 'Confirm All Plots?',
-                html: `Are you sure you want to confirm agreement permission for <b>${clientName}</b> (All ${plotCount} plots)?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, confirm all',
-                cancelButtonColor: '#d33'
-            }).then(result => {
-                if (result.isConfirmed) {
+                const groupId = this.dataset.id;
+                const clientName = this.dataset.name;
+                const plotCount = this.dataset.plotCount;
 
-                    Swal.fire({
-                        title: 'Processing...',
-                        text: 'Please wait.',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
+                Swal.fire({
+                    title: 'Confirm All Plots?',
+                    html: `Are you sure you want to confirm agreement permission for <b>${clientName}</b> (All ${plotCount} plots)?`,
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonText: 'Yes, confirm all',
+                    cancelButtonColor: '#d33'
+                }).then(result => {
+                    if (result.isConfirmed) {
 
-                    // Using jQuery's AJAX to send the request
-                    $.ajax({
-                        url: `/confirm-group-permission/${groupId}`,
-                        method: 'POST',
-                        dataType: 'json',  // Expect JSON response
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        data: JSON.stringify({}),
-                        contentType: 'application/json',  // Content type set to JSON
-                        success: function(data) {
-                            Swal.close();
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait.',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
 
-                            if (data.success) {
-                                Swal.fire({
-                                    title: 'Confirmed!',
-                                    text: data.message,
-                                    icon: 'success'
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: data.message || 'Something went wrong!',
-                                    icon: 'error'
-                                });
+                        // Using jQuery's AJAX to send the request
+                        $.ajax({
+                            url: `/confirm-group-permission/${groupId}`,
+                            method: 'POST',
+                            dataType: 'json',  // Expect JSON response
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            data: JSON.stringify({}),
+                            contentType: 'application/json',  // Content type set to JSON
+                            success: function (data) {
+                                Swal.close();
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Confirmed!',
+                                        text: data.message,
+                                        icon: 'success'
+                                    }).then(() => location.reload());
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: data.message || 'Something went wrong!',
+                                        icon: 'error'
+                                    });
+                                }
+                            },
+                            error: function (data) {
+                                $('body').html(data.responseText);
                             }
-                        },
-                        error: function(data) {
-                            $('body').html(data.responseText);
-                        }
-                    });
+                        });
 
-                }
+                    }
+                });
+
             });
-
         });
     });
-});
-<<<<<<< HEAD
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const confirmButtons = document.querySelectorAll('.confirm-revoke-btn');
+
+        confirmButtons.forEach(button => {
+            button.addEventListener('click', function () {
+
+                const groupId = this.dataset.id;
+                const clientName = this.dataset.name;
+                const plotCount = this.dataset.plotCount;
+
+                Swal.fire({
+                    title: 'Confirm All Plots?',
+                    html: `Are you sure you want to revoke permission to generate these agreements for <b>${clientName}</b> (All ${plotCount} plots)?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, confirm all',
+                    cancelButtonColor: '#d33'
+                }).then(result => {
+                    if (result.isConfirmed) {
+
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait.',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        // Using jQuery's AJAX to send the request
+                        $.ajax({
+                            url: `/revoke-group-permission/${groupId}`,
+                            method: 'POST',
+                            dataType: 'json',  // Expect JSON response
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            data: JSON.stringify({}),
+                            contentType: 'application/json',  // Content type set to JSON
+                            success: function (data) {
+                                Swal.close();
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Confirmed!',
+                                        text: data.message,
+                                        icon: 'success'
+                                    }).then(() => location.reload());
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: data.message || 'Something went wrong!',
+                                        icon: 'error'
+                                    });
+                                }
+                            },
+                            error: function (data) {
+                                $('body').html(data.responseText);
+                            }
+                        });
+
+                    }
+                });
+
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const confirmButtons = document.querySelectorAll('.confirm-delete-user');
+
+        confirmButtons.forEach(button => {
+            button.addEventListener('click', function () {
+
+                const groupId = this.dataset.id;
+                const clientName = this.dataset.name;
+                const plotCount = this.dataset.plotCount;
+
+                Swal.fire({
+                    title: 'Confirm All Plots?',
+                    html: `Are you sure you want to delete this client with their related agreements for <b>${clientName}</b> (All ${plotCount} plots)?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, confirm all',
+                    cancelButtonColor: '#d33'
+                }).then(result => {
+                    if (result.isConfirmed) {
+
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait.',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        // Using jQuery's AJAX to send the request
+                        $.ajax({
+                            url: `/delete-user-grouped-by-permission/${groupId}`,
+                            method: 'POST',
+                            dataType: 'json',  // Expect JSON response
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            data: JSON.stringify({}),
+                            contentType: 'application/json',  // Content type set to JSON
+                            success: function (data) {
+                                Swal.close();
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Confirmed!',
+                                        text: data.message,
+                                        icon: 'success'
+                                    }).then(() => location.reload());
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: data.message || 'Something went wrong!',
+                                        icon: 'error'
+                                    });
+                                }
+                            },
+                            error: function (data) {
+                                $('body').html(data.responseText);
+                            }
+                        });
+
+                    }
+                });
+
+            });
+        });
+    });
 </script>
-=======
->>>>>>> 10926ab109fe6be323aaeb9349a7d3cacaef6b17
 
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const confirmButtons = document.querySelectorAll('.confirm-revoke-btn');
-
-    confirmButtons.forEach(button => {
-        button.addEventListener('click', function () {
-
-            const groupId = this.dataset.id;
-            const clientName = this.dataset.name;
-            const plotCount = this.dataset.plotCount;
-            
-            Swal.fire({
-                title: 'Confirm All Plots?',
-                html: `Are you sure you want to revoke permission to generate these agreements for <b>${clientName}</b> (All ${plotCount} plots)?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, confirm all',
-                cancelButtonColor: '#d33'
-            }).then(result => {
-                if (result.isConfirmed) {
-
-                    Swal.fire({
-                        title: 'Processing...',
-                        text: 'Please wait.',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
-
-                    // Using jQuery's AJAX to send the request
-                    $.ajax({
-                        url: `/revoke-group-permission/${groupId}`,
-                        method: 'POST',
-                        dataType: 'json',  // Expect JSON response
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        data: JSON.stringify({}),
-                        contentType: 'application/json',  // Content type set to JSON
-                        success: function(data) {
-                            Swal.close();
-
-                            if (data.success) {
-                                Swal.fire({
-                                    title: 'Confirmed!',
-                                    text: data.message,
-                                    icon: 'success'
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: data.message || 'Something went wrong!',
-                                    icon: 'error'
-                                });
-                            }
-                        },
-                        error: function(data) {
-                            $('body').html(data.responseText);
-                        }
-                    });
-
-                }
-            });
-
-        });
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const confirmButtons = document.querySelectorAll('.confirm-delete-user');
-
-    confirmButtons.forEach(button => {
-        button.addEventListener('click', function () {
-
-            const groupId = this.dataset.id;
-            const clientName = this.dataset.name;
-            const plotCount = this.dataset.plotCount;
-            
-            Swal.fire({
-                title: 'Confirm All Plots?',
-                html: `Are you sure you want to delete this client with their related agreements for <b>${clientName}</b> (All ${plotCount} plots)?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, confirm all',
-                cancelButtonColor: '#d33'
-            }).then(result => {
-                if (result.isConfirmed) {
-
-                    Swal.fire({
-                        title: 'Processing...',
-                        text: 'Please wait.',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
-
-                    // Using jQuery's AJAX to send the request
-                    $.ajax({
-                        url: `/delete-user-grouped-by-permission/${groupId}`,
-                        method: 'POST',
-                        dataType: 'json',  // Expect JSON response
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        data: JSON.stringify({}),
-                        contentType: 'application/json',  // Content type set to JSON
-                        success: function(data) {
-                            Swal.close();
-
-                            if (data.success) {
-                                Swal.fire({
-                                    title: 'Confirmed!',
-                                    text: data.message,
-                                    icon: 'success'
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: data.message || 'Something went wrong!',
-                                    icon: 'error'
-                                });
-                            }
-                        },
-                        error: function(data) {
-                            $('body').html(data.responseText);
-                        }
-                    });
-
-                }
-            });
-
-        });
-    });
-});
-</script>
 
 
 <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
