@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const groupId = this.dataset.id;
             const clientName = this.dataset.name;
             const plotCount = this.dataset.plotCount;
-
+            
             Swal.fire({
                 title: 'Confirm All Plots?',
                 html: `Are you sure you want to confirm agreement permission for <b>${clientName}</b> (All ${plotCount} plots)?`,
@@ -301,54 +301,36 @@ document.addEventListener('DOMContentLoaded', function () {
                         didOpen: () => Swal.showLoading()
                     });
 
-                    fetch(`/confirm-group-permission/${groupId}`, {
+                    // Using jQuery's AJAX to send the request
+                    $.ajax({
+                        url: `/confirm-group-permission/${groupId}`,
                         method: 'POST',
+                        dataType: 'json',  // Expect JSON response
                         headers: {
-                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
-                        body: JSON.stringify({})
-                    })
-                    .then(async (res) => {
+                        data: JSON.stringify({}),
+                        contentType: 'application/json',  // Content type set to JSON
+                        success: function(data) {
+                            Swal.close();
 
-                        const contentType = res.headers.get("content-type");
-
-                        if (contentType && contentType.includes("text/html")) {
-                            // Laravel dd() output (HTML)
-                            const html = await res.text();
-                            document.body.innerHTML = html;
-                            return;
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Confirmed!',
+                                    text: data.message,
+                                    icon: 'success'
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.message || 'Something went wrong!',
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(data) {
+                            $('body').html(data.responseText);
                         }
-
-                        // If JSON
-                        return res.json();
-                    })
-                    .then(data => {
-                        if (!data) return;
-
-                        Swal.close();
-
-                        if (data.success) {
-                            Swal.fire({
-                                title: 'Confirmed!',
-                                text: data.message,
-                                icon: 'success'
-                            }).then(() => location.reload());
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: data.message || 'Something went wrong!',
-                                icon: 'error'
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        Swal.close();
-                        Swal.fire({
-                            title: 'Server Error',
-                            text: err.message || 'Something went wrong!',
-                            icon: 'error'
-                        });
                     });
 
                 }

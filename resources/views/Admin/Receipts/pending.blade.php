@@ -264,11 +264,6 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
                                                         @elseif($item->request_permission == 1)
                                                           @if ($User_access_right == 'SuperAdmin')
-                                                            <button class="btn btn-primary   btn-sm confirm-permission-btn" data-id="{{ $item->id }}"
-                                                              data-name="{{ $item->firstname }}" data-plot="{{ $item->plot_number }}">
-                                                              <i class="mdi mdi-check-decagram me-1"></i> Confirm Permission
-                                                            </button>
-                                                          @else
                                                             <a href="javascript:void();" class="btn btn-primary btn-sm">
                                                               <i class="mdi mdi-clock-outline me-1"></i> Pending Confirmation
                                                             </a>

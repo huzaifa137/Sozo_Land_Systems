@@ -3938,9 +3938,9 @@ class Master extends Controller
 
     public function insertPlots()
     {
-        for ($i = 1; $i <= 143; $i++) {
+        for ($i = 1; $i <= 53; $i++) {
             DB::table('plots')->insert([
-                'estate' => 'kabimbiri',
+                'estate' => 'kayebwe_phase_1',
                 'plot_number' => $i,
                 'width_1' => 20,
                 'width_2' => 20,
@@ -3956,7 +3956,6 @@ class Master extends Controller
         }
 
         dd('Records inserted successfully from plot 2 to 143.');
-
     }
 
     public function updateRequestPermission(Request $request, $id)
@@ -4131,11 +4130,19 @@ class Master extends Controller
 
         // 5️⃣ Update ALL buyers to use ONE agreement
         foreach ($buyers as $b) {
+            // Save the filename to the agreements table
+            $agreement = new agreement();
+            $agreement->user_id = $b->id;
+            $agreement->Amount_paid = $b->amount_payed;
+            $agreement->Date_of_payment = now();
+            $agreement->agreement = $filename; 
+            $agreement->reciept = '-'; // Save the generated PDF filename here
+            $agreement->save();
 
             buyer::where('id', $b->id)->update([
                 'next_installment_pay' => "Fully payed",
                 'reciepts' => '-',
-                'agreement' => $filename,
+                'agreement' => $filename,  // Ensure the filename is saved here
                 'request_permission' => 2
             ]);
 
@@ -4143,13 +4150,14 @@ class Master extends Controller
                 ->where(['estate' => $b->estate, 'plot_number' => $b->plot_number])
                 ->update(['status' => 'Fully payed']);
 
-            // Insert single receipt for each buyer if needed
+            // Insert receipt for each buyer if needed
             DB::insert(
                 'insert into reciepts (user_id, amount, balance, reciept, Date_of_payment, Phonenumber, amount_in_words)
-             values (?, ?, ?, ?, ?, ?, ?)',
+                    values (?, ?, ?, ?, ?, ?, ?)',
                 [$b->id, 0, 0, '-', now(), '-', $request->amount_in_words ?? '-']
             );
         }
+
 
         return response()->json([
             'success' => true,
