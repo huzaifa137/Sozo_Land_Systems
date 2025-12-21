@@ -228,10 +228,37 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                         <i class="mdi mdi-check-decagram me-1"></i> 
                                                         Confirm Permission
                                                     </a>
+<<<<<<< HEAD
                                                 </td>
                                             </tr>
                                             @endif
 
+=======
+
+                                                    <a href="javascript:void(0);" 
+                                                      class="btn btn-warning btn-sm confirm-revoke-btn text-white"
+                                                      data-id="{{ $multiple_user_id }}"
+                                                      data-name="{{ $main_item->firstname }}"
+                                                      data-action="revoke"
+                                                      data-plot-count="{{ $total_plots }}">
+                                                        <i class="mdi mdi-shield-off-outline me-1"></i> 
+                                                        Revoke Permission
+                                                    </a>
+
+                                                    <a href="javascript:void(0);" 
+                                                      class="btn btn-danger btn-sm confirm-delete-user"
+                                                      data-id="{{ $multiple_user_id }}"
+                                                      data-name="{{ $main_item->firstname }}"
+                                                      data-action="delete"
+                                                      data-plot-count="{{ $total_plots }}">
+                                                        <i class="mdi mdi-account-remove-outline me-1"></i> 
+                                                        Delete User
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            @endif
+
+>>>>>>> 10926ab109fe6be323aaeb9349a7d3cacaef6b17
                                       @empty
                                           <tr>
                                               <td colspan="5" class="text-center text-warning py-4">
@@ -272,6 +299,8 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -339,8 +368,146 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+<<<<<<< HEAD
 </script>
+=======
+>>>>>>> 10926ab109fe6be323aaeb9349a7d3cacaef6b17
 
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const confirmButtons = document.querySelectorAll('.confirm-revoke-btn');
+
+    confirmButtons.forEach(button => {
+        button.addEventListener('click', function () {
+
+            const groupId = this.dataset.id;
+            const clientName = this.dataset.name;
+            const plotCount = this.dataset.plotCount;
+            
+            Swal.fire({
+                title: 'Confirm All Plots?',
+                html: `Are you sure you want to revoke permission to generate these agreements for <b>${clientName}</b> (All ${plotCount} plots)?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, confirm all',
+                cancelButtonColor: '#d33'
+            }).then(result => {
+                if (result.isConfirmed) {
+
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Please wait.',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    // Using jQuery's AJAX to send the request
+                    $.ajax({
+                        url: `/revoke-group-permission/${groupId}`,
+                        method: 'POST',
+                        dataType: 'json',  // Expect JSON response
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        data: JSON.stringify({}),
+                        contentType: 'application/json',  // Content type set to JSON
+                        success: function(data) {
+                            Swal.close();
+
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Confirmed!',
+                                    text: data.message,
+                                    icon: 'success'
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.message || 'Something went wrong!',
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(data) {
+                            $('body').html(data.responseText);
+                        }
+                    });
+
+                }
+            });
+
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const confirmButtons = document.querySelectorAll('.confirm-delete-user');
+
+    confirmButtons.forEach(button => {
+        button.addEventListener('click', function () {
+
+            const groupId = this.dataset.id;
+            const clientName = this.dataset.name;
+            const plotCount = this.dataset.plotCount;
+            
+            Swal.fire({
+                title: 'Confirm All Plots?',
+                html: `Are you sure you want to delete this client with their related agreements for <b>${clientName}</b> (All ${plotCount} plots)?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, confirm all',
+                cancelButtonColor: '#d33'
+            }).then(result => {
+                if (result.isConfirmed) {
+
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Please wait.',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    // Using jQuery's AJAX to send the request
+                    $.ajax({
+                        url: `/delete-user-grouped-by-permission/${groupId}`,
+                        method: 'POST',
+                        dataType: 'json',  // Expect JSON response
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        data: JSON.stringify({}),
+                        contentType: 'application/json',  // Content type set to JSON
+                        success: function(data) {
+                            Swal.close();
+
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Confirmed!',
+                                    text: data.message,
+                                    icon: 'success'
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.message || 'Something went wrong!',
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(data) {
+                            $('body').html(data.responseText);
+                        }
+                    });
+
+                }
+            });
+
+        });
+    });
+});
+</script>
 
 
 <script src="/assets/vendors/js/vendor.bundle.base.js"></script>

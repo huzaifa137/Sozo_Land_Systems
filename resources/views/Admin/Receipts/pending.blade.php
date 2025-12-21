@@ -191,7 +191,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                           </tr>
                         </thead>
                         <tbody>
-                          @foreach ($not_fully_paid as $key => $item)
+                        @foreach ($not_fully_paid as $key => $item)
 
                                                     <?php 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 $estatePrice = DB::table('estates')

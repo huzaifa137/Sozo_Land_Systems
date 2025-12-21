@@ -75,7 +75,7 @@
                                 ->where('estate', $item->estate)
                                 ->where('plot_number', $item->plot_number)
                                 ->value('next_installment_pay');
-                                          ?>
+                                                                    ?>
 
                                                     <tr>
 
@@ -96,9 +96,11 @@
                                                       @if($userRight == 'SuperAdmin' || $userRight == 'Admin')
 
                                                         @if ($next_installment_pay != 'Fully payed')
-                                                          <td><a href="{{'update-payment-reminder/' . $item->id}}"
-                                                              class="btn btn-outline-primary btn-icon-text">
-                                                              <i class="mdi mdi-eye btn-icon-prepend"></i> update Status </a>
+                                                          <td>
+                                                            <a href="javascript:void(0);" id="pendingBtn"
+                                                              class="btn btn-outline-success btn-icon-text">
+                                                              <i class="mdi mdi-eye btn-icon-prepend"></i> Pending CEO Confirmation
+                                                            </a>
                                                           </td>
                                                         @else
                                                           <td>
@@ -152,6 +154,9 @@
 
 <script type="text/javascript"></script>
 <script src="/assets/js/jquery.min.js"></script>
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <script>
   $(document).ready(function () {
@@ -172,6 +177,18 @@
     });
   });
 
+  document.getElementById('pendingBtn').addEventListener('click', function () {
+    Swal.fire({
+      title: 'Pending Director Confirmation',
+      text: 'FOR AGREEMENT',
+      icon: 'info',
+      color: '#333',
+      background: '#343a40',
+
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#28a745'
+    });
+  });
 </script>
 
 

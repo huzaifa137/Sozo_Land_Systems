@@ -178,5 +178,7 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::get('download-old-agreement/{id}', [Master::class, 'downloadOldAgreement']);
 
+    Route::post('/revoke-group-permission/{group_id}', [Master::class, 'revokeGroupedPermission']);
+    Route::post('/delete-user-grouped-by-permission/{group_id}', [Master::class, 'deleteUserGroupedByPermission']);
 
 });

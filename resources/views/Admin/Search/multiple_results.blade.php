@@ -53,7 +53,7 @@
                             <th> Location </th>
                             <th> Amount Payed </th>
                             <th> Back on Market </th>
-                            <th colspan="2" style="text-align:center;"> Action </th>
+                            <th colspan="3" style="text-align:center;"> Action </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -100,6 +100,32 @@
                         <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
                         </td> --}}
                       @endif
+                      
+                    @if($userRight == 'SuperAdmin' || $userRight == 'Admin')
+                        <td>
+                            @php
+                                $publicPath = public_path('agreements/' . $item->agreement_file);
+                                $storagePath = storage_path('app/public/agreements/' . $item->agreement_file);
+                                $agreementUrl = null;
+                    
+                                if ($item->agreement_file) {
+                                    if (file_exists($publicPath)) {
+                                        $agreementUrl = url('agreements/' . $item->agreement_file);
+                                    } elseif (file_exists($storagePath)) {
+                                        $agreementUrl = url('download-old-agreement/' . $item->id);
+                                    }
+                                }
+                            @endphp
+                    
+                            @if($agreementUrl)
+                                <a href="{{ $agreementUrl }}" class="btn btn-outline-success btn-icon-text" target="_blank">
+                                    <i class="mdi mdi-download btn-icon-prepend"></i> Download
+                                </a>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                    @endif
 
                     </tr>
                     <tr>
