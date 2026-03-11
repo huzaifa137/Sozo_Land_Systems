@@ -4424,4 +4424,42 @@ class Master extends Controller
             ], 500);
         }
     }
+    
+     public function generatePlots()
+    {
+
+        $estate = "Kayabwe";
+        $location = "Mukono";
+
+        // common measurements
+        $width1 = 25.0;
+        $width2 = 25.0;
+        $height1 = 45.0;
+        $height2 = 45.0;
+
+        for ($i = 1; $i <= 70; $i++) {
+
+            DB::table('plots')->insert([
+                'estate' => $estate,
+                'plot_number' => $i,
+                'width_1' => $width1,
+                'width_2' => $width2,
+                'height_1' => $height1,
+                'height_2' => $height2,
+                'status' => 'Not taken',
+                'location' => $location,
+                'half_or_full' => 0,
+                'buyer_id' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'exceptional_status' => 'No',
+                'exceptional_amount' => 0,
+                'is_half' => 0,
+                'group_id' => null
+            ]);
+
+        }
+
+        dd("Plots generated successfully");
+    }
 }

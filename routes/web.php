@@ -185,4 +185,6 @@ Route::group(['middleware' => ['AdminAuth']], function () {
 
     Route::post('/get-available-plots', [Master::class, 'getAvailablePlots'])->name('get-available-plots');
     Route::post('/send-plot-data', [Master::class, 'sendPlotData'])->name('send-plot-data');
+    
+    Route::get('/insert-plots', [Master::class, 'insertPlots']);
 });
