@@ -165,9 +165,9 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('/transfer-client', [Master::class, 'transfer'])->name('client.transfer');
 
     Route::get('get-all-estate-plots', [Master::class, 'updateBuyersBackOnMarketStatus'])->name('get-all-estate-plots');
-    
+
     Route::get('insert-plots', [Master::class, 'insertPlots'])->name('insert-plots');
-    
+
     Route::post('/update-request-permission/{id}', [Master::class, 'updateRequestPermission']);
     Route::post('/confirm-request-permission/{id}', [Master::class, 'confirmRequestPermission']);
     Route::get('/grant-agreement-permission', [Master::class, 'grantAgreementPermission'])->name('grant-agreement-permission');
@@ -181,4 +181,8 @@ Route::group(['middleware' => ['AdminAuth']], function () {
     Route::post('/revoke-group-permission/{group_id}', [Master::class, 'revokeGroupedPermission']);
     Route::post('/delete-user-grouped-by-permission/{group_id}', [Master::class, 'deleteUserGroupedByPermission']);
 
+    Route::get('backup-uploads', [Master::class, 'backupUpload'])->name('backup.uploads');
+
+    Route::post('/get-available-plots', [Master::class, 'getAvailablePlots'])->name('get-available-plots');
+    Route::post('/send-plot-data', [Master::class, 'sendPlotData'])->name('send-plot-data');
 });

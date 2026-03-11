@@ -4283,4 +4283,145 @@ class Master extends Controller
         ]);
     }
 
+    public function backupUpload()
+    {
+
+        $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $estates = Estate::all();
+
+        return view('Backup.backup-upload', $data, compact('estates'));
+    }
+
+    public function getAvailablePlots(Request $request)
+    {
+        $estate = $request->estate;
+
+        $plots = Plot::where('estate', $estate)
+            ->where('status', '=', 'Not taken') // Adjust based on your status values
+            ->get(['plot_number']);
+
+        return response()->json(['plots' => $plots]);
+    }
+
+    public function sendPlotData(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'estate' => 'required|string',
+            'records' => 'required|array|min:1',
+            'records.*.firstname' => 'required|string',
+            'records.*.lastname' => 'required|string',
+            'records.*.plot_number' => 'required|string'
+        ]);
+
+        $estate = $request->estate;
+        $records = $request->records;
+
+        $savedRecords = [];
+        $errors = [];
+
+        $formattedDate = now()->format('Y/m/d');
+
+        // Use database transaction to ensure all records are saved or none
+        DB::beginTransaction();
+
+        try {
+            foreach ($records as $record) {
+                // Check if plot exists and is available
+                $plot = Plot::where('estate', $estate)
+                    ->where('plot_number', $record['plot_number'])
+                    ->first();
+
+                $EstateInformation = Estate::where('estate_name', $request->estate)
+                    ->first();
+
+                if (!$plot) {
+                    throw new \Exception("Plot {$record['plot_number']} not found in {$estate}");
+                }
+
+                // Check if plot is already Fully payed
+                if ($plot->status == 'Fully payed') {
+                    throw new \Exception("Plot {$record['plot_number']} is already taken");
+                }
+
+                // Create new buyer
+                $buyer = new Buyer();
+
+                $multipleUserId = Str::uuid();
+
+                // Common fields
+                $buyer->firstname = $record['firstname'];
+                $buyer->lastname = $record['lastname'];
+                $buyer->gender = 'Male';
+                $buyer->date_of_birth = '1987-04-21';
+                $buyer->NIN = 'CF88012100Q29F';
+                $buyer->national_id_front = '';
+                $buyer->national_id_back = '';
+                $buyer->profile_pic = '';
+                $buyer->card_number = '0082642414274';
+                $buyer->land_poster = 'Paid';
+                $buyer->phonenumber = '';
+                $buyer->method_payment = 'paying_in_installments';
+                $buyer->purchase_type = 'plot';
+                $buyer->half_or_full = 0;
+                if ($plot->exceptional_status == 'Yes') {
+                    $buyer->amount_payed = $plot->exceptional_amount;
+                } else {
+                    $buyer->amount_payed = $EstateInformation->estate_price;
+                }
+                $buyer->balance =  0;
+                $buyer->reciepts =  '0';
+                $buyer->agreement =  '-';
+                $buyer->next_installment_pay = "Fully payed";
+                $buyer->added_by = Session('LoggedAdmin');
+                $buyer->date_sold = $formattedDate;
+
+                // Estate-specific
+                $buyer->estate = $EstateInformation->estate_name ?? null;
+                $buyer->location = $EstateInformation->location ?? 'Mukono';
+                $buyer->plot_number = $plot->plot_number ?? null;
+                $buyer->width_1 = $plot->width_1 ?? null;
+                $buyer->width_2 = $plot->width_2 ?? null;
+                $buyer->height_1 = $plot->height_1 ?? null;
+                $buyer->height_2 = $plot->height_2 ?? null;
+
+                // 🔥 Assign same group ID
+                $buyer->multiple_user_id = $multipleUserId;
+
+                $buyer->save();
+
+                // Update the plot with buyer information
+                $plot->buyer_id = $buyer->id;
+                $plot->status = 'Fully payed';
+                $plot->save();
+
+                $savedRecords[] = [
+                    'buyer_id' => $buyer->id,
+                    'plot_id' => $plot->id,
+                    'plot_number' => $plot->plot_number,
+                    'buyer_name' => $buyer->firstname . ' ' . $buyer->lastname
+                ];
+            }
+
+            // If everything is successful, commit the transaction
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($savedRecords) . ' records saved successfully',
+                'data' => $savedRecords
+            ]);
+
+        } catch (\Exception $e) {
+            // If there's an error, rollback the transaction
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving records: ' . $e->getMessage(),
+                'errors' => $errors
+            ], 500);
+        }
+    }
 }

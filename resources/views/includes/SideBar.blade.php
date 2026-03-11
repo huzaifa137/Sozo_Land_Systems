@@ -484,4 +484,16 @@ $pendingApproval = DB::table('houses')->where('status', 1)->count();
     @else
     @endif
 
+    @if ($User_access_right == 'SuperAdmin')
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ route('backup.uploads') }}">
+                <span class="menu-icon">
+                    <i class="icon mdi mdi-cloud-upload"></i>
+                </span>
+                <span class="menu-title">Backup</span>
+            </a>
+        </li>
+    @else
+    @endif
+
 </ul>
