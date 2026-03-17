@@ -398,9 +398,7 @@
                                                         <td>{{$key+1}}</td>
                                                         <td>
                                                             <a href="{{ 'view-reciept/' . $all_sale->id }}">
-                                                            <img style="width: 100%; height:100%"
-                                                                src="{{ '/public/public/national_id/' . $all_sale->national_id_front }}"
-                                                                alt="" id="week_img">
+                                                           
                                                             <span class="ps-2">{{ $all_sale->firstname }}</span>
                                                             </a>
                                                         </td>

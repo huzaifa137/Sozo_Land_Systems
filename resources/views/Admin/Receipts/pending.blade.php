@@ -191,10 +191,10 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                           </tr>
                         </thead>
                         <tbody>
-                        @foreach ($not_fully_paid as $key => $item)
+                          @foreach ($not_fully_paid as $key => $item)
 
                                                     <?php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $estatePrice = DB::table('estates')
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          $estatePrice = DB::table('estates')
                               ->where('estate_name', $item->estate)
                               ->value('estate_price');
 
@@ -212,7 +212,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             } elseif ($exceptionalPlot->exceptional_status == 'No') {
                               $amount_payed = $item->amount_payed;
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ?>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ?>
 
                                                     <tr>
                                                       <td>{{$key + 1}}</td>
@@ -390,7 +390,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
       button.addEventListener('click', function () {
         const exceptionalStatus = this.dataset.exceptionalStatus;
         const exceptionalPrice = parseFloat(this.dataset.exceptionalPrice.replace(/,/g, '') || 0);
-        const cleanPrice  = parseFloat(this.dataset.cleanPrice.replace(/,/g, '') || 0);
+        const cleanPrice = parseFloat(this.dataset.cleanPrice.replace(/,/g, '') || 0);
         const EstatePrice = cleanPrice; // ✅ re-assign value
         const amountPayed = parseFloat(this.dataset.amountPayed.replace(/,/g, '') || 0);
         const clientName = this.dataset.firstname;
@@ -400,15 +400,41 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
         let errorMessage = '';
         let alertType = '';
 
+        // if (exceptionalStatus === 'Yes') {
+        //   if ( amountPayed < exceptionalPrice) {
+        //     errorMessage = `This is an exceptional plot (${plotNumber}) for ${clientName}. Required amount is Ugx${exceptionalPrice.toLocaleString()}, which is less than the amount paid: Ugx${amountPayed.toLocaleString()}.`;
+        //     alertType = 'error';
+        //   }else {
+        //     isValid = true;
+        //   }
+        // } else {
+        //   if (amountPayed < EstatePrice) {
+        //     errorMessage = `Amount paid (Ugx${amountPayed.toLocaleString()}) is not enough for estate price (Ugx${cleanPrice.toLocaleString()}).`;
+        //     alertType = 'warning';
+        //   } else {
+        //     isValid = true;
+        //   }
+        // }
+
+        // if (!isValid) {
+        //   Swal.fire({
+        //     icon: alertType,
+        //     title: alertType === 'error' ? 'Exceptional Plot' : 'Payment Not Enough',
+        //     html: errorMessage
+        //   });
+        //   return;
+        // }
+
+
         if (exceptionalStatus === 'Yes') {
-          if ( amountPayed < exceptionalPrice) {
+          if (amountPayed <= 0) {
             errorMessage = `This is an exceptional plot (${plotNumber}) for ${clientName}. Required amount is Ugx${exceptionalPrice.toLocaleString()}, which is less than the amount paid: Ugx${amountPayed.toLocaleString()}.`;
             alertType = 'error';
-          }else {
+          } else {
             isValid = true;
           }
         } else {
-          if (amountPayed < EstatePrice) {
+          if (amountPayed <= 0) {
             errorMessage = `Amount paid (Ugx${amountPayed.toLocaleString()}) is not enough for estate price (Ugx${cleanPrice.toLocaleString()}).`;
             alertType = 'warning';
           } else {
@@ -495,86 +521,86 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
 
 
-document.addEventListener('DOMContentLoaded', function () {
-  const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
+  document.addEventListener('DOMContentLoaded', function () {
+    const confirmButtons = document.querySelectorAll('.confirm-permission-btn');
 
-  confirmButtons.forEach(button => {
-    button.addEventListener('click', function () {
-      const itemId = this.dataset.id;
-      const clientName = this.dataset.name;
-      const plotNumber = this.dataset.plot;
+    confirmButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const itemId = this.dataset.id;
+        const clientName = this.dataset.name;
+        const plotNumber = this.dataset.plot;
 
-      Swal.fire({
-        title: 'Confirm Permission?',
-        html: `Are you sure you want to confirm permission for <b>${clientName}</b> (Plot ${plotNumber})?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#28a745',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, confirm it'
-      }).then((result) => {
-        if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Confirm Permission?',
+          html: `Are you sure you want to confirm permission for <b>${clientName}</b> (Plot ${plotNumber})?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, confirm it'
+        }).then((result) => {
+          if (result.isConfirmed) {
 
-          // Step 1: Show "Generating Agreement..." loading alert
-          Swal.fire({
-            title: 'Generating Agreement...',
-            text: 'Please wait while we generate the agreement.',
-            allowOutsideClick: false,
-            didOpen: () => {
-              Swal.showLoading();
-            }
-          });
+            // Step 1: Show "Generating Agreement..." loading alert
+            Swal.fire({
+              title: 'Generating Agreement...',
+              text: 'Please wait while we generate the agreement.',
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
 
-          // Step 2: Send AJAX request
-          $.ajax({
-            url: `/confirm-request-permission/${itemId}`,
-            type: 'POST',
-            data: JSON.stringify({ request_permission: 2 }),
-            contentType: 'application/json',
-            headers: {
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            success: function (response) {
-              Swal.close();
+            // Step 2: Send AJAX request
+            $.ajax({
+              url: `/confirm-request-permission/${itemId}`,
+              type: 'POST',
+              data: JSON.stringify({ request_permission: 2 }),
+              contentType: 'application/json',
+              headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+              },
+              success: function (response) {
+                Swal.close();
 
-              if (response.status === 'success') {
-                Swal.fire({
-                  title: 'Agreement Generated!',
-                  text: response.message,
-                  icon: 'success',
-                  confirmButtonText: 'OK'
-                }).then(() => {
-                  // Redirect when user clicks OK
-                  window.location.href = '/accomplished';
-                });
-              } else {
+                if (response.status === 'success') {
+                  Swal.fire({
+                    title: 'Agreement Generated!',
+                    text: response.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                  }).then(() => {
+                    // Redirect when user clicks OK
+                    window.location.href = '/accomplished';
+                  });
+                } else {
+                  Swal.fire({
+                    title: 'Error!',
+                    text: response.message || 'Something went wrong!',
+                    icon: 'error'
+                  });
+                }
+              },
+              error: function (xhr) {
+                Swal.close();
+
+                let msg = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                  msg = xhr.responseJSON.message;
+                }
+
                 Swal.fire({
                   title: 'Error!',
-                  text: response.message || 'Something went wrong!',
+                  text: msg,
                   icon: 'error'
                 });
               }
-            },
-            error: function (xhr) {
-              Swal.close();
-
-              let msg = 'An unexpected error occurred.';
-              if (xhr.responseJSON && xhr.responseJSON.message) {
-                msg = xhr.responseJSON.message;
-              }
-
-              Swal.fire({
-                title: 'Error!',
-                text: msg,
-                icon: 'error'
-              });
-            }
-          });
-        }
+            });
+          }
+        });
       });
     });
   });
-});
 
 
 

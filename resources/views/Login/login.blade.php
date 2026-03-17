@@ -262,9 +262,14 @@
             left: 100%;
         }
 
-        .btn-login:hover {
+        .btn-login:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .btn-login i {
@@ -361,10 +366,13 @@
 
         /* Input styling */
         .password-wrapper input.form-control {
-            padding-left: 45px;  /* space for lock icon */
-            padding-right: 45px;  /* space for eye icon */
+            padding-left: 45px;
+            /* space for lock icon */
+            padding-right: 45px;
+            /* space for eye icon */
             width: 100%;
-            height: 52px; /* Fixed height for consistency */
+            height: 52px;
+            /* Fixed height for consistency */
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 15px;
@@ -428,12 +436,7 @@
 </head>
 
 <body>
-    @if($user_registered_ip)
-        <div class="ip-badge">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Registered IP: {{$user_registered_ip}}</span>
-        </div>
-    @endif
+
 
     <div class="login-container">
         <div class="logo-wrapper">
@@ -460,10 +463,11 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin-send') }}" method="POST">
+            <form action="{{ route('admin-send') }}" method="POST" id="loginForm">
                 @csrf
-                <input type="hidden" name="user_registered_ip" value="{{$user_registered_ip}}">
+                <input type="hidden" name="user_registered_ip" value="{{ $user_registered_ip }}">
 
+                <!-- Email Field -->
                 <div class="form-group">
                     <label><i class="fas fa-envelope"></i> Email Address <span class="text-danger">*</span></label>
                     <div class="input-group">
@@ -476,6 +480,7 @@
                     @enderror
                 </div>
 
+                <!-- Password Field -->
                 <div class="form-group">
                     <label><i class="fas fa-lock"></i> Password <span class="text-danger">*</span></label>
                     <div class="password-wrapper">
@@ -491,19 +496,83 @@
                     @enderror
                 </div>
 
+                <!-- Submit Button -->
                 <button type="submit" class="btn-login" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span class="btn-text">SECURE LOGIN</span>
-                    <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                    <i class="fas fa-sign-in-alt" id="btnIcon"></i>
+                    <span class="btn-text" id="btnText">SECURE LOGIN</span>
+                    <span class="spinner-border spinner-border-sm ms-2 d-none" id="btnSpinner" role="status"
+                        aria-hidden="true"></span>
                 </button>
 
+                <!-- Footer -->
                 <div class="login-footer">
-                    <p>Don't have an account? <a href="#">Sign Up Now</a></p>
                     <p style="margin-top: 10px; font-size: 12px;">
                         <i class="fas fa-shield-alt"></i> Protected by advanced security
                     </p>
                 </div>
             </form>
+
+            <!-- Password Toggle JS -->
+            <script>
+                const togglePassword = document.getElementById('togglePassword');
+                const passwordField = document.getElementById('password');
+
+                togglePassword.addEventListener('click', function () {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('fa-eye')) {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+
+                // Login Button Loading State
+                const loginForm = document.getElementById('loginForm');
+                loginForm.addEventListener('submit', function (e) {
+                    const loginBtn = document.getElementById('loginBtn');
+                    const btnIcon = document.getElementById('btnIcon');
+                    const btnText = document.getElementById('btnText');
+                    const btnSpinner = document.getElementById('btnSpinner');
+
+                    loginBtn.disabled = true;
+                    btnIcon.classList.remove('fa-sign-in-alt');
+                    btnIcon.classList.add('fa-spinner', 'fa-spin');
+                    btnText.textContent = 'LOGGING IN...';
+                    btnSpinner.classList.remove('d-none');
+
+                    // Safety timeout to re-enable button after 30s
+                    setTimeout(() => {
+                        if (loginBtn.disabled) {
+                            loginBtn.disabled = false;
+                            btnIcon.classList.remove('fa-spinner', 'fa-spin');
+                            btnIcon.classList.add('fa-sign-in-alt');
+                            btnText.textContent = 'SECURE LOGIN';
+                            btnSpinner.classList.add('d-none');
+                        }
+                    }, 30000);
+                });
+
+                // Re-enable button on validation errors
+                window.addEventListener('load', function () {
+                    @if($errors->any() || Session::get('fail'))
+                        const loginBtn = document.getElementById('loginBtn');
+                        const btnIcon = document.getElementById('btnIcon');
+                        const btnText = document.getElementById('btnText');
+                        const btnSpinner = document.getElementById('btnSpinner');
+
+                        loginBtn.disabled = false;
+                        btnIcon.classList.remove('fa-spinner', 'fa-spin');
+                        btnIcon.classList.add('fa-sign-in-alt');
+                        btnText.textContent = 'SECURE LOGIN';
+                        btnSpinner.classList.add('d-none');
+                    @endif
+    });
+            </script>
         </div>
     </div>
 
@@ -530,11 +599,11 @@
         const togglePassword = document.getElementById('togglePassword');
         const passwordField = document.getElementById('password');
 
-        togglePassword.addEventListener('click', function() {
+        togglePassword.addEventListener('click', function () {
             // Toggle the type attribute
             const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordField.setAttribute('type', type);
-            
+
             // Toggle the eye icon
             const icon = this.querySelector('i');
             if (icon.classList.contains('fa-eye')) {
@@ -545,6 +614,59 @@
                 icon.classList.add('fa-eye');
             }
         });
+
+        // Login button functionality
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            const loginBtn = document.getElementById('loginBtn');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
+            // Disable button and show loading state
+            loginBtn.disabled = true;
+            btnIcon.classList.remove('fa-sign-in-alt');
+            btnIcon.classList.add('fa-spinner', 'fa-spin');
+            btnText.textContent = 'LOGGING IN...';
+            btnSpinner.classList.remove('d-none');
+
+            // Re-enable button after 30 seconds (safety timeout in case something goes wrong)
+            setTimeout(function () {
+                if (loginBtn.disabled) {
+                    loginBtn.disabled = false;
+                    btnIcon.classList.remove('fa-spinner', 'fa-spin');
+                    btnIcon.classList.add('fa-sign-in-alt');
+                    btnText.textContent = 'SECURE LOGIN';
+                    btnSpinner.classList.add('d-none');
+                }
+            }, 30000);
+        });
+
+        // Re-enable button if there are validation errors (when page reloads with errors)
+        window.addEventListener('load', function () {
+            @if($errors->any() || Session::get('fail'))
+                const loginBtn = document.getElementById('loginBtn');
+                const btnIcon = document.getElementById('btnIcon');
+                const btnText = document.getElementById('btnText');
+                const btnSpinner = document.getElementById('btnSpinner');
+
+                loginBtn.disabled = false;
+                btnIcon.classList.remove('fa-spinner', 'fa-spin');
+                btnIcon.classList.add('fa-sign-in-alt');
+                btnText.textContent = 'SECURE LOGIN';
+                btnSpinner.classList.add('d-none');
+            @endif
+        });
+
+
+        window.addEventListener('load', function () {
+            @if($errors->any())
+                const firstError = document.querySelector('.text-danger');
+                if (firstError) {
+                    const input = firstError.previousElementSibling.querySelector('input');
+                    if (input) input.focus();
+                }
+            @endif
+});
     </script>
 </body>
 

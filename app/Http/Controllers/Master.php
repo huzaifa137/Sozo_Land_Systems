@@ -112,7 +112,7 @@ class Master extends Controller
             $AdminEmail = AdminRegister::where('email', '=', $request->email)->first();
 
             if (!$AdminEmail) {
-                return back()->with('fail', 'We dont recognise the above email or password');
+                return back()->withInput()->with('fail', 'We dont recognise the above email or password');
             } else {
 
                 if (Hash::check($request->password, $AdminEmail->password)) {
@@ -127,7 +127,7 @@ class Master extends Controller
 
                     return redirect('admin-dashboard');
                 } else {
-                    return back()->with('fail', 'incorrect email or password');
+                    return back()->withInput()->with('fail', 'incorrect email or password');
                 }
             }
         } else {
@@ -139,7 +139,7 @@ class Master extends Controller
             $AdminEmail = AdminRegister::where('email', '=', $request->email)->first();
 
             if (!$AdminEmail) {
-                return back()->with('fail', 'We dont recognise the above email or password');
+                return back()->withInput()->with('fail', 'We dont recognise the above email or password');
             } else {
 
                 if (Hash::check($request->password, $AdminEmail->password)) {
@@ -150,7 +150,7 @@ class Master extends Controller
 
                     return redirect('admin-dashboard');
                 } else {
-                    return back()->with('fail', 'incorrect email or password');
+                    return back()->withInput()->with('fail', 'incorrect email or password');
                 }
             }
         }
@@ -922,6 +922,8 @@ class Master extends Controller
     public function send_plot_estate(Request $request)
     {
 
+    dd('welcome home zaipha ...');
+
         $status = $request->land_status;
         $estate_name = $request->Estate;
         $plot_number = $request->plot_number;
@@ -1458,8 +1460,13 @@ class Master extends Controller
         $balancePendingRaw = $request->balance_pending;
         $balance_pending = str_replace(',', '', $request->balance_pending);
 
-        $AmountFormatted = number_format($amount_paid);
-        $BalanceFormatted = number_format($balance_pending);
+
+$Balance = $balance_pending; // e.g., 1000000
+$Amount = $amount_paid;      // e.g., 2000000
+
+// Only format for display
+$BalanceFormatted = number_format($Balance); // "1,000,000"
+$AmountFormatted = number_format($Amount);  
 
         $user_email = $request->user_email;
         $user_name = $request->user_name;
@@ -1476,9 +1483,9 @@ class Master extends Controller
         $formattedDate = $currentDate->format('Y/m/d');
 
         $user_id = $request->user_id;
-        $amount_paid = $amount_paid;
+        $amount_paid = $AmountFormatted;
         $Balance = $BalanceFormatted;
-        $Amount = $amount_paid;
+        $Amount = $AmountFormatted;
 
         $post = new reciept();
 
@@ -1511,12 +1518,12 @@ class Master extends Controller
 
         $original_amount = buyer::where('id', $user_id)->value('amount_payed');
 
-        $all_cash = $original_amount + str_replace(',', '', $AmountFormatted);
+        $all_cash = $original_amount + str_replace(',', '', $request->amount_paid);
 
         $update_buyer_amount = buyer::where('id', $user_id)
             ->update([
                 'amount_payed' => $all_cash,
-                'balance' => $BalanceFormatted,
+                'balance' => str_replace(',', '', $request->balance_pending),
             ]);
 
         return redirect()->back()->with('download_link', asset("storage/pdf_receipts/{$filename}"));
