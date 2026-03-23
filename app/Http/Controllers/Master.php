@@ -4432,7 +4432,7 @@ $AmountFormatted = number_format($Amount);
         }
     }
     
-     public function generatePlots()
+    public function insertPlots()
     {
 
         $estate = "Kayabwe";
