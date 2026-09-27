@@ -8,6 +8,25 @@
             </div>
         </div>
 
+<style>
+    /* Force SweetAlert2 popups to use black text on a white background */
+    .swal2-popup.swal-black-text,
+    .swal2-popup.swal-black-text .swal2-title,
+    .swal2-popup.swal-black-text .swal2-html-container,
+    .swal2-popup.swal-black-text .swal2-content {
+        color: #000 !important;
+    }
+
+    /* Keep the popup background white (in case a dark theme is applied) */
+    .swal2-popup.swal-black-text {
+        background-color: #fff !important;
+    }
+
+    /* Cancel / Close buttons should stay readable */
+    .swal2-popup.swal-black-text .swal2-cancel {
+        color: #000 !important;
+    }
+</style>
 
         <style>
             a {
@@ -60,6 +79,7 @@
                                             <th> Plot Number</th>
                                             <th> Back on market</th>
                                             <th> Transfer Status</th>
+                                            <th> Agreement</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -115,6 +135,14 @@
                                                     </td>
                                                 @endif
 
+
+                                                <td>
+                                                    <button type="button"
+                                                        class="btn btn-outline-primary btn-icon-text regenerate-agreement-btn"
+                                                        data-id="{{ $data->id }}">
+                                                        <i class="mdi mdi-file-pdf-box btn-icon-prepend"></i> Regenerate Agreement
+                                                    </button>
+                                                </td>
 
                                             </tr>
 
@@ -174,6 +202,89 @@
 <!-- Custom js for this page -->
 <script src="/assets/js/dashboard.js"></script>
 <!-- End custom js for this page -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.querySelectorAll('.regenerate-agreement-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const buyerId = this.getAttribute('data-id');
+            const originalHtml = this.innerHTML;
+            const button = this;
+
+            Swal.fire({
+                title: 'Regenerate Agreement',
+                text: 'This will generate a fresh agreement PDF for this buyer using their saved information. Continue?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, regenerate it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                focusCancel: true,
+                customClass: {
+                    popup: 'swal-black-text',
+                    title: 'swal-black-text',
+                    htmlContainer: 'swal-black-text'
+                }
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                button.disabled = true;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...';
+
+                fetch('{{ url("regenerate-agreement") }}/' + buyerId, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                    .then(({ status, body }) => {
+                        if (status !== 200 || body.status !== 'success') {
+                            throw new Error(body.message || 'Something went wrong while regenerating the agreement.');
+                        }
+
+                        Swal.fire({
+                            title: 'Success!',
+                            text: body.message,
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonText: 'Download Agreement',
+                            cancelButtonText: 'Close',
+                            customClass: {
+                                popup: 'swal-black-text',
+                                title: 'swal-black-text',
+                                htmlContainer: 'swal-black-text'
+                            }
+                        }).then((res) => {
+                            if (res.isConfirmed) {
+                                window.open(body.download_link, '_blank');
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message,
+                            icon: 'error',
+                            customClass: {
+                                popup: 'swal-black-text',
+                                title: 'swal-black-text',
+                                htmlContainer: 'swal-black-text'
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        button.disabled = false;
+                        button.innerHTML = originalHtml;
+                    });
+            });
+        });
+    });
+</script>
+
 </body>
 
 </html>

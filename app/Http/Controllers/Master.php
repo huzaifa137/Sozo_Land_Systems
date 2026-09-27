@@ -2898,6 +2898,95 @@ $AmountFormatted = number_format($Amount);
         );
     }
 
+    // Re-generate an agreement PDF for a buyer who already completed payment,
+    // using the exact same information-fetching approach used when the
+    // agreement is generated the first time (buyer info, the group of
+    // interconnected plots, profile picture, and the original purchase date).
+    public function regenerate_agreement($id)
+    {
+        $buyer_info = buyer::find($id);
+
+        if (!$buyer_info) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Buyer not found.'
+            ], 404);
+        }
+
+        // Find the group of interconnected plots tied to this buyer's plot
+        // (same lookup used in store_agreement()).
+        $group_id = plot::where('plot_number', $buyer_info->plot_number)
+            ->where('estate', $buyer_info->estate)
+            ->value('group_id');
+
+        if ($group_id) {
+            $plots = plot::where('group_id', $group_id)->get();
+        } else {
+            // Fallback for buyers whose plot has no group_id set: use their own plot only.
+            $plots = plot::where('plot_number', $buyer_info->plot_number)
+                ->where('estate', $buyer_info->estate)
+                ->get();
+        }
+
+        if ($plots->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No plot records were found for this buyer, so the agreement could not be regenerated.'
+            ], 404);
+        }
+
+        $groupedEstates = $plots->groupBy('estate');
+
+        $profile_pic = public_path('profile_pic/' . $buyer_info->profile_pic);
+
+        $day = $buyer_info->created_at->day;
+        $month = $buyer_info->created_at->month;
+        $year = $buyer_info->created_at->year;
+
+        // Carry over the amount in words from the buyer's last receipt, if one exists.
+        $last_reciept = DB::table('reciepts')->where('user_id', $id)->latest()->first();
+        $amount_in_words = $last_reciept->amount_in_words ?? '-';
+
+        $pdf = PDF::loadView('agreement_pdf', [
+            'user_amount_paid' => $buyer_info->amount_payed,
+            'user_info' => $buyer_info,
+            'all_cash' => $buyer_info->amount_payed,
+            'day' => $day,
+            'month' => $month,
+            'year' => $year,
+            'amount_in_words' => $amount_in_words,
+            'profile_pic' => $profile_pic,
+            'plots' => $plots,
+            'groupedEstates' => $groupedEstates,
+        ]);
+
+        $filename = 'payment_agreement_regenerated_' . $id . '_' . time() . '.pdf';
+        $publicPath = public_path('agreements');
+
+        if (!file_exists($publicPath)) {
+            mkdir($publicPath, 0775, true);
+        }
+
+        $pdf->save("{$publicPath}/{$filename}");
+
+        // Keep a record of the regenerated agreement, same as when it is first created.
+        // Note: this is a re-print of the existing, already fully-paid agreement, so
+        // unlike store_agreement() we do NOT touch amount_payed, receipts, or plot status.
+        $post = new agreement();
+        $post->user_id = $id;
+        $post->Amount_paid = $buyer_info->amount_payed;
+        $post->Date_of_payment = now();
+        $post->reciept = '-';
+        $post->agreement = $filename;
+        $post->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Agreement regenerated successfully!',
+            'download_link' => url("agreements/{$filename}")
+        ]);
+    }
+
 
     public function total_not_taken_plots_in_estate($id)
     {
