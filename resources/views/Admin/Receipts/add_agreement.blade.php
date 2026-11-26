@@ -44,17 +44,6 @@
             <div class="main-panel">
                 <div class="content-wrapper-v2">
 
-                    <script>
-                        @if(session('error'))
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: '{{ session('error') }}',
-                                confirmButtonText: 'OK'
-                            });
-                        @endif
-                    </script>
-
                     <div class="agreement-card">
                         <h2 class="agreement-title">Agreement Generation</h2>
                         <p class="agreement-subtitle">Click the button below to instantly generate and finalize the

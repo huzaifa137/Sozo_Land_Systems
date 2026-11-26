@@ -10,17 +10,7 @@
 
                         @include('sweetalert::alert')
 
-                        @if (Session::get('success'))
-                            <div class="alert alert-success">
-                                {{ Session::get('success') }}
-                            </div>
-                        @endif
 
-                        @if (Session::get('error'))
-                            <div class="alert alert-danger">
-                                {{ Session::get('error') }}
-                            </div>
-                        @endif
 
                         <form class="form-sample" id="my_form" action="{{ route('send-plot-data') }}" method="POST"
                             enctype="multipart/form-data">

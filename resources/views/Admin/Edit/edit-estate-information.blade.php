@@ -14,17 +14,7 @@
 
                         @include('sweetalert::alert')
 
-                        @if (Session::get('success'))
-                            <div class="alert alert-success">
-                                {{ Session::get('success') }}
-                            </div>
-                        @endif
 
-                        @if (Session::get('error'))
-                            <div class="alert alert-danger">
-                                {{ Session::get('error') }}
-                            </div>
-                        @endif
 
                         <style>
                             .black-input {
@@ -114,7 +104,7 @@
                             <div class="row mt-3">
                                 <div class="col-md-10">
                                     <button type="submit" class="btn btn-primary"
-                                        onclick="return confirm('Please confirm you want to update this informaiton !')">Update</button>
+                                        data-confirm="Please confirm you want to update this information !">Update</button>
                                 </div>
                             </div>
                         </form>

@@ -29,17 +29,7 @@
                 </div>
             </div>
 
-            @if (Session::get('success'))
-                <div class="alert alert-success">
-                    {{ Session::get('success') }}
-                </div>
-            @endif
 
-            @if (Session::get('error'))
-                <div class="alert alert-danger">
-                    {{ Session::get('error') }}
-                </div>
-            @endif
 
             <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
 
@@ -97,7 +87,7 @@
 
                                                 <td><a class="text-white btn btn-primary"
                                                         href="{{ url('edit-plot-information/' . $data->id) }}"
-                                                        onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                        data-confirm="Please confirm you want to edit this plot Information">
                                                         Edit Plot</a></td>
                                                    @endif
 

@@ -49,17 +49,7 @@
                                 
                                 </br> </br>
 
-                                @if (Session::get('success'))
-                                <div class="alert alert-success">
-                                    {{ Session::get('success') }}
-                                </div>
-                                @endif
 
-                                @if (Session::get('fail'))
-                                <div class="alert alert-danger">
-                                    {{ Session::get('fail') }}
-                                </div>
-                                @endif
 
                                 <div class="table-responsive">
                                     <table class="table">
@@ -101,7 +91,7 @@
                                 <br>
 
                                 <button type="submit" class="btn btn-success btn-sm"
-                                    onclick="return confirm('Please confirm you want to remove poster from plot !')">Add posters
+                                    data-confirm="Please confirm you want to remove poster from plot !">Add posters
                                     to selected plots <span style="color: rgb(25, 0, 255);"></span></button>
                             </form>
                         </div>

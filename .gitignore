@@ -17,8 +17,13 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/public/public/national_id/
-/public/public/receipts/
+
+# Generated / uploaded files: these differ between local and the server, never commit them
+/public/agreements/
+/public/uploads/
+/public/public/
 /public/profile_pic/
 /public/estate_pdf/
-/public/public/agreements/
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/logs/*.log

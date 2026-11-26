@@ -11,17 +11,7 @@
                             <form action="{{ route('attach-seller-agreement') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                             
-                                @if (Session::get('success'))
-                                    <div class="alert alert-success">
-                                        {{ Session::get('success') }}
-                                    </div>
-                                @endif
                             
-                                @if (Session::get('error'))
-                                    <div class="alert alert-danger">
-                                        {{ Session::get('error') }}
-                                    </div>
-                                @endif
                             
                                 <input type="hidden" name="user_id" value="{{ $userId }}">
                             
@@ -34,7 +24,7 @@
                             
                                     <div class="col-md-12 text-right">
                                         <button type="submit" class="btn btn-primary"
-                                            onclick="confirm('Please confirm you want to upload this seller agreement!')">Upload Agreement</button>
+                                            data-confirm="Please confirm you want to upload this seller agreement!">Upload Agreement</button>
                                     </div>
                                 </div>
                             </form>

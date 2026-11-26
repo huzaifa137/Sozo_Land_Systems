@@ -107,14 +107,14 @@
 
                                             <td><a class="text-white btn btn-primary"
                                                     href="{{ url('edit-plot-information/' . $data->id) }}"
-                                                    onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                    data-confirm="Please confirm you want to edit this plot Information">
                                                     Edit Plot</a></td>
                                                     
                                                      @else
                                                      
                                                    <td><a class="text-white btn btn-primary disabled"
                                                     href="{{ url('edit-plot-information/' . $data->id) }}"
-                                                    onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                    data-confirm="Please confirm you want to edit this plot Information">
                                                     Not editabled</a></td>
                                                @endif
                                                

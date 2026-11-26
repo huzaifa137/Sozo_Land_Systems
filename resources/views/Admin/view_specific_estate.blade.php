@@ -161,17 +161,7 @@ $countAvailablePlots = $unmatchedPlotsCollection->merge($fully_paid_half);
     </div>
 
 
-    @if (Session::get('success'))
-        <div class="alert alert-success">
-            {{ Session::get('success') }}
-        </div>
-    @endif
 
-    @if (Session::get('error'))
-        <div class="alert alert-danger">
-            {{ Session::get('error') }}
-        </div>
-    @endif
 
 
     <div class="row ">
@@ -237,7 +227,7 @@ $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->v
                                     @if ($userInfo == 'SuperAdmin')
                                         <td><a class="text-white btn btn-primary"
                                                 href="{{ url('edit-estate-information/' . $specific_estate->id) }}"
-                                                onclick="return confirm('Please confirm you want to edit this plot Information')">
+                                                data-confirm="Please confirm you want to edit this plot Information">
                                                 Edit </a></td>
                                     @endif
 

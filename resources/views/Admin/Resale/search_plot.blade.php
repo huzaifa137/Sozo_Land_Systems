@@ -13,17 +13,7 @@
                       @csrf
                       <p class="card-description">Enter plot or house Information to be resold:</p>
 
-                  @if (Session::get('success'))
-                  <div class="alert alert-success">
-                    {{Session::get('success')}}
-                  </div>
-                  @endif
 
-                  @if (Session::get('error'))
-                  <div class="alert alert-danger">
-                    {{Session::get('error')}}
-                  </div>
-                  @endif
 
 
                       <div class="row">

@@ -13,13 +13,7 @@
             </div>
         </div>
 
-        @if (Session::get('success'))
-            <div class="alert alert-success" role="status">{{ Session::get('success') }}</div>
-        @endif
 
-        @if (Session::get('fail'))
-            <div class="alert alert-danger" role="alert">{{ Session::get('fail') }}</div>
-        @endif
 
         <section class="sz-panel" aria-label="Registration form" style="max-width: 860px;">
             <header>

@@ -13,6 +13,7 @@
     <title>..:: Admin - Register Portal ::..</title>
     <link rel="stylesheet" href="/assets/sozo/loader.css">
     <script src="/assets/sozo/loader.js" defer></script>
+    @include('includes.ui-extras')
 </head>
 
 <body>
@@ -30,17 +31,7 @@
                         <h2 class="mb-2 text-primary" style="text-align: center">EDIT USER INFORMATION
                         </h2>
 
-                        @if (Session::get('success'))
-                            <div class="alert alert-success">
-                                {{ Session::get('success') }}
-                            </div>
-                        @endif
 
-                        @if (Session::get('fail'))
-                            <div class="alert alert-danger">
-                                {{ Session::get('fail') }}
-                            </div>
-                        @endif
 
 
                         <div class="row">

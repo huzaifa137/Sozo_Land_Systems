@@ -17,17 +17,7 @@
             </style>
             @include('sweetalert::alert')
 
-            @if (Session::get('success'))
-              <div class="alert alert-success">
-                {{Session::get('success')}}
-              </div>
-            @endif
 
-            @if (Session::get('failed'))
-              <div class="alert alert-danger">
-                {{Session::get('danger')}}
-              </div>
-            @endif
 
 
             <?php 

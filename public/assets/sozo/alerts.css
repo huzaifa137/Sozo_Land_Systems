@@ -1,0 +1,52 @@
+/* Sozo SweetAlert theme + back-to-top button. Works on admin pages and the login page. */
+
+/* ---------- SweetAlert2 popups ---------- */
+.swal2-container.sz-swal-container { background: rgba(4, 10, 8, .72) !important; backdrop-filter: blur(3px); z-index: 3000; }
+.swal2-popup.sz-swal {
+  width: min(30rem, 92vw); padding: 2rem 1.6rem 1.5rem; border-radius: 18px;
+  background: var(--sz-canopy, #13251f); color: var(--sz-chalk, #eceae0);
+  border: 1px solid var(--sz-rule, #2a4538);
+  box-shadow: 0 40px 90px -30px #000;
+  font-family: var(--sz-text, "Instrument Sans", "Segoe UI", system-ui, sans-serif);
+}
+.sz-swal .swal2-title { color: var(--sz-chalk, #eceae0); font-family: var(--sz-display, "Fraunces", Georgia, serif); font-weight: 600; font-size: 1.55rem; letter-spacing: -.01em; padding: .2rem 0 0; }
+.sz-swal .swal2-html-container { color: var(--sz-muted, #93a79c); font-size: 1rem; line-height: 1.55; margin: .6rem 1rem .2rem; }
+.sz-swal .swal2-actions { gap: .6rem; margin-top: 1.5rem; }
+.sz-swal .swal2-styled { margin: 0; padding: .65rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: .95rem; box-shadow: none !important; transition: transform .12s ease, filter .15s ease; }
+.sz-swal .swal2-styled:hover { transform: translateY(-1px); filter: brightness(1.06); }
+.sz-swal .swal2-confirm { background: var(--sz-brass, #d2a44e) !important; color: var(--sz-brass-ink, #1d1605) !important; }
+.sz-swal .swal2-confirm.sz-danger { background: var(--sz-brick, #e0645c) !important; color: #fff !important; }
+.sz-swal .swal2-cancel { background: transparent !important; color: var(--sz-chalk, #eceae0) !important; border: 1px solid var(--sz-rule, #2a4538) !important; }
+.sz-swal .swal2-styled:focus-visible { outline: 2px solid var(--sz-chalk, #eceae0); outline-offset: 2px; }
+/* icons */
+.sz-swal .swal2-icon { margin: .2rem auto 1rem; }
+.sz-swal .swal2-icon.swal2-success { color: var(--sz-lake, #54b6a0); border-color: rgba(84, 182, 160, .45); }
+.sz-swal .swal2-icon.swal2-success [class^=swal2-success-line] { background-color: var(--sz-lake, #54b6a0); }
+.sz-swal .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(84, 182, 160, .35); }
+.sz-swal .swal2-icon.swal2-success [class^=swal2-success-circular-line] { background: transparent !important; }
+.sz-swal .swal2-icon.swal2-success .swal2-success-fix { background: transparent !important; }
+.sz-swal .swal2-icon.swal2-error { color: var(--sz-brick, #e0645c); border-color: var(--sz-brick, #e0645c); }
+.sz-swal .swal2-icon.swal2-error [class^=swal2-x-mark-line] { background-color: var(--sz-brick, #e0645c); }
+.sz-swal .swal2-icon.swal2-warning { color: var(--sz-brass, #d2a44e); border-color: var(--sz-brass, #d2a44e); }
+.sz-swal .swal2-icon.swal2-info, .sz-swal .swal2-icon.swal2-question { color: var(--sz-sky, #6ca6d9); border-color: var(--sz-sky, #6ca6d9); }
+
+/* ---------- Back to top ---------- */
+.sz-top {
+  position: fixed; right: max(1.1rem, env(safe-area-inset-right)); bottom: max(1.1rem, env(safe-area-inset-bottom));
+  width: 52px; height: 52px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; z-index: 1020;
+  display: grid; place-items: center; color: var(--sz-brass, #d2a44e);
+  background: var(--sz-moss, #1b3329);
+  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .8), 0 0 0 1px var(--sz-rule, #2a4538);
+  opacity: 0; visibility: hidden; transform: translateY(14px) scale(.9);
+  transition: opacity .25s ease, transform .25s ease, visibility .25s, background .2s ease, color .2s ease;
+}
+.sz-top.is-visible { opacity: 1; visibility: visible; transform: none; }
+.sz-top:hover { background: var(--sz-brass, #d2a44e); color: var(--sz-brass-ink, #1d1605); transform: translateY(-3px); }
+.sz-top:focus-visible { outline: 2px solid var(--sz-chalk, #eceae0); outline-offset: 3px; }
+.sz-top svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
+.sz-top .sz-top-track { fill: none; stroke: rgba(236, 234, 224, .1); stroke-width: 3; }
+.sz-top .sz-top-bar { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 144.5; stroke-dashoffset: 144.5; transition: stroke-dashoffset .1s linear; }
+.sz-top .sz-top-arrow { width: 22px; height: 22px; position: relative; transform: none; }
+@media (max-width: 575px) { .sz-top { width: 46px; height: 46px; right: .8rem; bottom: .8rem; } }
+@media (prefers-reduced-motion: reduce) { .sz-top, .sz-swal .swal2-styled { transition: none; } }
+@media print { .sz-top { display: none !important; } }

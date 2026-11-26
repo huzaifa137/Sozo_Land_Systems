@@ -12,17 +12,7 @@
             <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
                 <div class="card">
 
-                    @if (Session::get('success'))
-                    <div class="alert alert-success">
-                        {{ Session::get('success') }}
-                    </div>
-                @endif
 
-                @if (Session::get('failed'))
-                    <div class="alert alert-danger">
-                        {{ Session::get('danger') }}
-                    </div>
-                @endif
 
 
                     <div class="card-body">
@@ -50,7 +40,7 @@
                         <br>
 
                         <button type="submit" class="btn btn-primary"
-                            onclick=" return confirm('Please confirm you want to update reminder date ?')"> Save
+                            data-confirm="Please confirm you want to update reminder date ?"> Save
                             date</button>
 
                         </form>

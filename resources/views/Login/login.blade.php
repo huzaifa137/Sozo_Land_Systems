@@ -55,6 +55,11 @@
         .alert i { font-size: 1.2rem; margin-top: -.05rem; }
         .alert.fail { background: rgba(224, 100, 92, .1); border-color: var(--brick); color: #f4b8b3; }
         .alert.ok { background: rgba(84, 182, 160, .1); border-color: var(--lake); color: #a8e0d3; }
+        .back-btn { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; margin-top: 1.1rem; padding: .85rem 1rem; border-radius: 11px; border: 1px solid var(--rule); background: transparent; color: var(--chalk); font: 600 .95rem var(--text); text-decoration: none; transition: background .18s ease, border-color .18s ease, color .18s ease, transform .12s ease; }
+        .back-btn i { font-size: 1.15rem; color: var(--brass); transition: transform .18s ease, color .18s ease; }
+        .back-btn:hover { background: var(--moss); border-color: var(--brass); color: var(--chalk); transform: translateY(-1px); }
+        .back-btn:hover i { transform: translateX(-3px); }
+        .back-btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
         .field { margin-bottom: 1.2rem; }
         .field label { display: block; margin-bottom: .45rem; font-size: .88rem; font-weight: 500; color: var(--muted); }
         .control { position: relative; }
@@ -97,6 +102,7 @@
         }
         @media (prefers-reduced-motion: reduce) { .form-wrap { animation: none; } .submit .spin { animation-duration: 2s; } }
     </style>
+    @include('includes.ui-extras')
 </head>
 
 <body>
@@ -133,14 +139,6 @@
                 <h2>Welcome back</h2>
                 <p>Sign in to manage estates, plots, receipts and agreements.</p>
 
-                @if (Session::get('fail'))
-                    <div class="alert fail" role="alert"><i class="mdi mdi-alert-circle-outline"></i><span>{{ Session::get('fail') }}</span></div>
-                @endif
-
-                @if (Session::get('success'))
-                    <div class="alert ok" role="status"><i class="mdi mdi-check-circle-outline"></i><span>{{ Session::get('success') }}</span></div>
-                @endif
-
                 <form action="{{ route('admin-send') }}" method="POST" id="loginForm" novalidate>
                     @csrf
                     <input type="hidden" name="user_registered_ip" value="{{ $user_registered_ip }}">
@@ -175,7 +173,7 @@
                 </form>
 
                 <p class="fine"><i class="mdi mdi-shield-check-outline"></i> Access is limited to authorised Sozo staff.</p>
-                <p class="fine" style="margin-top:.9rem"><a href="{{ url('/') }}" style="color:var(--muted);text-decoration:none">&larr; Back to the website</a></p>
+                <a class="back-btn" href="{{ url('/') }}"><i class="mdi mdi-arrow-left"></i> Back to website</a>
             </div>
         </section>
     </main>

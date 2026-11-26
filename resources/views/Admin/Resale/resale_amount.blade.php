@@ -12,17 +12,7 @@
                             @csrf
                             <p class="card-description">Enter plot or house Information to be resold:</p>
 
-                            @if (Session::get('success'))
-                                <div class="alert alert-success">
-                                    {{ Session::get('success') }}
-                                </div>
-                            @endif
 
-                            @if (Session::get('error'))
-                                <div class="alert alert-danger">
-                                    {{ Session::get('error') }}
-                                </div>
-                            @endif
 
                             <style>
                                 .infoData {
@@ -128,7 +118,7 @@
 
                                 <div class="col-md-12 text-right">
                                     <button type="submit" class="btn btn-primary"
-                                        onclick="confirm('Please confirm you want to resale this plot!')">Resale</button>
+                                        data-confirm="Please confirm you want to resale this plot!">Resale</button>
                                 </div>
                             </div>
                         </form>

@@ -17,17 +17,7 @@
             <form action="{{ route('search-clients-to-transfer') }}" method="POST">
               @csrf
 
-              @if (Session::get('success'))
-                <div class="alert alert-success">
-                {{ Session::get('success') }}
-                </div>
-              @endif
 
-              @if (Session::get('error'))
-                <div class="alert alert-danger">
-                {{ Session::get('error') }}
-                </div>
-              @endif
 
               <div class="row">
                 <div class="col-md-4">

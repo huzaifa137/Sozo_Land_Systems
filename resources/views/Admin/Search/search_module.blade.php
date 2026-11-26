@@ -13,24 +13,13 @@
                                         @csrf
                                         <p class="card-description">Select the search alogrithm :</p>
 
-                                        @if (Session::get('success'))
-                                            <div class="alert alert-success">
-                                                {{ Session::get('success') }}
-                                            </div>
-                                        @endif
-
-                                        @if (Session::get('error'))
-                                            <div class="alert alert-danger">
-                                                {{ Session::get('error') }}
-                                            </div>
-                                        @endif
 
 
-                                        <div class="row">
+
+                                        <div class="row align-items-start">
                                             <div class="col-md-4">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">Choose the search
-                                                        option</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">Choose the search option</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <select name="land_plot" id="land_plot" class="form-control"
@@ -51,7 +40,7 @@
 
                                             <div class="col-md-4" id="plot_estate_field" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">Estate</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">Estate</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <select name="estate" id="estate" class="form-control">
@@ -68,7 +57,7 @@
 
                                             <div class="col-md-4" id="land_estate_field" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">Land Plot</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">Land Plot</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="text" name="land_plot" id="land_plot"
@@ -81,7 +70,7 @@
 
                                             <div class="col-md-4" id="first_name" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">First name</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">First name</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="text" name="firstname" id=""
@@ -93,7 +82,7 @@
 
                                             <div class="col-md-4" id="last_name" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">Last name</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">Last name</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="text" name="lastname" id="lastname"
@@ -106,7 +95,7 @@
 
                                             <div class="col-md-4" id="NIN" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">NIN</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">NIN</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="text" name="NIN" id="NIN"
@@ -118,7 +107,7 @@
 
                                             <div class="col-md-4" id="date_of_birth" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">Date of Birth</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">Date of Birth</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="date" name="date_of_birth" id="date_of_birth"
@@ -131,7 +120,7 @@
                                             
                                             <div class="col-md-4" id="date_sold" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-8 col-form-label">Start date</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">Start date</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="date" name="date_sold" id="date_sold"
@@ -144,7 +133,7 @@
 
                                             <div class="col-md-4" id="end_date" style="display: none;">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-6 col-form-label">End date</label>
+                                                    <label class="col-sm-12 col-form-label text-nowrap">End date</label>
                                                     <div class="col-sm-12">
                                                         <div class="col-sm-12">
                                                             <input type="date" name="end_date" id="end_date"

@@ -8,13 +8,7 @@
 <div class="main-panel">
     <div class="content-wrapper">
 
-        @if (Session::get('error'))
-            <div class="alert alert-danger" role="alert">{{ Session::get('error') }}</div>
-        @endif
 
-        @if (Session::get('success'))
-            <div class="alert alert-success" role="status">{{ Session::get('success') }}</div>
-        @endif
 
         {{-- Hero: welcome + a plot plan drawn from the real sales counts --}}
         <section class="sz-hero" aria-label="Sales overview">

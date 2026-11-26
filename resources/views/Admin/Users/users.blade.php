@@ -54,17 +54,7 @@
             </div>
         </div>
 
-        @if (Session::get('success'))
-            <div class="alert alert-success">
-                {{ Session::get('success') }}
-            </div>
-        @endif
 
-        @if (Session::get('fail'))
-            <div class="alert alert-danger">
-                {{ Session::get('fail') }}
-            </div>
-        @endif
 
 
         <div class="row ">
@@ -103,10 +93,10 @@
                                                 </td>
                                             @endif
                                             <td colspan="2">
-                                                <a onclick=" return confirm('Do you want to edit user ? ')"
+                                                <a data-confirm="Do you want to edit user ?"
                                                     href="{{ 'edit-user/' . $user_record->id }}"><i
                                                         class="btn btn-primary">Edit User</i></a>
-                                                <a onclick=" return confirm('Do you want to delete user ? ')"
+                                                <a data-confirm="Do you want to delete user ?"
                                                     href="{{ 'delete-user/' . $user_record->id }}"><i
                                                         class="btn btn-danger">Delete User</i></a>
                                             </td>

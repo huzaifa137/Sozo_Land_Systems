@@ -18,17 +18,7 @@
             </style>
             @include('sweetalert::alert')
 
-            @if (Session::get('success'))
-        <div class="alert alert-success">
-          {{Session::get('success')}}
-        </div>
-      @endif
 
-            @if (Session::get('failed'))
-        <div class="alert alert-danger">
-          {{Session::get('danger')}}
-        </div>
-      @endif
 
 
             <?php 
@@ -95,7 +85,7 @@
                       </td>
 
                       {{-- <td><a href="{{ 'delete/' . $item->id . '/' . $item->plot_number . '/' . $item->estate }}"
-                        onclick=" return confirm('Please confirm you want to delete this record ?')"
+                        data-confirm="Please confirm you want to delete this record ?"
                         class="btn btn-outline-danger btn-icon-text">
                         <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>
                         </td> --}}
