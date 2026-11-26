@@ -1,5 +1,6 @@
 @php
     $szVersion = @filemtime(public_path('assets/sozo/sozo.css')) ?: 1;
+    $szLoaderVersion = max(@filemtime(public_path('assets/sozo/loader.css')) ?: 1, @filemtime(public_path('assets/sozo/loader.js')) ?: 1);
     $szUser = \Illuminate\Support\Facades\DB::table('admin_registers')->where('id', session('LoggedAdmin'))->first();
     $szRole = $szUser->admin_category ?? '';
     $szName = $szUser->username ?? 'Account';
@@ -65,10 +66,12 @@
     <!-- Base template styles, then the Sozo theme on top -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/sozo/sozo.css?v={{ $szVersion }}">
+    <link rel="stylesheet" href="/assets/sozo/loader.css?v={{ $szLoaderVersion }}">
     <link rel="icon" type="image/png" href="/assets/sozo/favicon.png" />
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <script>try { if (localStorage.getItem('sz-sidebar') === '1') document.documentElement.classList.add('sz-collapsed'); } catch (e) {}</script>
     <script src="/assets/sozo/sozo.js?v={{ $szVersion }}" defer></script>
+    <script src="/assets/sozo/loader.js?v={{ $szLoaderVersion }}" defer></script>
   </head>
   <body>
     <div class="container-scroller">

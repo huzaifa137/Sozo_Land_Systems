@@ -134,9 +134,7 @@
                 </div>
             </div>
             
-             		    <div>
-                        <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="900px"></iframe>
-                    </div>
+             		    @include('includes.estate-document', ['estate' => $specific_estate])
 
 
         </div>

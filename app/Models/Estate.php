@@ -59,4 +59,11 @@ class Estate extends Model
         $path = $this->documentPath();
         return $path ? route('estate-file', ['id' => $this->id, 'v' => filemtime($path)]) : null;
     }
+
+    /** Same file, but served as a download instead of being shown in the browser. */
+    public function downloadUrl(): ?string
+    {
+        $path = $this->documentPath();
+        return $path ? route('estate-file', ['id' => $this->id, 'download' => 1, 'v' => filemtime($path)]) : null;
+    }
 }

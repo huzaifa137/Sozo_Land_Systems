@@ -11,6 +11,8 @@
     <link rel="shortcut icon" href="/img/favicon.jpg" />
 
     <title>..:: Admin - Register Portal ::..</title>
+    <link rel="stylesheet" href="/assets/sozo/loader.css">
+    <script src="/assets/sozo/loader.js" defer></script>
 </head>
 
 <body>

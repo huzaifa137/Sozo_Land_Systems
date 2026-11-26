@@ -157,7 +157,8 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
                             @foreach ($plots as $plot_item)
                                 @php
-                                    $estate_pdf = DB::table('estates')->where('estate_name', $plot_item->estate)->value('estate_pdf');
+                                    $szPlotEstate = \App\Models\Estate::where('estate_name', $plot_item->estate)->first();
+                                    $szPlotDocUrl = $szPlotEstate ? $szPlotEstate->documentUrl() : null;
                                 @endphp
                                 <tr class="sz-detail-row">
                                     <td></td>
@@ -171,11 +172,15 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                         </a>
                                     </td>
                                     <td class="text-center" data-label="Sketch">
-                                        <button type="button" class="btn btn-outline-warning btn-sm btn-icon-text open-pdf"
-                                            data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                            data-pdf="{{ asset('/public/estate_pdf/' . $estate_pdf) }}">
-                                            <i class="mdi mdi-file-pdf-box btn-icon-prepend"></i> View sketch
-                                        </button>
+                                        @if ($szPlotDocUrl)
+                                            <button type="button" class="btn btn-outline-warning btn-sm btn-icon-text open-pdf"
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal"
+                                                data-pdf="{{ $szPlotDocUrl }}">
+                                                <i class="mdi mdi-file-pdf-box btn-icon-prepend"></i> View sketch
+                                            </button>
+                                        @else
+                                            <span class="text-muted">No sketch</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -231,7 +236,16 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-0">
-                        <iframe id="pdfFrame" width="100%" height="600px" style="border:none;"></iframe>
+                        <div class="sz-doc-viewer" id="pdfFrameBox" style="border:0;border-radius:0;margin:0">
+                            <div class="sz-doc-stage">
+                                <div class="sz-doc-state sz-doc-loading" id="pdfFrameLoading" hidden role="status">
+                                    <span class="sz-spin" aria-hidden="true"></span>
+                                    <b>Loading the sketch</b>
+                                </div>
+                                <iframe id="pdfFrame" class="sz-doc-frame" title="Estate sketch"
+                                    onload="if (this.getAttribute('src')) { document.getElementById('pdfFrameLoading').hidden = true; document.getElementById('pdfFrameBox').classList.add('is-ready'); }"></iframe>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -240,13 +254,15 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
         <script>
             document.querySelectorAll('.open-pdf').forEach(button => {
                 button.addEventListener('click', function () {
+                    document.getElementById('pdfFrameBox').classList.remove('is-ready');
+                    document.getElementById('pdfFrameLoading').hidden = false;
                     document.getElementById('pdfFrame').src = this.dataset.pdf + '#toolbar=0&navpanes=0&scrollbar=0';
                 });
             });
 
             // Clear the iframe when the modal closes
             document.getElementById('pdfModal').addEventListener('hidden.bs.modal', function () {
-                document.getElementById('pdfFrame').src = '';
+                document.getElementById('pdfFrame').removeAttribute('src');
             });
         </script>
     </div>

@@ -215,19 +215,23 @@ $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->v
                                     <td> {{ $specific_estate->location }} </td>
                                     <td> {{ $specific_estate->number_of_plots }} </td>
                                     <td>
-                                        <button id="downloadBtn" class="btn btn-success" onclick="handleDownload()">
-                                            <i class="fas fa-download me-1"></i>
-                                            <span id="btnText">Download Sketch</span>
-                                            <span id="btnSpinner" class="spinner-border spinner-border-sm d-none"
-                                                role="status" aria-hidden="true"></span>
-                                        </button>
+                                        @if ($specific_estate->documentKind())
+                                            <a href="{{ $specific_estate->downloadUrl() }}" class="btn btn-success">
+                                                <i class="mdi mdi-download"></i> Download Sketch
+                                            </a>
+                                        @else
+                                            <span class="text-muted">No sketch</span>
+                                        @endif
                                     </td>
 
                                     <td>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#pdfModal">
-                                            View PDF
-                                        </button>
+                                        @if ($specific_estate->documentKind())
+                                            <a href="#estate-sketch" class="btn btn-primary">
+                                                <i class="mdi mdi-eye-outline"></i> View sketch
+                                            </a>
+                                        @else
+                                            <span class="text-muted">No sketch</span>
+                                        @endif
                                     </td>
 
                                     @if ($userInfo == 'SuperAdmin')
@@ -242,66 +246,19 @@ $userInfo = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->v
                             </tbody>
                         </table>
                       
-                        <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-                                <div class="modal-content">
-
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Estate Document</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            style="color: white; background-color: white;"></button>                                    </div>
-
-                                    <div class="modal-body p-0">
-                                        <iframe
-                                            src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0"
-                                            width="100%" height="600px" style="border: none;">
-                                        </iframe>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script>
-            function handleDownload() {
-                const btn = document.getElementById('downloadBtn');
-                const btnText = document.getElementById('btnText');
-                const btnSpinner = document.getElementById('btnSpinner');
-
-                btnText.textContent = 'Downloading...';
-                btnSpinner.classList.remove('d-none');
-                btn.disabled = true;
-
-                const link = document.createElement('a');
-                link.href = "{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}";
-                link.download = '';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                setTimeout(() => {
-                    btnText.textContent = 'Download Sketch';
-                    btnSpinner.classList.add('d-none');
-                    btn.disabled = false;
-                }, 1500);
-            }
-        </script>
 
 
-        <style>
-            .btn .spinner-border {
-                margin-left: 5px;
-            }
-        </style>
 
 
-        <div>
-            <iframe src="{{ asset('/public/estate_pdf/' . $estate_pdf_info) }}#toolbar=0&navpanes=0&scrollbar=0"
-                width="100%" height="900px"></iframe>
+
+
+        <div id="estate-sketch">
+            @include('includes.estate-document', ['estate' => $specific_estate])
         </div>
 
     </div>

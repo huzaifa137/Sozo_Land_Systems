@@ -510,9 +510,11 @@ class Master extends Controller
 
         $estate_name = buyer::where('id', $id)->value('estate');
 
-        $estate_record = estate::where('estate_name', $estate_name)->value('estate_pdf');
+        $path = estate::where('estate_name', $estate_name)->first()?->documentPath();
 
-        return response()->download(public_path('estate_pdf/' . $estate_record));
+        abort_unless($path, 404, 'This estate has no sketch uploaded.');
+
+        return response()->download($path);
 
     }
 
@@ -523,7 +525,7 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -763,7 +765,7 @@ class Master extends Controller
     public function totalHalfPlots($id)
     {
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -825,7 +827,7 @@ class Master extends Controller
     public function fully_taken_half_plots($id)
     {
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -876,7 +878,7 @@ class Master extends Controller
     public function fully_not_taken_half_plots($id)
     {
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -903,7 +905,7 @@ class Master extends Controller
     public function partially_taken_half_plots($id)
     {
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -2893,7 +2895,7 @@ $AmountFormatted = number_format($Amount);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -2917,7 +2919,7 @@ $AmountFormatted = number_format($Amount);
     {
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -3038,7 +3040,7 @@ $AmountFormatted = number_format($Amount);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -3124,9 +3126,11 @@ $AmountFormatted = number_format($Amount);
     {
 
         $estate_name = buyer::where('id', $id)->value('estate');
-        $estate_record = estate::where('estate_name', $estate)->value('estate_pdf');
+        $path = estate::where('estate_name', $estate)->first()?->documentPath();
 
-        return response()->download(public_path('estate_pdf/' . $estate_record));
+        abort_unless($path, 404, 'This estate has no sketch uploaded.');
+
+        return response()->download($path);
     }
 
     public function back_on_market()
@@ -3348,7 +3352,7 @@ $AmountFormatted = number_format($Amount);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
         $estate_pdf_info = $specific_estate->estate_pdf;
@@ -3372,7 +3376,7 @@ $AmountFormatted = number_format($Amount);
     {
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -3393,7 +3397,7 @@ $AmountFormatted = number_format($Amount);
     {
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -3670,8 +3674,10 @@ $AmountFormatted = number_format($Amount);
 
         abort_unless($path && $estate->documentKind(), 404);
 
+        $disposition = request()->boolean('download') ? 'attachment' : 'inline';
+
         return response()->file($path, [
-            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
+            'Content-Disposition' => $disposition . '; filename="' . basename($path) . '"',
             'Cache-Control' => 'public, max-age=0, must-revalidate',
         ]);
     }
@@ -4062,7 +4068,7 @@ $AmountFormatted = number_format($Amount);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
@@ -4088,7 +4094,7 @@ $AmountFormatted = number_format($Amount);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $specific_estate = Estate::find($id);
+        $specific_estate = Estate::findOrFail($id);
         $estate_id = $id;
         $estate_name = $specific_estate->estate_name;
 
