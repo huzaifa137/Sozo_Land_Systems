@@ -19,6 +19,7 @@
             --display: "Fraunces", "Iowan Old Style", Georgia, serif;
             --text: "Instrument Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
         }
+        html[data-sz-theme="dark"] { color-scheme: dark; --pine: #08080a; --canopy: #111114; --moss: #19191d; --rule: #2e2e35; --chalk: #ededf0; --muted: #a3a3ad; --faint: #74747e; --brass: #e0b24f; --brass-ink: #1a1304; --brick: #ef6b62; --lake: #4fc2a8; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { -webkit-text-size-adjust: 100%; }
         body {

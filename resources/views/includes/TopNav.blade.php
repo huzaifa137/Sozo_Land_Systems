@@ -30,6 +30,30 @@
         </a>
     @endif
 
+    @php
+        // To add a theme: add a row here and a matching html[data-sz-theme="id"] block in public/assets/sozo/themes.css
+        $szThemes = [
+            'green' => ['name' => 'Forest green', 'bg' => '#0d1a16', 'accent' => '#d2a44e'],
+            'dark'  => ['name' => 'Black',        'bg' => '#08080a', 'accent' => '#e0b24f'],
+        ];
+    @endphp
+    <div class="sz-menu-wrap">
+        <button class="sz-icon-btn" type="button" data-sz-menu aria-haspopup="true" aria-expanded="false" aria-label="Change theme" title="Change theme">
+            <i class="mdi mdi-palette-outline"></i>
+        </button>
+        <div class="sz-menu sz-theme-menu" role="menu" aria-label="Theme">
+            <div class="sz-menu-head"><b>Appearance</b><span>Choose a theme</span></div>
+            @foreach ($szThemes as $szId => $szT)
+                <button type="button" class="sz-theme-opt" role="menuitemradio" aria-checked="false"
+                        data-sz-theme-opt="{{ $szId }}" data-sz-allow-repeat data-bg="{{ $szT['bg'] }}">
+                    <span class="sw" style="--bg: {{ $szT['bg'] }}; --ac: {{ $szT['accent'] }};"></span>
+                    <span class="nm">{{ $szT['name'] }}</span>
+                    <i class="mdi mdi-check ck"></i>
+                </button>
+            @endforeach
+        </div>
+    </div>
+
     <div class="sz-menu-wrap">
         <button class="sz-me" type="button" data-sz-menu aria-haspopup="true" aria-expanded="false">
             <span class="sz-avatar">{{ strtoupper(substr($szName, 0, 1)) }}</span>

@@ -18,6 +18,9 @@
         }
     }
 @endphp
+<script>try{var szT=localStorage.getItem('sz-theme');if(szT&&/^[a-z0-9-]+$/.test(szT)&&szT!=='green')document.documentElement.setAttribute('data-sz-theme',szT);}catch(e){}</script>
+<link rel="stylesheet" href="/assets/sozo/themes.css?v={{ @filemtime(public_path('assets/sozo/themes.css')) ?: 1 }}">
+<script src="/assets/sozo/theme.js?v={{ @filemtime(public_path('assets/sozo/theme.js')) ?: 1 }}" defer></script>
 <link rel="stylesheet" href="/assets/sozo/alerts.css?v={{ @filemtime(public_path('assets/sozo/alerts.css')) ?: 1 }}">
 <script>window.SozoFlash = @json($szFlash);</script>
 <script src="/vendor/sweetalert/sweetalert.all.js"></script>

@@ -1,0 +1,100 @@
+/* =====================================================================
+   Sozo themes. The default (green) lives in sozo.css and is untouched.
+   Every other theme is a block keyed on html[data-sz-theme="<id>"].
+   To add a theme: add one block below + one entry in includes/TopNav.blade.php.
+   ===================================================================== */
+
+/* ---------- Theme: Black ("dark") ---------- */
+html[data-sz-theme="dark"] {
+  color-scheme: dark;
+  --sz-pine: #08080a;            /* page */
+  --sz-canopy: #111114;          /* cards, panels, inputs */
+  --sz-moss: #19191d;            /* menus, raised surfaces */
+  --sz-moss-2: #222227;
+  --sz-rule: #2e2e35;            /* borders */
+  --sz-rule-soft: rgba(255, 255, 255, .08);
+  --sz-chalk: #ededf0;           /* body text */
+  --sz-muted: #a3a3ad;           /* secondary text (7:1 on cards) */
+  --sz-faint: #74747e;           /* placeholders */
+  --sz-brass: #e0b24f;           /* accent, a touch brighter on black */
+  --sz-brass-ink: #1a1304;
+  --sz-lake: #4fc2a8;
+  --sz-sky: #70aee6;
+  --sz-brick: #ef6b62;
+  --sz-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 18px 40px -24px rgba(0, 0, 0, .95);
+}
+
+/* Surfaces that carry a hard-coded green gradient in sozo.css */
+html[data-sz-theme="dark"] .sidebar.sz-side { background: linear-gradient(180deg, #0e0e11 0%, #050506 100%) !important; }
+html[data-sz-theme="dark"] .sz-hero {
+  background: radial-gradient(900px 400px at 100% 0%, rgba(224, 178, 79, .13), transparent 60%), linear-gradient(135deg, #17171b, #0d0d10);
+}
+html[data-sz-theme="dark"] .sz-plan { background: rgba(0, 0, 0, .45); }
+html[data-sz-theme="dark"] .main-panel {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .02) 1px, transparent 1px);
+}
+
+/* Neutral (not green-tinted) overlays */
+html[data-sz-theme="dark"] .sz-scrim,
+html[data-sz-theme="dark"] .sz-palette,
+html[data-sz-theme="dark"] .swal2-container.sz-swal-container { background: rgba(0, 0, 0, .78) !important; }
+html[data-sz-theme="dark"] ::-webkit-scrollbar-thumb { border-color: var(--sz-pine); }
+html[data-sz-theme="dark"] ::selection { background: var(--sz-brass); color: var(--sz-brass-ink); }
+
+/* Tables: slightly stronger header and hover so rows stay readable on black */
+html[data-sz-theme="dark"] .table thead th { background: rgba(255, 255, 255, .05); }
+html[data-sz-theme="dark"] .table tbody tr:hover,
+html[data-sz-theme="dark"] .table tr.table-light:hover,
+html[data-sz-theme="dark"] .table tr.table-primary:hover { background: rgba(224, 178, 79, .08) !important; }
+html[data-sz-theme="dark"] .table td { border-color: rgba(255, 255, 255, .07) !important; }
+
+/* Forms and native controls */
+html[data-sz-theme="dark"] .form-control,
+html[data-sz-theme="dark"] .form-select,
+html[data-sz-theme="dark"] select.form-control,
+html[data-sz-theme="dark"] textarea.form-control { background-color: var(--sz-pine) !important; border-color: var(--sz-rule) !important; color: var(--sz-chalk) !important; }
+html[data-sz-theme="dark"] .form-control:focus,
+html[data-sz-theme="dark"] .form-select:focus,
+html[data-sz-theme="dark"] select.form-control:focus { box-shadow: 0 0 0 3px rgba(224, 178, 79, .22) !important; }
+html[data-sz-theme="dark"] .form-control:disabled,
+html[data-sz-theme="dark"] .form-control[readonly] { background-color: rgba(255, 255, 255, .04) !important; }
+html[data-sz-theme="dark"] option { background: var(--sz-canopy); color: var(--sz-chalk); }
+html[data-sz-theme="dark"] input:-webkit-autofill { -webkit-text-fill-color: var(--sz-chalk); box-shadow: 0 0 0 1000px var(--sz-pine) inset; caret-color: var(--sz-chalk); }
+
+/* Plain Bootstrap utility classes that still assume a light page */
+html[data-sz-theme="dark"] .bg-light,
+html[data-sz-theme="dark"] .bg-white { background-color: var(--sz-canopy) !important; color: var(--sz-chalk); }
+html[data-sz-theme="dark"] .dropdown-menu,
+html[data-sz-theme="dark"] .list-group-item,
+html[data-sz-theme="dark"] .popover,
+html[data-sz-theme="dark"] .pagination .page-link { background: var(--sz-moss); border-color: var(--sz-rule); color: var(--sz-chalk); }
+html[data-sz-theme="dark"] .pagination .page-item.active .page-link { background: var(--sz-brass); border-color: var(--sz-brass); color: var(--sz-brass-ink); }
+
+/* ---------- Theme switcher (navbar) ---------- */
+.sz-theme-menu { min-width: 224px; }
+.sz-theme-menu .sz-menu-head { display: block; }
+.sz-theme-opt {
+  display: flex; align-items: center; gap: .75rem; width: 100%; padding: .6rem .7rem; border: 0; border-radius: 9px;
+  background: transparent; color: var(--sz-chalk); font: inherit; font-size: .9rem; text-align: left; cursor: pointer;
+}
+.sz-theme-opt:hover { background: rgba(236, 234, 224, .07); }
+.sz-theme-opt:focus-visible { outline: 2px solid var(--sz-brass); outline-offset: -2px; }
+.sz-theme-opt .sw {
+  flex: none; position: relative; width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid rgba(236, 234, 224, .25); background: var(--bg);
+}
+.sz-theme-opt .sw::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; background: var(--ac); border: 2px solid var(--sz-moss); }
+.sz-theme-opt .nm { flex: 1; }
+.sz-theme-opt .ck { font-size: 1.1rem; color: var(--sz-brass); opacity: 0; }
+.sz-theme-opt[aria-checked="true"] { background: rgba(210, 164, 78, .1); }
+.sz-theme-opt[aria-checked="true"] .ck { opacity: 1; }
+html[data-sz-theme="dark"] .sz-theme-opt:hover { background: rgba(255, 255, 255, .07); }
+html[data-sz-theme="dark"] .sz-theme-opt[aria-checked="true"] { background: rgba(224, 178, 79, .12); }
+html[data-sz-theme="dark"] .sz-theme-opt .sw::after { border-color: var(--sz-moss); }
+
+/* Smooth colour change when the theme is switched (not on page load) */
+html.sz-theme-anim, html.sz-theme-anim body, html.sz-theme-anim .card, html.sz-theme-anim .sz-top-bar, html.sz-theme-anim .sidebar,
+html.sz-theme-anim .form-control, html.sz-theme-anim .table th, html.sz-theme-anim .table td { transition: background-color .25s ease, color .25s ease, border-color .25s ease; }
+@media (prefers-reduced-motion: reduce) { html.sz-theme-anim, html.sz-theme-anim * { transition: none !important; } }
