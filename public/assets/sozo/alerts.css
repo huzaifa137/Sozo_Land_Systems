@@ -31,7 +31,7 @@
 .sz-swal .swal2-icon.swal2-info, .sz-swal .swal2-icon.swal2-question { color: var(--sz-sky, #6ca6d9); border-color: var(--sz-sky, #6ca6d9); }
 
 /* ---------- Back to top ---------- */
-.sz-top {
+.sz-totop {
   position: fixed; right: max(1.1rem, env(safe-area-inset-right)); bottom: max(1.1rem, env(safe-area-inset-bottom));
   width: 52px; height: 52px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; z-index: 1020;
   display: grid; place-items: center; color: var(--sz-brass, #d2a44e);
@@ -40,13 +40,13 @@
   opacity: 0; visibility: hidden; transform: translateY(14px) scale(.9);
   transition: opacity .25s ease, transform .25s ease, visibility .25s, background .2s ease, color .2s ease;
 }
-.sz-top.is-visible { opacity: 1; visibility: visible; transform: none; }
-.sz-top:hover { background: var(--sz-brass, #d2a44e); color: var(--sz-brass-ink, #1d1605); transform: translateY(-3px); }
-.sz-top:focus-visible { outline: 2px solid var(--sz-chalk, #eceae0); outline-offset: 3px; }
-.sz-top svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
-.sz-top .sz-top-track { fill: none; stroke: rgba(236, 234, 224, .1); stroke-width: 3; }
-.sz-top .sz-top-bar { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 144.5; stroke-dashoffset: 144.5; transition: stroke-dashoffset .1s linear; }
-.sz-top .sz-top-arrow { width: 22px; height: 22px; position: relative; transform: none; }
-@media (max-width: 575px) { .sz-top { width: 46px; height: 46px; right: .8rem; bottom: .8rem; } }
-@media (prefers-reduced-motion: reduce) { .sz-top, .sz-swal .swal2-styled { transition: none; } }
-@media print { .sz-top { display: none !important; } }
+.sz-totop.is-visible { opacity: 1; visibility: visible; transform: none; }
+.sz-totop:hover { background: var(--sz-brass, #d2a44e); color: var(--sz-brass-ink, #1d1605); transform: translateY(-3px); }
+.sz-totop:focus-visible { outline: 2px solid var(--sz-chalk, #eceae0); outline-offset: 3px; }
+.sz-totop svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
+.sz-totop .sz-totop-track { fill: none; stroke: rgba(236, 234, 224, .1); stroke-width: 3; }
+.sz-totop .sz-totop-bar { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 144.5; stroke-dashoffset: 144.5; transition: stroke-dashoffset .1s linear; }
+.sz-totop .sz-totop-arrow { width: 22px; height: 22px; position: relative; transform: none; }
+@media (max-width: 575px) { .sz-totop { width: 46px; height: 46px; right: .8rem; bottom: .8rem; } }
+@media (prefers-reduced-motion: reduce) { .sz-totop, .sz-swal .swal2-styled { transition: none; } }
+@media print { .sz-totop { display: none !important; } }

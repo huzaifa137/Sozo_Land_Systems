@@ -115,20 +115,20 @@
   }
 
   /* ---------- Back to top ---------- */
-  var ARROW = '<svg class="sz-top-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>';
-  var RING = '<svg viewBox="0 0 52 52" aria-hidden="true"><circle class="sz-top-track" cx="26" cy="26" r="23"/><circle class="sz-top-bar" cx="26" cy="26" r="23"/></svg>';
+  var ARROW = '<svg class="sz-totop-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>';
+  var RING = '<svg viewBox="0 0 52 52" aria-hidden="true"><circle class="sz-totop-track" cx="26" cy="26" r="23"/><circle class="sz-totop-bar" cx="26" cy="26" r="23"/></svg>';
 
   function backToTop() {
-    if (doc.querySelector('.sz-top')) return;
+    if (doc.querySelector('.sz-totop')) return;
     var btn = doc.createElement('button');
     btn.type = 'button';
-    btn.className = 'sz-top';
+    btn.className = 'sz-totop';
     btn.setAttribute('aria-label', 'Back to top');
     btn.setAttribute('title', 'Back to top');
     btn.setAttribute('data-sz-no-loader', '1');
     btn.innerHTML = RING + ARROW;
     doc.body.appendChild(btn);
-    var bar = btn.querySelector('.sz-top-bar'), LEN = 144.5, ticking = false;
+    var bar = btn.querySelector('.sz-totop-bar'), LEN = 144.5, ticking = false;
 
     function update() {
       ticking = false;

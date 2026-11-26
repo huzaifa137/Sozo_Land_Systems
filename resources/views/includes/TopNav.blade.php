@@ -35,6 +35,7 @@
         $szThemes = [
             'green' => ['name' => 'Forest green', 'bg' => '#0d1a16', 'accent' => '#d2a44e'],
             'dark'  => ['name' => 'Black',        'bg' => '#08080a', 'accent' => '#e0b24f'],
+            'light' => ['name' => 'White',        'bg' => '#f2f4f7', 'accent' => '#a06908'],
         ];
     @endphp
     <div class="sz-menu-wrap">

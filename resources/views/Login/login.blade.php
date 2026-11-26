@@ -20,6 +20,10 @@
             --text: "Instrument Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
         }
         html[data-sz-theme="dark"] { color-scheme: dark; --pine: #08080a; --canopy: #111114; --moss: #19191d; --rule: #2e2e35; --chalk: #ededf0; --muted: #a3a3ad; --faint: #74747e; --brass: #e0b24f; --brass-ink: #1a1304; --brick: #ef6b62; --lake: #4fc2a8; }
+        html[data-sz-theme="light"] { color-scheme: light; --pine: #f2f4f7; --canopy: #ffffff; --moss: #eef1f5; --rule: #d6dbe4; --chalk: #171b22; --muted: #566073; --faint: #7a8396; --brass: #a06908; --brass-ink: #ffffff; --brick: #c5372d; --lake: #0e8a6c; }
+        html[data-sz-theme="light"] .scene { --chalk: #eceae0; --muted: #93a79c; --brass: #d2a44e; --rule: #2a4538; }
+        html[data-sz-theme="light"] .panel { background: radial-gradient(700px 400px at 100% 0%, rgba(160, 105, 8, .08), transparent 60%), var(--pine); }
+        html[data-sz-theme="light"] .alert.fail { color: #8a1f17; } html[data-sz-theme="light"] .alert.ok { color: #0a5c48; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { -webkit-text-size-adjust: 100%; }
         body {
