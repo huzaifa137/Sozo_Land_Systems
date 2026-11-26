@@ -20,7 +20,7 @@
             --text: "Instrument Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
         }
         html[data-sz-theme="dark"] { color-scheme: dark; --pine: #08080a; --canopy: #111114; --moss: #19191d; --rule: #2e2e35; --chalk: #ededf0; --muted: #a3a3ad; --faint: #74747e; --brass: #e0b24f; --brass-ink: #1a1304; --brick: #ef6b62; --lake: #4fc2a8; }
-        html[data-sz-theme="light"] { color-scheme: light; --pine: #ece3cd; --canopy: #f5eedb; --moss: #e9dfc6; --rule: #d3c7a8; --chalk: #2b2517; --muted: #645a43; --faint: #877c63; --brass: #a06908; --brass-ink: #fffaf0; --brick: #c5372d; --lake: #0e8a6c; }
+        html[data-sz-theme="light"] { color-scheme: light; --pine: #e8ebf0; --canopy: #f5f6f9; --moss: #e4e8ee; --rule: #cfd5de; --chalk: #232936; --muted: #596377; --faint: #7b8598; --brass: #a06908; --brass-ink: #fdfdfe; --brick: #c5372d; --lake: #0e8a6c; }
         html[data-sz-theme="light"] .scene { --chalk: #eceae0; --muted: #93a79c; --brass: #d2a44e; --rule: #2a4538; }
         html[data-sz-theme="light"] .panel { background: radial-gradient(700px 400px at 100% 0%, rgba(160, 105, 8, .08), transparent 60%), var(--pine); }
         html[data-sz-theme="light"] .alert.fail { color: #8a1f17; } html[data-sz-theme="light"] .alert.ok { color: #0a5c48; }

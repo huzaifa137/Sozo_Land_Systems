@@ -452,7 +452,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                       title: 'Permission Requested',
                       text: 'Request has been submitted successfully.'
                     }).then(() => {
-                      location.reload();
+                      (window.SozoLoader ? SozoLoader.reload() : location.reload());
                     });
                   } else {
                     // Backend returned success: false with an error message
@@ -536,7 +536,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                     confirmButtonText: 'OK'
                   }).then(() => {
                     // Redirect when user clicks OK
-                    window.location.href = '/accomplished';
+                    (window.SozoLoader ? SozoLoader.go('/accomplished') : (window.location.href = '/accomplished'));
                   });
                 } else {
                   Swal.fire({

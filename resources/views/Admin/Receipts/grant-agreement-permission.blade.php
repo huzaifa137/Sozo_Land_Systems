@@ -334,7 +334,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                         title: 'Confirmed!',
                                         text: data.message,
                                         icon: 'success'
-                                    }).then(() => location.reload());
+                                    }).then(() => (window.SozoLoader ? SozoLoader.reload() : location.reload()));
                                 } else {
                                     Swal.fire({
                                         title: 'Error!',
@@ -402,7 +402,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                         title: 'Confirmed!',
                                         text: data.message,
                                         icon: 'success'
-                                    }).then(() => location.reload());
+                                    }).then(() => (window.SozoLoader ? SozoLoader.reload() : location.reload()));
                                 } else {
                                     Swal.fire({
                                         title: 'Error!',
@@ -469,7 +469,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                         title: 'Confirmed!',
                                         text: data.message,
                                         icon: 'success'
-                                    }).then(() => location.reload());
+                                    }).then(() => (window.SozoLoader ? SozoLoader.reload() : location.reload()));
                                 } else {
                                     Swal.fire({
                                         title: 'Error!',

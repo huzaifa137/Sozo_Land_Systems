@@ -122,7 +122,7 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
                                     confirmButtonColor: '#28a745'
                                 }).then(() => {
                                     // Redirect after clicking "OK"
-                                    window.location.href = response.redirect_url;
+                                    (window.SozoLoader ? SozoLoader.go(response.redirect_url) : (window.location.href = response.redirect_url));
                                 });
                             },
                             error: function (data) {

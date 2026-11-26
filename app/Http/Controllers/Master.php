@@ -189,7 +189,11 @@ class Master extends Controller
     public function dashboard()
     {
 
-        $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10);
+        // withQueryString() keeps each table's page when the other one is paged.
+        $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        // "Recent customers" panel: only the 6 newest buyers, no paging.
+        $recent_customers = Buyer::orderBy('created_at', 'desc')->take(6)->get();
 
         $currentDate = Carbon::today();
         $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
@@ -218,6 +222,7 @@ class Master extends Controller
         if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin') {
             return view('Admin.dashboard', $data, compact([
                 'all_sales',
+                'recent_customers',
                 'totalAmount',
                 'totalweekSales',
                 'totalmonthSales'

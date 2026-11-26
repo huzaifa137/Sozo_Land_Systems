@@ -146,7 +146,7 @@
 
                             <div class="row">
                                 <div class="col-md-10">
-                                    <button type="submit" class="btn btn-primary" data-confirm="Please confirm you want to update this information !">Update</button>
+                                    <button type="submit" class="btn btn-primary" data-confirm="Please confirm you want to update this information !" data-sz-loading-text="Updating plot information, please wait">Update</button>
                                 </div>
                             </div>
                         </form>

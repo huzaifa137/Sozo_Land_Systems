@@ -507,7 +507,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                             text: 'Sold Pending CEO Approval!',
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            location.reload();
+                            (window.SozoLoader ? SozoLoader.reload() : location.reload());
                         });
                     },
                     error: function(data) {

@@ -490,7 +490,7 @@
                             icon: 'success',
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            location.reload();
+                            (window.SozoLoader ? SozoLoader.reload() : location.reload());
                         });
                     },
                     error: function(data) {

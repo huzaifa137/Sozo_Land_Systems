@@ -779,7 +779,7 @@
                                     background: '#452e6f',
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        window.location.href = '/admin-buyer';
+                                        (window.SozoLoader ? SozoLoader.go('/admin-buyer') : (window.location.href = '/admin-buyer'));
                                     }
                                 });
                             }

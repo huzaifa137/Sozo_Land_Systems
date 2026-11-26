@@ -98,10 +98,10 @@
                                                 // Open the PDF in a new tab
                                                 window.open(response.download_link, '_blank');
                                                 // Optional: redirect after download
-                                                window.location.href = '/pending-buyers';
+                                                (window.SozoLoader ? SozoLoader.go('/pending-buyers') : (window.location.href = '/pending-buyers'));
                                             } else {
                                                 // Redirect if user clicks "Close"
-                                                window.location.href = '/pending-buyers';
+                                                (window.SozoLoader ? SozoLoader.go('/pending-buyers') : (window.location.href = '/pending-buyers'));
                                             }
 
                                             // Re-enable button

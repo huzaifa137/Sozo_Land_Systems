@@ -66,22 +66,25 @@
 
         <div class="sz-grid-2">
             {{-- Recent customers --}}
-            <section class="sz-panel" aria-label="Recent customers">
+            <section class="sz-panel sz-recent" aria-label="Recent customers">
                 <header>
                     <h3>Recent customers</h3>
                     <a href="{{ route('all-buyers') }}">All buyers</a>
                 </header>
-                @if ($all_sales->count())
+                @if ($recent_customers->count())
+                    {{-- The 6 newest buyers as same-size cards: the photo box is a fixed shape whatever the picture is. --}}
                     <div class="sz-people">
-                        @foreach ($all_sales as $all_sale)
-                            <a class="sz-person" href="{{ url('view-reciept/' . $all_sale->id) }}">
-                                <img src="{{ '/public/public/national_id/' . $all_sale->national_id_front }}"
-                                    alt="ID photo for {{ $all_sale->firstname }}" loading="lazy"
-                                    data-sz-fallback data-seed="{{ $all_sale->id }}">
-                                <div>
-                                    <b>{{ $all_sale->firstname }}</b>
-                                    <span>{{ $all_sale->estate }}, plot {{ $all_sale->plot_number }}</span>
-                                </div>
+                        @foreach ($recent_customers as $recent)
+                            <a class="sz-person" href="{{ url('view-reciept/' . $recent->id) }}">
+                                <span class="sz-person-photo">
+                                    <img src="{{ '/public/public/national_id/' . $recent->national_id_front }}"
+                                        alt="ID photo for {{ $recent->firstname }}" loading="lazy"
+                                        data-sz-fallback data-seed="{{ $recent->id }}">
+                                </span>
+                                <span class="sz-person-text">
+                                    <b>{{ $recent->firstname }}</b>
+                                    <span>{{ $recent->estate }}, plot {{ $recent->plot_number }}</span>
+                                </span>
                             </a>
                         @endforeach
                     </div>

@@ -151,6 +151,7 @@
             $.ajax({
                 url: '{{ route("get-available-plots") }}',
                 type: 'POST',
+                quiet: true,   // a dropdown lookup, not a save: no full-page loader
                 data: {
                     _token: '{{ csrf_token() }}',
                     estate: estateName
@@ -429,7 +430,7 @@
                         background: '#452e6f',
                         color: '#FFF'
                     }).then(() => {
-                        window.location.href = "{{ url('backup-uploads') }}";
+                        (window.SozoLoader ? SozoLoader.go("{{ url('backup-uploads') }}") : (window.location.href = "{{ url('backup-uploads') }}"));
                     });
                 },
 

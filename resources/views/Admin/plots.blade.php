@@ -505,7 +505,7 @@
                                     background: '#452e6f',
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        window.location.href = '/plots';
+                                        (window.SozoLoader ? SozoLoader.go('/plots') : (window.location.href = '/plots'));
                                     }
                                 });
                             } else {

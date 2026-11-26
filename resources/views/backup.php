@@ -121,7 +121,7 @@ $('body').html(data.responseText);
                     confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = this.href;
+                        (window.SozoLoader ? SozoLoader.go(this.href) : (window.location.href = this.href));
                     }
                 });
             });
@@ -159,7 +159,7 @@ $('body').html(data.responseText);
                     confirmButtonText: 'Yes, edit it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = url; // Redirect to URL if confirmed
+                        (window.SozoLoader ? SozoLoader.go(url) : (window.location.href = url)); // Redirect to URL if confirmed
                     }
                 });
             });
