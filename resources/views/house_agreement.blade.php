@@ -61,7 +61,7 @@
 
         <p style="text-align: center!important;"><strong>NE</strong><br></p>
 
-        SOZO PROPERTY CONSULTANTS LIMITED ab’e Kireka mu Wakiso District (muno abayitibwa “Maneja” banaayitibwa batyo
+         Sozo Property Consultants Limited ab’e Kireka mu Wakiso District (muno abayitibwa “Maneja” banaayitibwa batyo
         abantu be b’alonze, abawolereza b’amateeka, abasigirwa n’abasika abalondeddwa buli we kineetagisizanga); </p>
     </div>
 
@@ -158,7 +158,7 @@
     <p style="text-align: center;">OMUJULIZI</p>
 
 
-    <p>OMUSISIGIRE WA SOZO PROPERTY CONSULTANTS LIMITED </p>
+    <p>OMUSISIGIRE WA  Sozo Property Consultants Limited </p>
 
     <div class="signatory">
         <p>ATADDEKO OMUKONO</p>

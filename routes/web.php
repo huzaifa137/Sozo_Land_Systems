@@ -4,11 +4,13 @@ use App\Http\Controllers\Master;
 use Illuminate\Support\Facades\Route;
 
 Route::post('admin-send', [Master::class, 'admin_check'])->name('admin-send');
+Route::get('estate-file/{id}', [Master::class, 'estateFile'])->name('estate-file');
 Route::get('reload-captcha', [Master::class, 'reload_captcha']);
 
 Route::group(['middleware' => ['AdminAuth']], function () {
 
-    Route::get('/', [Master::class, 'login'])->name('home');
+    Route::view('/', 'Landing.landing')->name('home');
+    Route::get('login', [Master::class, 'login'])->name('login');
 
     Route::get('/agreement/download/{houseId}', [Master::class, 'downloadAgreementPdf']);
 

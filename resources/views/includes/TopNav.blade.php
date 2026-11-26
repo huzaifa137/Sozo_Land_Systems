@@ -1,66 +1,47 @@
-<ul class="navbar-nav navbar-nav-right">
+@php
+    $szUser = $szUser ?? \Illuminate\Support\Facades\DB::table('admin_registers')->where('id', session('LoggedAdmin'))->first();
+    $szRole = $szRole ?? ($szUser->admin_category ?? '');
+    $szName = $szName ?? ($szUser->username ?? 'Account');
+    $szSection = $szSection ?? 'Sozo Land Systems';
+    $szTitle = $szTitle ?? 'Dashboard';
+    $szDueToday = \App\Models\buyer::whereDate('next_installment_pay', \Carbon\Carbon::now()->format('Y/m/d'))->count();
+@endphp
+<button class="sz-burger" type="button" data-sz-burger aria-label="Open menu"><i class="mdi mdi-menu"></i></button>
 
-    <?php
-    
-    use App\Models\AdminRegister;
-    
-    $user_id = Session('LoggedAdmin');
-    $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
-    
-    ?>
+<div class="sz-crumb">
+    <small>{{ $szSection }}</small>
+    <h1>{{ $szTitle }}</h1>
+</div>
 
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item dropdown d-none d-lg-block">
-            <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-bs-toggle="dropdown"
-                aria-expanded="false">+ Manage Admins</a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                aria-labelledby="createbuttonDropdown">
-                <h6 class="p-3 mb-0" style="text-align: center">Sozo Properties</h6>
-                <div class="dropdown-divider"></div>
+<div class="sz-top-actions">
+    <button class="sz-find" type="button" data-sz-palette aria-label="Jump to a page">
+        <i class="mdi mdi-magnify"></i><span>Jump to a page</span><kbd>Ctrl K</kbd>
+    </button>
 
-                <a class="dropdown-item preview-item" href="{{ url('/admin-register') }}">
-                    <div class="preview-thumbnail">
-                        <div class="preview-icon bg-dark rounded-circle">
-                            <i class="mdi mdi-plus text-primary"></i>
-                        </div>
-                    </div>
-                    <div class="preview-item-content">
-                        <p class="preview-subject ellipsis mb-1"> Add new Admin</p>
-                    </div>
-                </a>
-                <div class="dropdown-divider"></div>
-        </li>
+    @if ($szRole == 'SuperAdmin' || $szRole == 'Admin')
+        <a class="btn btn-primary" href="{{ route('admin-buyer') }}"><i class="mdi mdi-plus"></i> Sell a plot</a>
     @endif
 
-
-    <?php
-    
-    $user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
-    ?>
-
-    <li class="nav-item dropdown">
-        <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
-            <div class="navbar-profile">
-                <img class="img-xs rounded-circle" src="/assets/images/faces/face15.jpg" alt="">
-                <p class="mb-0 d-none d-sm-block navbar-profile-name">{{ $user->username }}</p>
-                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
-            </div>
+    @if ($szRole == 'SuperAdmin')
+        <a class="sz-icon-btn" href="{{ route('payment-reminder') }}" aria-label="Today's reminders" title="Today's reminders">
+            <i class="mdi mdi-bell-outline"></i>
+            @if ($szDueToday > 0)<em class="sz-pill">{{ $szDueToday }}</em>@endif
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-            <h6 class="p-3 mb-0">Profile</h6>
-            <div class="dropdown-divider"></div>
+    @endif
 
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item preview-item" href="{{ route('admin-logout') }}">
-                <div class="preview-thumbnail">
-                    <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-logout text-danger"></i>
-                    </div>
-                </div>
-                <div class="preview-item-content">
-                    <p class="preview-subject mb-1">Log out</p>
-                </div>
-            </a>
+    <div class="sz-menu-wrap">
+        <button class="sz-me" type="button" data-sz-menu aria-haspopup="true" aria-expanded="false">
+            <span class="sz-avatar">{{ strtoupper(substr($szName, 0, 1)) }}</span>
+            <span class="sz-name">{{ $szName }}</span>
+            <i class="mdi mdi-chevron-down"></i>
+        </button>
+        <div class="sz-menu" role="menu">
+            <div class="sz-menu-head"><b>{{ $szName }}</b><span>{{ $szRole }}</span></div>
+            @if ($szRole == 'SuperAdmin')
+                <a href="{{ url('/admin-register') }}" role="menuitem"><i class="mdi mdi-account-plus-outline"></i> Add a new admin</a>
+                <a href="{{ route('user-information') }}" role="menuitem"><i class="mdi mdi-account-group-outline"></i> Manage users</a>
+            @endif
+            <a class="danger" href="{{ route('admin-logout') }}" role="menuitem"><i class="mdi mdi-logout"></i> Log out</a>
         </div>
-    </li>
-</ul>
+    </div>
+</div>

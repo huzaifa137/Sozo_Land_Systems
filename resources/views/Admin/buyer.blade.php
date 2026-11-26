@@ -437,6 +437,37 @@
                                 </div>
 
                                 <div id="multiple_plot_section" style="display:none;">
+                                    <style>
+                                        #quick_plots { height: auto !important; overflow-y: auto; }
+                                    </style>
+                                    <div id="quick_plot_picker" class="border rounded p-2 mb-3">
+                                        <p class="mb-2"><strong>Quick add:</strong> choose an estate, then click plot
+                                            numbers (Ctrl/Cmd + click or Shift + click also work). A plot row is added
+                                            automatically for each plot you select, and removed if you deselect it.</p>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <label>Estate</label>
+                                                <select id="quick_estate" class="form-control">
+                                                    <option value="">-- Select Estate --</option>
+                                                    @foreach($estates as $estate)
+                                                        <option value="{{ $estate->estate_name }}">{{ $estate->estate_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-2" id="quick_plots_col" style="display:none;">
+                                                <label>Plot Numbers</label>
+                                                <div id="quick_plots_body" style="display:none;">
+                                                    <select id="quick_plots" class="form-control" multiple size="8" disabled></select>
+                                                    <div class="mt-1">
+                                                        <button type="button" id="quick_select_all" class="btn btn-sm btn-outline-primary">Select all</button>
+                                                        <button type="button" id="quick_clear" class="btn btn-sm btn-outline-secondary">Clear</button>
+                                                    </div>
+                                                </div>
+                                                <small id="quick_plots_hint" class="d-block mt-1"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div id="plot_items_container">
                                         <!-- dynamic plot item blocks go here -->
                                     </div>
@@ -518,7 +549,7 @@
         <div class="d-sm-flex justify-content-center justify-content-sm-between">
             <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
                 SozoPropertiesLimited.com 2023</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
                 <a href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
         </div>
     </footer>
@@ -804,6 +835,18 @@
                         if (!estate) errors.push(`Estate is required for plot #${i + 1}.`);
                         if (!plot_number) errors.push(`Plot number is required for plot #${i + 1}.`);
                     });
+
+                    // the same estate + plot must not appear twice
+                    let seenPlots = {};
+                    $('.plot-item').each(function (i) {
+                        let key = $(this).find('.estate-select').val() + '||' + $(this).find('.plot-select').val();
+                        if (!$(this).find('.plot-select').val()) return;
+                        if (seenPlots[key] !== undefined) {
+                            errors.push(`Plot #${i + 1} is a duplicate of plot #${seenPlots[key] + 1}.`);
+                        } else {
+                            seenPlots[key] = i;
+                        }
+                    });
                 }
 
                 return errors;
@@ -841,12 +884,13 @@
             }
         });
 
-        // add new plot item
-       $('#add_plot_item').click(function () {
-    const index = $('.plot-item').length;
-    const newBlock = `
+        // ---------- Plot row template ----------
+        let plotRowCounter = 0;
+
+        function plotRowHtml(index) {
+            return `
         <div class="plot-item border p-2 mb-2 rounded position-relative">
-            <button type="button" class="btn btn-sm btn-danger remove-plot-item" 
+            <button type="button" class="btn btn-sm btn-danger remove-plot-item"
                     style="position:absolute; top:5px; right:4px;">
                         <i class="fas fa-times"></i>
             </button>
@@ -869,6 +913,8 @@
                 </div>
             </div>
 
+            <input type="hidden" name="plots[${index}][location]" class="location">
+
             <div class="row">
                 <div class="col-md-3"><input type="number" name="plots[${index}][width1]" class="form-control width1" placeholder="Width1"></div>
                 <div class="col-md-3"><input type="number" name="plots[${index}][width2]" class="form-control width2" placeholder="Width2"></div>
@@ -876,25 +922,189 @@
                 <div class="col-md-3"><input type="number" name="plots[${index}][height2]" class="form-control height2" placeholder="Height2"></div>
             </div>
         </div>`;
-    
-    $('#plot_items_container').append(newBlock);
-});
+        }
 
+        // ---------- "Add Another Plot" (unchanged behaviour) ----------
+        $('#add_plot_item').click(function () {
+            $('#plot_items_container').append(plotRowHtml(plotRowCounter++));
+        });
 
-$(document).on('click', '.remove-plot-item', function () {
-    $(this).closest('.plot-item').remove();
-});
+        // ---------- Helpers ----------
+        function findPlotRow(estate, plot) {
+            return $('.plot-item').filter(function () {
+                return $(this).find('.estate-select').val() === estate &&
+                    String($(this).find('.plot-select').val()) === String(plot);
+            });
+        }
 
+        function loadPlotDetails($row, estate, plot) {
+            $.get('/get-input-option', { selectedValue: plot, estate: estate })
+                .done(res => {
+                    $row.find('.width1').val(res.width_1);
+                    $row.find('.width2').val(res.width_2);
+                    $row.find('.height1').val(res.height_1);
+                    $row.find('.height2').val(res.height_2);
+                    $row.find('.location').val(res.location);
+                })
+                .fail(() => Swal.fire('Error', 'Could not load plot info', 'error'));
+        }
 
-        // event delegation for dynamically added blocks
+        // ---------- Quick add: pick an estate, then select many plots ----------
+        const $quickEstate = $('#quick_estate');
+        const $quickPlots = $('#quick_plots');
+        const $quickHint = $('#quick_plots_hint');
+        const quickPlotCache = {};
+
+        // List box height: fits the plots when there are few, grows as more are selected,
+        // and stops at QUICK_MAX_ROWS (it scrolls after that)
+        const QUICK_MIN_ROWS = 8;
+        const QUICK_EXTRA_ROWS = 4;
+        const QUICK_MAX_ROWS = 15;
+        function resizeQuickPlots() {
+            const total = $quickPlots.find('option').length;
+            if (!total) return;
+            const selectedCount = ($quickPlots.val() || []).length;
+            const wanted = Math.max(QUICK_MIN_ROWS, selectedCount + QUICK_EXTRA_ROWS);
+            $quickPlots.attr('size', Math.max(1, Math.min(total, wanted, QUICK_MAX_ROWS)));
+        }
+
+        function resetQuickPanel() {
+            $quickPlots.empty().prop('disabled', true);
+            $('#quick_plots_body').hide();
+            $('#quick_plots_col').hide();
+            $quickHint.text('');
+        }
+
+        function addQuickRow(estate, plot, allPlots) {
+            const $row = $(plotRowHtml(plotRowCounter++));
+            $row.attr('data-quick', '1');
+            $row.find('.estate-select').val(estate);
+
+            const $plotSelect = $row.find('.plot-select').empty()
+                .append('<option value="">-- Select Plot --</option>');
+            allPlots.forEach(p => $plotSelect.append($('<option>').val(p).text(p)));
+            $plotSelect.val(String(plot));
+
+            $('#plot_items_container').append($row);
+            loadPlotDetails($row, estate, plot);
+        }
+
+        $quickEstate.on('change', function () {
+            const estate = $(this).val();
+            resetQuickPanel();
+            if (!estate) return;
+
+            $('#quick_plots_col').show();
+            $quickHint.text('Loading plots...');
+            $.get('/get-second-option', { value: estate })
+                .done(data => {
+                    if ($quickEstate.val() !== estate) return; // estate changed meanwhile
+
+                    const seen = {};
+                    const plots = [];
+                    data.forEach(item => {
+                        const p = String(item.plot_number);
+                        if (!seen[p]) { seen[p] = true; plots.push(p); }
+                    });
+                    quickPlotCache[estate] = plots;
+
+                    $quickPlots.empty();
+                    plots.forEach(p => $quickPlots.append($('<option>').val(p).text(p)));
+
+                    // pre-select plots that already have a row
+                    $quickPlots.find('option').each(function () {
+                        if (findPlotRow(estate, this.value).length) this.selected = true;
+                    });
+
+                    $quickPlots.prop('disabled', plots.length === 0);
+                    if (plots.length) {
+                        $('#quick_plots_body').show();
+                        resizeQuickPlots();
+                    }
+                    $quickHint.text(plots.length ? plots.length + ' plot(s) available' : 'No available plots in this estate');
+                })
+                .fail(() => {
+                    resetQuickPanel();
+                    Swal.fire('Error', 'Could not load plots', 'error');
+                });
+        });
+
+        // Plain click toggles a plot (no Ctrl needed); Ctrl/Cmd/Shift keep native behaviour
+        $quickPlots.on('mousedown', 'option', function (e) {
+            if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+            e.preventDefault();
+            this.selected = !this.selected;
+            $quickPlots.trigger('focus').trigger('change');
+        });
+
+        $quickPlots.on('change', function () {
+            const estate = $quickEstate.val();
+            if (!estate) return;
+
+            const selected = ($quickPlots.val() || []).map(String);
+            resizeQuickPlots();
+
+            // remove auto-added rows of this estate that were deselected
+            $('.plot-item[data-quick="1"]').each(function () {
+                const $row = $(this);
+                if ($row.find('.estate-select').val() === estate &&
+                    !selected.includes(String($row.find('.plot-select').val()))) {
+                    $row.remove();
+                }
+            });
+
+            // add a row for every newly selected plot
+            selected.forEach(p => {
+                if (!findPlotRow(estate, p).length) {
+                    addQuickRow(estate, p, quickPlotCache[estate] || selected);
+                }
+            });
+        });
+
+        $('#quick_select_all').click(function () {
+            if ($quickPlots.prop('disabled')) return;
+            $quickPlots.find('option').prop('selected', true);
+            $quickPlots.trigger('change');
+        });
+
+        $('#quick_clear').click(function () {
+            if ($quickPlots.prop('disabled')) return;
+            $quickPlots.find('option').prop('selected', false);
+            $quickPlots.trigger('change');
+        });
+
+        // ---------- Remove a row ----------
+        $(document).on('click', '.remove-plot-item', function () {
+            const $row = $(this).closest('.plot-item');
+            const estate = $row.find('.estate-select').val();
+            const plot = String($row.find('.plot-select').val());
+            $row.remove();
+
+            // keep the quick-add list in sync
+            if (estate && estate === $quickEstate.val() && !findPlotRow(estate, plot).length) {
+                $quickPlots.find('option').filter(function () { return this.value === plot; })
+                    .prop('selected', false);
+                resizeQuickPlots();
+            }
+        });
+
+        // ---------- Row events (manual rows and quick rows) ----------
         $(document).on('change', '.estate-select', function () {
             const estateSelect = $(this);
-            const plotSelect = estateSelect.closest('.plot-item').find('.plot-select');
+            const $row = estateSelect.closest('.plot-item');
+            const plotSelect = $row.find('.plot-select');
+            $row.removeAttr('data-quick'); // user edited it manually
             plotSelect.html('<option>Loading plots...</option>');
             $.get('/get-second-option', { value: estateSelect.val() })
                 .done(data => {
                     plotSelect.empty().append('<option value="">-- Select Plot --</option>');
-                    data.forEach(item => plotSelect.append(`<option value="${item.plot_number}">${item.plot_number}</option>`));
+                    const seen = {};
+                    data.forEach(item => {
+                        const p = String(item.plot_number);
+                        if (seen[p]) return;
+                        seen[p] = true;
+                        plotSelect.append(`<option value="${p}">${p}</option>`);
+                    });
                 })
                 .fail(() => Swal.fire('Error', 'Could not load plots', 'error'));
         });
@@ -902,14 +1112,8 @@ $(document).on('click', '.remove-plot-item', function () {
         $(document).on('change', '.plot-select', function () {
             const plotSelect = $(this);
             const container = plotSelect.closest('.plot-item');
-            $.get('/get-input-option', { selectedValue: plotSelect.val() })
-                .done(res => {
-                    container.find('.width1').val(res.width_1);
-                    container.find('.width2').val(res.width_2);
-                    container.find('.height1').val(res.height_1);
-                    container.find('.height2').val(res.height_2);
-                })
-                .fail(() => Swal.fire('Error', 'Could not load plot info', 'error'));
+            container.removeAttr('data-quick'); // user edited it manually
+            loadPlotDetails(container, container.find('.estate-select').val(), plotSelect.val());
         });
     });
 </script>

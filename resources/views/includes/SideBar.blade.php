@@ -1,499 +1,211 @@
-<ul class="nav">
-    <li class="nav-item profile">
-        <div class="profile-desc">
-            <div class="profile-pic">
-                <div class="count-indicator">
-                    <img class="img-xs rounded-circle " src="/assets/images/faces/face15.jpg" alt="">
-                    <span class="count bg-success"></span>
-                </div>
-                <?php
-use App\Models\AdminRegister;
-$user = DB::table('admin_registers')->where('id', Session('LoggedAdmin'))->first();
-                ?>
-                <div class="profile-name">
-                    <h5 class="mb-0 font-weight-normal">{{ $user->username }}</h5>
-                    <span>{{ $user->admin_category }}</span>
-                </div>
-            </div>
-            <a href="#" id="profile-dropdown" data-bs-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
+@php
+    $szUser = $szUser ?? \Illuminate\Support\Facades\DB::table('admin_registers')->where('id', session('LoggedAdmin'))->first();
+    $szRole = $szRole ?? ($szUser->admin_category ?? '');
+    $szName = $szName ?? ($szUser->username ?? 'Account');
 
-        </div>
-    </li>
+    $szIsSuper = $szRole == 'SuperAdmin';
+    $szIsAdmin = $szRole == 'Admin';
+    $szIsStaff = $szIsSuper || $szIsAdmin;
 
-    <style>
-        @keyframes pulse-grow-shrink {
-            0% {
-                transform: scale(1);
-            }
+    $szPendingHouses = \Illuminate\Support\Facades\DB::table('houses')->where('status', 1)->count();
+    $szGrantPending = \Illuminate\Support\Facades\DB::table('buyers')
+        ->where('next_installment_pay', '!=', 'Fully payed')
+        ->where('request_permission', '=', 1)
+        ->count();
+    $szRemindersToday = \App\Models\buyer::whereDate('next_installment_pay', \Carbon\Carbon::now()->format('Y/m/d'))->count();
+@endphp
 
-            50% {
-                transform: scale(1.25);
-            }
+<div class="sz-brand">
+    <a href="{{ route('admin-dashboard') }}" aria-label="Sozo Property Consultants, go to dashboard">
+        <img class="sz-logo" src="/assets/sozo/logo-light.png" alt="Sozo Property Consultants" width="403" height="379">
+    </a>
+</div>
 
-            100% {
-                transform: scale(1);
-            }
-        }
+<div class="sz-scroll">
+    <ul class="sz-nav">
 
-        .badge-pulse {
-            animation: pulse-grow-shrink 1s infinite;
-            animation-delay: 0.8s;
-        }
+        @if ($szIsStaff)
+            <li class="sz-heading">Overview</li>
+            <li>
+                <a class="sz-link" href="{{ route('admin-dashboard') }}">
+                    <i class="mdi mdi-view-dashboard-outline"></i><span class="sz-label">Dashboard</span>
+                </a>
+            </li>
+        @endif
 
-        .badge-sm {
-            font-size: 0.65rem;
-            padding: 0.25em 0.5em;
-        }
-    </style>
+        <li class="sz-heading">Land and houses</li>
 
-    <?php
-
-$user_id = Session('LoggedAdmin');
-$User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
-    
-    ?>
-
-    <li class="nav-item nav-category">
-        <span class="nav-link text-white">Sozo Properties Limited</span>
-    </li>
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('admin-dashboard') }}">
-                <span class="menu-icon">
-                    <i class="mdi mdi-speedometer"></i>
-                </span>
-                <span class="menu-title">Dashboard</span>
-            </a>
-        </li>
-    @elseif($User_access_right == 'Admin')
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('admin-dashboard') }}">
-                <span class="menu-icon">
-                    <i class="mdi mdi-speedometer"></i>
-                </span>
-                <span class="menu-title">Dashboard</span>
-            </a>
-        </li>
-    @else
-    @endif
-
-    <li class="nav-item menu-items">
-        <a class="nav-link " data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-            <span class="menu-icon">
-                <i class="mdi mdi-laptop"></i>
-            </span>
-            <span class="menu-title">Land</span>
-            <i class="menu-arrow"></i>
-        </a>
-        <div class="collapse" id="ui-basic">
-            <ul class="nav flex-column sub-menu">
-
-                @if ($User_access_right == 'SuperAdmin')
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin-buyer') }}">Sell Plot</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('estates') }}">Estates</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('plots') }}">Add Plot</a></li>
-                @elseif($User_access_right == 'Admin')
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin-buyer') }}">Sell Plot</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell
-                            House</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('estates') }}">Estates</a></li>
-                @else
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('estates') }}">Estates</a></li>
-                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('plots') }}">Plots and House</a></li> --}}
+        <li class="sz-group">
+            <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                <i class="mdi mdi-terrain"></i><span class="sz-label">Land</span><i class="mdi mdi-chevron-right sz-chev"></i>
+            </button>
+            <div class="sz-subwrap"><ul class="sz-sub">
+                @if ($szIsStaff)
+                    <li><a class="sz-link" href="{{ route('admin-buyer') }}"><span class="sz-label">Sell plot</span></a></li>
                 @endif
-
-
-            </ul>
-        </div>
-    </li>
-
-    <?php
-$pendingApproval = DB::table('houses')->where('status', 1)->count();
-            ?>
-
-    <li class="nav-item menu-items">
-        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ui-house"
-            aria-expanded="false" aria-controls="ui-house">
-
-            <span class="menu-icon">
-                <i class="mdi mdi-home"></i>
-            </span>
-
-            <span class="menu-title">
-                Houses
-
-                @if ($User_access_right == 'SuperAdmin')
-                    @if ($pendingApproval > 0)
-                        <span class="badge bg-danger rounded-pill ms-2">{{ $pendingApproval }}</span>
-                    @endif
-                @else
-                    <span class="badge bg-danger rounded-pill ms-2"></span>
+                @if ($szIsAdmin)
+                    <li><a class="sz-link" href="{{ route('admin.sell.house.fetch') }}"><span class="sz-label">Sell house</span></a></li>
                 @endif
+                <li><a class="sz-link" href="{{ route('estates') }}"><span class="sz-label">Estates</span></a></li>
+                @if ($szIsSuper)
+                    <li><a class="sz-link" href="{{ route('plots') }}"><span class="sz-label">Add plot</span></a></li>
+                @endif
+            </ul></div>
+        </li>
 
-            </span>
-            <i class="menu-arrow"></i>
-        </a>
-
-        <div class="collapse" id="ui-house">
-            <ul class="nav flex-column sub-menu">
-                @if ($User_access_right == 'SuperAdmin')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('add-house') }}">Add House</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell House</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link d-flex justify-content-between align-items-center"
-                            href="{{ route('approval.house.sell') }}">
-                            Pending Approval
-                            @if ($pendingApproval > 0)
-                                <span class="badge bg-danger rounded-pill ms-2">{{ $pendingApproval }}</span>
-                            @endif
+        <li class="sz-group">
+            <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                <i class="mdi mdi-home-city-outline"></i><span class="sz-label">Houses</span>
+                @if ($szIsSuper && $szPendingHouses > 0)<em class="sz-pill">{{ $szPendingHouses }}</em>@endif
+                <i class="mdi mdi-chevron-right sz-chev"></i>
+            </button>
+            <div class="sz-subwrap"><ul class="sz-sub">
+                @if ($szIsStaff)
+                    <li><a class="sz-link" href="{{ route('add-house') }}"><span class="sz-label">Add house</span></a></li>
+                    <li><a class="sz-link" href="{{ route('admin.sell.house.fetch') }}"><span class="sz-label">Sell house</span></a></li>
+                @else
+                    <li><a class="sz-link" href="{{ route('admin.sell.house.fetch') }}"><span class="sz-label">Houses</span></a></li>
+                @endif
+                @if ($szIsSuper)
+                    <li>
+                        <a class="sz-link" href="{{ route('approval.house.sell') }}">
+                            <span class="sz-label">Pending approval</span>
+                            @if ($szPendingHouses > 0)<em class="sz-pill">{{ $szPendingHouses }}</em>@endif
                         </a>
                     </li>
-                @elseif($User_access_right == 'Admin')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('add-house') }}">Add House</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Sell House</a>
-                    </li>
-                @elseif($User_access_right == 'Sales')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.sell.house.fetch') }}">Houses</a>
-                    </li>
                 @endif
-            </ul>
-        </div>
-    </li>
-
-
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-reciepts" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-animation"></i>
-                </span>
-                <span class="menu-title">Reciepts</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-reciepts">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('accomplished') }}">Fully purchased</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under
-                            payments</a>
-                    </li>
-                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
-                            Receipts</a>
-                    </li> --}}
-                </ul>
-            </div>
+            </ul></div>
         </li>
-    @elseif($User_access_right == 'Admin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-reciepts" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-animation"></i>
-                </span>
-                <span class="menu-title">Reciepts</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-reciepts">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('accomplished') }}">Full purchased</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('pending-buyers') }}">Under
-                            payments</a>
-                    </li>
-                    {{-- <li class="nav-item"> <a class="nav-link" href="{{ route('pending-receipts') }}">Pending
-                            Receipts</a>
-                    </li> --}}
-                </ul>
-            </div>
-        </li>
-    @else
-    @endif
 
-    @php
+        @if ($szIsStaff)
+            <li class="sz-heading">Money</li>
 
-        $GrantAccessPending = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
-            ->where('request_permission', '=', 1)
-            ->count();
-    @endphp
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-file-document-outline"></i><span class="sz-label">Receipts</span><i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    <li><a class="sz-link" href="{{ route('accomplished') }}"><span class="sz-label">Fully purchased</span></a></li>
+                    <li><a class="sz-link" href="{{ route('pending-buyers') }}"><span class="sz-label">Under payments</span></a></li>
+                </ul></div>
+            </li>
 
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('grant-agreement-permission') }}">
-                <span class="menu-icon">
-                    <i class="icon mdi mdi-account-key"></i>
-                </span>
-                <span class="menu-title">Grant Access
-                    @if ($GrantAccessPending > 0)
-                        <span class="badge rounded-pill ms-2 animate__animated animate__bounceIn badge-pulse"
-                            style="background-color: #8f5fe8;">
-                            {{ $GrantAccessPending }}
-                        </span>
-
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-chart-line"></i><span class="sz-label">Sales</span><i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    @if ($szIsSuper)
+                        <li><a class="sz-link" href="{{ route('all-sales') }}"><span class="sz-label">All sales</span></a></li>
                     @endif
-                </span>
-            </a>
-        </li>
-    @endif
-
-
-
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false" aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-chart-bar"></i>
-                </span>
-                <span class="menu-title">Sales</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-sales">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('all-sales') }}">All Sales</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('current-sales') }}">Today's Sales</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('weekly-records') }}">weekly Sales</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('monthly-records') }}">Monthly
-                            Sales</a></li>
-                </ul>
-            </div>
-        </li>
-    @elseif($User_access_right == 'Admin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-sales" aria-expanded="false" aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-chart-bar"></i>
-                </span>
-                <span class="menu-title">Sales</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-sales">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('current-sales') }}">Today's Sales</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-    @else
-    @endif
-
-
-
-
-
-
-    @if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-resales" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-cards"></i>
-                </span>
-                <span class="menu-title">Resales</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-resales">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('search-land') }}">Resale</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market') }}">Back on
-                            market</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('back-on-market-all') }}">All Back on
-                            Market</a></li>
-                </ul>
-            </div>
-        </li>
-    @else
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('back-on-market-all') }}">
-                <span class="menu-icon">
-                    <i class="mdi mdi-file-document"></i>
-                </span>
-                <span class="menu-title">Back on Market</span>
-            </a>
-        </li>
-    @endif
-
-
-    @if ($User_access_right == 'SuperAdmin' || $User_access_right == 'Admin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-transfers" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-swap-horizontal"></i>
-                </span>
-                <span class="menu-title">Transfers</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-transfers">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('assign-empty-plot') }}">Transfer to new
-                            plot</a></li>
-                </ul>
-            </div>
-        </li>
-    @else
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('back-on-market-all') }}">
-                <span class="menu-icon">
-                    <i class="mdi mdi-file-document"></i>
-                </span>
-                <span class="menu-title">Back on Market</span>
-            </a>
-        </li>
-    @endif
-
-    @php
-        $today = \Carbon\Carbon::now()->format('Y/m/d');
-        $reminderCount = \App\Models\buyer::whereDate('next_installment_pay', $today)->count();
-    @endphp
-
-
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#ui-alerts" aria-expanded="false" aria-controls="ui-basic">
-
-                <span class="menu-icon">
-                    <i class="mdi mdi-security"></i>
-                </span>
-
-                <span class="menu-title">
-                    Reminders
-                    @if ($reminderCount > 0)
-                        <span class="badge rounded-pill bg-danger ms-2 animate__animated animate__bounceIn badge-pulse">
-                            {{ $reminderCount }}
-                        </span>
+                    <li><a class="sz-link" href="{{ route('current-sales') }}"><span class="sz-label">Today's sales</span></a></li>
+                    @if ($szIsSuper)
+                        <li><a class="sz-link" href="{{ route('weekly-records') }}"><span class="sz-label">Weekly sales</span></a></li>
+                        <li><a class="sz-link" href="{{ route('monthly-records') }}"><span class="sz-label">Monthly sales</span></a></li>
                     @endif
-                </span>
-                <i class="menu-arrow"></i>
-            </a>
+                </ul></div>
+            </li>
+        @endif
 
-            <div class="collapse" id="ui-alerts">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('set-reminder') }}">Set Reminder</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('payment-reminder') }}">
-                            Today's reminders
-                            @if ($reminderCount > 0)
-                                <span
-                                    class="badge rounded-pill bg-danger ms-2 animate__animated animate__bounceIn badge-pulse badge-sm">
-                                    {{ $reminderCount }}
-                                </span>
-                            @endif
+        @if ($szIsSuper)
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-cash-multiple"></i><span class="sz-label">Expenditures</span><i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    <li><a class="sz-link" href="{{ route('add-expenditure') }}"><span class="sz-label">Add expenditure</span></a></li>
+                    <li><a class="sz-link" href="{{ route('expense-today') }}"><span class="sz-label">Today's expenditures</span></a></li>
+                </ul></div>
+            </li>
+        @endif
+
+        <li class="sz-heading">Clients</li>
+
+        @if ($szIsStaff)
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-cached"></i><span class="sz-label">Resales</span><i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    <li><a class="sz-link" href="{{ route('search-land') }}"><span class="sz-label">Resale</span></a></li>
+                    <li><a class="sz-link" href="{{ route('back-on-market') }}"><span class="sz-label">Back on market</span></a></li>
+                    <li><a class="sz-link" href="{{ route('back-on-market-all') }}"><span class="sz-label">All back on market</span></a></li>
+                </ul></div>
+            </li>
+
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-swap-horizontal"></i><span class="sz-label">Transfers</span><i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    <li><a class="sz-link" href="{{ route('assign-empty-plot') }}"><span class="sz-label">Transfer to new plot</span></a></li>
+                </ul></div>
+            </li>
+        @else
+            <li>
+                <a class="sz-link" href="{{ route('back-on-market-all') }}">
+                    <i class="mdi mdi-store"></i><span class="sz-label">Back on market</span>
+                </a>
+            </li>
+        @endif
+
+        @if ($szIsSuper)
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-bell-ring-outline"></i><span class="sz-label">Reminders</span>
+                    @if ($szRemindersToday > 0)<em class="sz-pill">{{ $szRemindersToday }}</em>@endif
+                    <i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    <li><a class="sz-link" href="{{ route('set-reminder') }}"><span class="sz-label">Set reminder</span></a></li>
+                    <li>
+                        <a class="sz-link" href="{{ route('payment-reminder') }}">
+                            <span class="sz-label">Today's reminders</span>
+                            @if ($szRemindersToday > 0)<em class="sz-pill">{{ $szRemindersToday }}</em>@endif
                         </a>
                     </li>
+                </ul></div>
+            </li>
 
-                </ul>
-            </div>
-        </li>
-    @else
-    @endif
+            <li>
+                <a class="sz-link" href="{{ route('grant-agreement-permission') }}">
+                    <i class="mdi mdi-key-outline"></i><span class="sz-label">Grant access</span>
+                    @if ($szGrantPending > 0)<em class="sz-pill is-brass">{{ $szGrantPending }}</em>@endif
+                </a>
+            </li>
+        @endif
 
-
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-expenditure" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-barcode-scan"></i>
-                </span>
-                <span class="menu-title">Expenditures</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-expenditure">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('add-expenditure') }}">Add
-                            Expenditure</a>
-                    </li>
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('expense-today') }}">Today's
-                            Expenditures</a></li>
-                    <!-- <li class="nav-item"> <a class="nav-link" href="{{ route('payment-reminder') }}">All Expenditures</a></li> -->
-                </ul>
-            </div>
-        </li>
-    @else
-    @endif
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link " data-bs-toggle="collapse" href="#ui-user-module" aria-expanded="false"
-                aria-controls="ui-basic">
-                <span class="menu-icon">
-                    <i class="mdi mdi-animation"></i>
-                </span>
-                <span class="menu-title">Users</span>
-                <i class="menu-arrow">
-                </i>
-            </a>
-            <div class="collapse" id="ui-user-module">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ route('user-information') }}">View Users</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-    @else
-    @endif
-
-
-    <li class="nav-item menu-items">
-        <a class="nav-link" href="{{ route('search-module') }}">
-            <span class="menu-icon">
-                <i class="mdi mdi-magnify"></i>
-            </span>
-            <span class="menu-title">Search</span>
-        </a>
-    </li>
-
-
-
-
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('all-posters') }}">
-                <span class="menu-icon">
-                    <i class="icon mdi mdi-message-processing"></i>
-                </span>
-                <span class="menu-title">Posters</span>
+        <li class="sz-heading">Tools</li>
+        <li>
+            <a class="sz-link" href="{{ route('search-module') }}">
+                <i class="mdi mdi-magnify"></i><span class="sz-label">Search</span>
             </a>
         </li>
-    @elseif($User_access_right == 'Admin')
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('all-posters') }}">
-                <span class="menu-icon">
-                    <i class="icon mdi mdi-message-processing"></i>
-                </span>
-                <span class="menu-title">Posters</span>
-            </a>
-        </li>
-    @else
-    @endif
+        @if ($szIsStaff)
+            <li>
+                <a class="sz-link" href="{{ route('all-posters') }}">
+                    <i class="mdi mdi-image-multiple"></i><span class="sz-label">Posters</span>
+                </a>
+            </li>
+        @endif
+        @if ($szIsSuper)
+            <li class="sz-group">
+                <button class="sz-toggle" type="button" data-sz-group aria-expanded="false">
+                    <i class="mdi mdi-shield-account-outline"></i><span class="sz-label">Administration</span><i class="mdi mdi-chevron-right sz-chev"></i>
+                </button>
+                <div class="sz-subwrap"><ul class="sz-sub">
+                    <li><a class="sz-link" href="{{ route('user-information') }}"><span class="sz-label">View users</span></a></li>
+                    <li><a class="sz-link" href="{{ route('backup.uploads') }}"><span class="sz-label">Backup</span></a></li>
+                </ul></div>
+            </li>
+        @endif
+    </ul>
+</div>
 
-    @if ($User_access_right == 'SuperAdmin')
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ route('backup.uploads') }}">
-                <span class="menu-icon">
-                    <i class="icon mdi mdi-cloud-upload"></i>
-                </span>
-                <span class="menu-title">Backup</span>
-            </a>
-        </li>
-    @else
-    @endif
-
-</ul>
+<div class="sz-account">
+    <span class="sz-avatar">{{ strtoupper(substr($szName, 0, 1)) }}</span>
+    <div>
+        <b>{{ $szName }}</b>
+        <span>{{ $szRole }}</span>
+    </div>
+</div>

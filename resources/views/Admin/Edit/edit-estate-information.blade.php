@@ -79,7 +79,39 @@
 
                             </div>
 
-                            <div class="row">
+                            @php
+                                $szKind = $estateInformation->documentKind();
+                                $szUrl = $estateInformation->documentUrl();
+                            @endphp
+                            <div class="row sz-file-row">
+                                <div class="col-md-5">
+                                    <label class="col-form-label">Current estate file</label>
+                                    @if ($szKind)
+                                        <div class="sz-doc sz-doc-preview">
+                                            @if ($szKind === 'pdf')
+                                                <canvas data-sz-pdf="{{ $szUrl }}" aria-label="First page of the estate PDF"></canvas>
+                                            @else
+                                                <img class="doc-img" src="{{ $szUrl }}" alt="Estate file">
+                                            @endif
+                                        </div>
+                                        <a href="{{ $szUrl }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm mt-2">
+                                            <i class="mdi mdi-open-in-new"></i> Open {{ $szKind === 'pdf' ? 'PDF' : 'image' }}
+                                        </a>
+                                    @else
+                                        <p class="text-muted mb-0">No file is attached to this estate yet. Upload one on the right.</p>
+                                    @endif
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <label for="estate_pdf" class="col-form-label">{{ $szKind ? 'Replace the estate file' : 'Upload the estate file' }} (optional)</label>
+                                        <input type="file" name="estate_pdf" id="estate_pdf" class="form-control"
+                                            accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*">
+                                        <small class="text-muted d-block mt-2">PDF, JPG, PNG or WEBP, up to 20 MB. Leave this empty to keep the current file.</small>
+                                        <span class="text-danger d-block mt-1">@error('estate_pdf'){{ $message }}@enderror</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
                                 <div class="col-md-10">
                                     <button type="submit" class="btn btn-primary"
                                         onclick="return confirm('Please confirm you want to update this informaiton !')">Update</button>
@@ -98,7 +130,7 @@
         <div class="d-sm-flex justify-content-center justify-content-sm-between">
             <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
                 SozoPropertiesLimited.com 2023</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
                 <a href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
         </div>
     </footer>
@@ -118,6 +150,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="script.js"></script>
+<script src="/assets/sozo/docthumb.js" defer></script>
 <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
 <!-- endinject -->
 <!-- Plugin js for this page -->

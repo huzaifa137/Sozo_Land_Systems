@@ -19,12 +19,12 @@ public function handle(Request $request, Closure $next): Response
         //     return redirect('/')->with('fail', 'You must be logged in');
         // }
         
-        if (!session()->has('LoggedAdmin') && $request->path() != '/' && $request->path() != 'privacy-policy') {
-    return redirect('/')->with('fail', 'You must be logged in');
+        if (!session()->has('LoggedAdmin') && !in_array($request->path(), ['/', 'login', 'privacy-policy'])) {
+    return redirect('login')->with('fail', 'You must be logged in');
 }
 
 
-        if (session()->has('LoggedAdmin') && $request->path() == '/') {
+        if (session()->has('LoggedAdmin') && in_array($request->path(), ['/', 'login'])) {
             return redirect()->route('admin-dashboard');
         }
 

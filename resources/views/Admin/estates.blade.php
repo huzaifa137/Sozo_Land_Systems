@@ -1,250 +1,179 @@
 @include('includes.header')
-        <!-- partial -->
-        <div class="main-panel">
-          <div class="content-wrapper">
-            <div class="row">
-              <div class="col-12 grid-margin stretch-card">
-                
-              </div>
+
+@php
+    $szRoleHere = \App\Models\AdminRegister::where('id', session('LoggedAdmin'))->value('admin_category');
+
+    // Free photos from Unsplash. If one fails to load, the card shows a drawn layout sketch instead.
+    $szPhotos = [
+        'photo-1500382017468-9049fed747ef',
+        'photo-1472214103451-9374bd1c798e',
+        'photo-1441974231531-c6227db76b6e',
+        'photo-1500530855697-b586d89ba3ee',
+        'photo-1501785888041-af3ef285b470',
+        'photo-1506905925346-21bda4d32df4',
+    ];
+    $szPrice = function ($value) {
+        $digits = preg_replace('/[^\d.]/', '', (string) $value);
+        return $digits !== '' ? 'UGX ' . number_format((float) $digits) : $value;
+    };
+@endphp
+
+<div class="main-panel">
+    <div class="content-wrapper">
+
+        <div class="sz-page-head">
+            <div>
+                <h2>Estates</h2>
+                <p>Every estate Sozo is selling, with its location, price and number of plots.</p>
             </div>
-
-
-                    <style>
-                        a{
-                            color: white;
-                        }
-                    </style>
-                    
-                    
-                <?php  
-                
-                use App\Models\AdminRegister;
-
-                $user_id = Session('LoggedAdmin');
-                $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
-                
-                ?>
-
-            <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$count_estates}}</h3>
-                        </div>
-                      </div>
-               
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Total Estates</h6>
-                  </div>
+            @if ($szRoleHere == 'SuperAdmin')
+                <div class="sz-actions">
+                    <a class="btn btn-primary btn-lg" href="{{ route('add-estate') }}"><i class="mdi mdi-plus"></i> Create an estate</a>
                 </div>
-              </div>
-              
-             
-              
-              
-                 @if($User_access_right == 'SuperAdmin')
-                 
-                  <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$number_plots}}</h3>
-                        </div>
-                      </div>
-                   
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Total Fully purchased plots</h6>
-                  </div>
-                </div>
-              </div>
-              
-              
-                            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$Not_fully_paid_plots}}</h3>
-                        </div>
-                      </div>
-                   
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Not taken plots</h6>
-                  </div>
-                </div>
-              </div>
-                 
-                 
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <a href="{{ route('add-estate')}}" style="text-decoration: none;color:white;">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h4 style="text-align: center">Create a new Estate</h4>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-plus icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                  </div>
-                </div>
-              </div>
-              
-            @else
-            
-        
             @endif
-              
-              
+        </div>
 
-            
+        <section class="sz-kpis" aria-label="Estate figures">
+            <article class="sz-kpi">
+                <header>Total estates <i class="mdi mdi-terrain"></i></header>
+                <strong><span data-sz-count="{{ (int) $count_estates }}">{{ number_format((int) $count_estates) }}</span></strong>
+            </article>
+            @if ($szRoleHere == 'SuperAdmin')
+                <article class="sz-kpi lake">
+                    <header>Fully purchased plots <i class="mdi mdi-check-decagram"></i></header>
+                    <strong><span data-sz-count="{{ (int) $number_plots }}">{{ number_format((int) $number_plots) }}</span></strong>
+                </article>
+                <article class="sz-kpi sky">
+                    <header>Plots not taken <i class="mdi mdi-map-marker-outline"></i></header>
+                    <strong><span data-sz-count="{{ (int) $Not_fully_paid_plots }}">{{ number_format((int) $Not_fully_paid_plots) }}</span></strong>
+                </article>
+            @endif
+        </section>
 
-            </div>
-
-            <!--<div class="row ">-->
-            <!--  <div class="col-12 grid-margin">-->
-            <!--    <div class="card">-->
-            <!--      <div class="card-body">-->
-            <!--        <h4 class="card-title">All Estates </h4>-->
-            <!--        <div class="table-responsive">-->
-            <!--          <table class="table">-->
-            <!--            <thead>-->
-            <!--              <tr>-->
-            <!--                <th>No</th>-->
-            <!--                <th> Estate Name</th>-->
-            <!--                <th> Estate Price </th>-->
-            <!--                <th> Location </th>-->
-            <!--                <th> Number of plots </th>-->
-            <!--                <th>View Estate</th>-->
-            <!--              </tr>-->
-            <!--            </thead>-->
-            <!--            <tbody>-->
-                        
-            <!--          @foreach ($estates as $key => $item)-->
-                        
-            <!--            <tr>-->
-            <!--                <td><a href="{{'view-estate/'.$item->id}}"> {{$key+1}} </a></td>-->
-            <!--                <td><a href="{{'view-estate/'.$item->id}}"> {{$item->estate_name}} </a></td>-->
-            <!--                <td><a href="{{'view-estate/'.$item->id}}"> {{$item->estate_price}} </a></td>-->
-            <!--                <td><a href="{{'view-estate/'.$item->id}}"> {{$item->location}} </a></td>-->
-            <!--                <td><a href="{{'view-estate/'.$item->id}}"> {{$item->number_of_plots}} </a></td>-->
-            <!--                <td><a href="{{'view-estate/'.$item->id}}"><i class="btn btn-success">View Estate</i></a></td>-->
-            <!--                {{-- <td><a href="{{'delete/'.$info->id}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this case ?')"><i class="la la-trash-o"></i></a></td> --}}-->
-            <!--              </tr>-->
-            <!--              @endforeach    -->
-            <!--            </tbody>-->
-            <!--          </table>-->
-            <!--        </div>-->
-            <!--      </div>-->
-            <!--    </div>-->
-            <!--  </div>-->
-            <!--</div>-->
-            
- <div class="row">
-    <div class="col-12 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">All Estates</h4>
-                <!-- Search Bar -->
-                <input type="text" id="searchBar" placeholder="Search estates by name..." class="form-control mb-4">
-
-                <div class="table-responsive">
-                    <table class="table" id="estatesTable">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Estate Name</th>
-                                <th>Estate Price</th>
-                                <th>Location</th>
-                                <th>Number of plots</th>
-                                <th>View Estate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($estates as $key => $item)
-                                <tr>
-                                    <td><a href="{{ url('view-estate/'.$item->id) }}"> {{$key+1}} </a></td>
-                                    <td><a href="{{ url('view-estate/'.$item->id) }}"> {{$item->estate_name}} </a></td>
-                                    <td><a href="{{ url('view-estate/'.$item->id) }}"> {{$item->estate_price}} </a></td>
-                                    <td><a href="{{ url('view-estate/'.$item->id) }}"> {{$item->location}} </a></td>
-                                    <td><a href="{{ url('view-estate/'.$item->id) }}"> {{$item->number_of_plots}} </a></td>
-                                    <td><a href="{{ url('view-estate/'.$item->id) }}" class="btn btn-success">View Estate</a></td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div id="szEstates">
+            <div class="sz-toolbar">
+                <div class="sz-search">
+                    <i class="mdi mdi-magnify"></i>
+                    <input type="search" class="form-control" id="searchBar" placeholder="Search estates by name or location"
+                        aria-label="Search estates" data-sz-filter="#szEstates [data-search]" data-sz-empty="#szNoMatch">
+                </div>
+                <div class="sz-seg" role="group" aria-label="Change view">
+                    <button type="button" class="on" data-sz-view="cards" data-sz-target="#szEstates" aria-pressed="true"><i class="mdi mdi-view-grid"></i> Cards</button>
+                    <button type="button" data-sz-view="table" data-sz-target="#szEstates" aria-pressed="false"><i class="mdi mdi-table"></i> Table</button>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<script>
-    document.getElementById('searchBar').addEventListener('keyup', function() {
-        const query = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#estatesTable tbody tr');
-
-        rows.forEach(row => {
-            const estateName = row.querySelector('td:nth-child(2) a').textContent.toLowerCase();
-            if (estateName.includes(query)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-</script>
-
-
-          
-          </div>
-          <!-- content-wrapper ends -->
-          <!-- partial:partials/_footer.html -->
-          <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © SozoPropertiesLimited.com 2023</span>
-              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon <a href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
+            <div class="sz-estates">
+                @foreach ($estates as $key => $item)
+                    @php
+                        $szKind = $item->documentKind();
+                        $szUrl = $item->documentUrl();
+                        $szPhoto = 'https://images.unsplash.com/' . $szPhotos[$item->id % count($szPhotos)] . '?auto=format&fit=crop&w=900&q=70';
+                    @endphp
+                    <article class="sz-estate" data-search="{{ strtolower($item->estate_name . ' ' . $item->location) }}">
+                        @if ($szKind)
+                            <div class="sz-estate-cover sz-doc">
+                                @if ($szKind === 'pdf')
+                                    <canvas data-sz-pdf="{{ $szUrl }}" aria-label="First page of the {{ $item->estate_name }} PDF"></canvas>
+                                    <img class="sz-doc-alt" data-sz-alt="{{ $szPhoto }}" alt="Land at {{ $item->estate_name }}" data-sz-fallback data-seed="{{ $item->id }}">
+                                @else
+                                    <img class="doc-img" src="{{ $szUrl }}" alt="Plan of {{ $item->estate_name }}" loading="lazy" data-sz-fallback data-seed="{{ $item->id }}">
+                                @endif
+                                <a class="sz-doc-open" href="{{ $szUrl }}" target="_blank" rel="noopener">
+                                    <i class="mdi mdi-open-in-new"></i> Open {{ $szKind === 'pdf' ? 'PDF' : 'image' }}
+                                </a>
+                                <span class="sz-estate-loc"><i class="mdi mdi-map-marker"></i> {{ $item->location }}</span>
+                            </div>
+                        @else
+                            <div class="sz-estate-cover">
+                                <img src="{{ $szPhoto }}" alt="Land at {{ $item->estate_name }}" loading="lazy" data-sz-fallback data-seed="{{ $item->id }}">
+                                <div class="sz-estate-sketch" data-sz-sketch="{{ $item->id }}" aria-hidden="true"></div>
+                                <span class="sz-estate-loc"><i class="mdi mdi-map-marker"></i> {{ $item->location }}</span>
+                            </div>
+                        @endif
+                        <div class="sz-estate-body">
+                            <h3>{{ $item->estate_name }}</h3>
+                            <div class="sz-estate-meta">
+                                <div><small>Estate price</small><b>{{ $szPrice($item->estate_price) }}</b></div>
+                                <div style="text-align:right"><small>Plots</small><b>{{ $item->number_of_plots }}</b></div>
+                            </div>
+                        </div>
+                        <a class="sz-open" href="{{ url('view-estate/' . $item->id) }}" aria-label="Open {{ $item->estate_name }}"></a>
+                    </article>
+                @endforeach
             </div>
-          </footer>
-          <!-- partial -->
+
+            <div class="sz-estates-table">
+                <div class="sz-panel">
+                    <div class="table-responsive">
+                        <table class="table sz-stack" id="estatesTable">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Estate name</th>
+                                    <th>Estate price</th>
+                                    <th>Location</th>
+                                    <th>Plots</th>
+                                    <th>Estate file</th>
+                                    <th>View</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($estates as $key => $item)
+                                    <tr data-search="{{ strtolower($item->estate_name . ' ' . $item->location) }}">
+                                        <td>{{ $key + 1 }}</td>
+                                        <td><a href="{{ url('view-estate/' . $item->id) }}"><b>{{ $item->estate_name }}</b></a></td>
+                                        <td class="sz-money">{{ $szPrice($item->estate_price) }}</td>
+                                        <td>{{ $item->location }}</td>
+                                        <td>{{ $item->number_of_plots }}</td>
+                                        <td>
+                                            @if ($item->documentKind())
+                                                <a href="{{ $item->documentUrl() }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">Open {{ $item->documentKind() === 'pdf' ? 'PDF' : 'image' }}</a>
+                                            @else
+                                                <span class="text-muted">None</span>
+                                            @endif
+                                        </td>
+                                        <td><a href="{{ url('view-estate/' . $item->id) }}" class="btn btn-outline-success btn-sm">View estate</a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sz-empty" id="szNoMatch" style="display:none">
+                <i class="mdi mdi-map-search-outline"></i><b>No estate matches that search</b>Try a shorter name or a different location.
+            </div>
+
+            @if ($estates->isEmpty())
+                <div class="sz-empty">
+                    <i class="mdi mdi-terrain"></i><b>No estates yet</b>
+                    @if ($szRoleHere == 'SuperAdmin')
+                        Create the first estate to start adding plots.
+                    @else
+                        Estates will appear here once a super admin creates them.
+                    @endif
+                </div>
+            @endif
         </div>
-        <!-- main-panel ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
+
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <script src="/assets/vendors/chart.js/Chart.min.js"></script>
-    <script src="/assets/vendors/progressbar.js/progressbar.min.js"></script>
-    <script src="/assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-    <script src="/assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="/assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
-    <script src="/assets/js/jquery.cookie.js" type="text/javascript"></script>
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="/assets/js/off-canvas.js"></script>
-    <script src="/assets/js/hoverable-collapse.js"></script>
-    <script src="/assets/js/misc.js"></script>
-    <script src="/assets/js/settings.js"></script>
-    <script src="/assets/js/todolist.js"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page -->
-    <script src="/assets/js/dashboard.js"></script>
-    <!-- End custom js for this page -->
-  </body>
+    <!-- content-wrapper ends -->
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="d-block text-center text-sm-left d-sm-inline-block">&copy; {{ date('Y') }} Sozo Property Consultants Limited</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Estates without a file show a free Unsplash photo</span>
+        </div>
+    </footer>
+</div>
+<!-- main-panel ends -->
+</div>
+<!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller ends -->
+<script src="/assets/vendors/js/vendor.bundle.base.js"></script>
+<script src="/assets/sozo/docthumb.js" defer></script>
+</body>
+
 </html>

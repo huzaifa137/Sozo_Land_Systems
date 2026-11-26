@@ -2635,6 +2635,11 @@ $AmountFormatted = number_format($Amount);
 
         $whereConditions = ['plot_number' => $info];
 
+        // Optional: scope by estate so identical plot numbers in different estates don't clash
+        if ($request->filled('estate')) {
+            $whereConditions['estate'] = $request->input('estate');
+        }
+
         $width_1 = DB::table('plots')->where($whereConditions)->value('width_1');
         $width_2 = DB::table('plots')->where($whereConditions)->value('width_2');
         $height_1 = DB::table('plots')->where($whereConditions)->value('height_1');
@@ -3567,6 +3572,13 @@ $AmountFormatted = number_format($Amount);
 
     public function storeEstateUpdatedInformation(Request $request)
     {
+        $request->validate([
+            'estate_pdf' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:20480',
+        ], [
+            'estate_pdf.mimes' => 'The estate file must be a PDF or an image (JPG, PNG or WEBP).',
+            'estate_pdf.max' => 'The estate file must be 20 MB or smaller.',
+            'estate_pdf.uploaded' => 'The estate file could not be uploaded. It may be larger than the server allows.',
+        ]);
 
         $post = estate::find($request->estateId);
 
@@ -3575,10 +3587,47 @@ $AmountFormatted = number_format($Amount);
         $post->location = $request->location;
         $post->number_of_plots = $request->numberofPlot;
 
+        $oldFile = null;
+
+        if ($request->hasFile('estate_pdf')) {
+            $oldFile = $post->documentPath();
+
+            $file = $request->file('estate_pdf');
+            $filename = date('YmdHis') . '-' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(6))
+                . '.' . strtolower($file->getClientOriginalExtension());
+
+            // Same destination the "add estate" form uses.
+            $file->move('estate_pdf', $filename);
+            $post->estate_pdf = $filename;
+        }
+
         $post->save();
 
+        // Remove the replaced file, unless another estate still points at it.
+        if ($oldFile && is_file($oldFile) && !estate::where('estate_pdf', basename($oldFile))->where('id', '!=', $post->id)->exists()) {
+            @unlink($oldFile);
+        }
+
         return redirect()->route('view-estate', ['id' => $request->estateId])
-            ->with('success', 'Estate information updated successfully.');
+            ->with('success', $request->hasFile('estate_pdf')
+                ? 'Estate information and file updated successfully.'
+                : 'Estate information updated successfully.');
+    }
+
+    /**
+     * Streams an estate's uploaded PDF or image. Public, so the landing page can show it.
+     */
+    public function estateFile($id)
+    {
+        $estate = estate::find($id);
+        $path = $estate ? $estate->documentPath() : null;
+
+        abort_unless($path && $estate->documentKind(), 404);
+
+        return response()->file($path, [
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
+            'Cache-Control' => 'public, max-age=0, must-revalidate',
+        ]);
     }
 
     public function privacyPolicy()

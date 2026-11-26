@@ -16,14 +16,16 @@
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/sozo/sozo.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/img/favicon.jpg" />
 
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
   </head>
-  <body>
+  <body class="sz-bare">
     <div class="container-scroller">
       <!-- partial:../../partials/_sidebar.html -->
       

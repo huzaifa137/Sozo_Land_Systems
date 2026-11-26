@@ -1,618 +1,267 @@
-<!DOCTYPE html>
-<html lang="en">
+@include('includes.header')
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Sozo Admin Dashboard</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="/assets/vendors/jvectormap/jquery-jvectormap.css">
-    <link rel="stylesheet" href="/assets/vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="/assets/vendors/owl-carousel-2/owl.carousel.min.css">
-    <link rel="stylesheet" href="/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <!-- End layout styles -->
-    {{-- <link rel="shortcut icon" href="/assets/images/favicon.png" /> --}}
-    <link rel="shortcut icon" href="/img/favicon.jpg" />
+@php
+    $szMoney = fn($n) => number_format((float) $n);
+    $szFirstName = $LoggedAdminInfo->username ?? 'there';
+@endphp
 
-</head>
-    
-    <style>
-    .bg-white {
-    --bs-bg-opacity: 1;
-    background-color: rgb(255 255 255 / 27%) !important;
-    }
+<div class="main-panel">
+    <div class="content-wrapper">
 
-    </style>
+        @if (Session::get('error'))
+            <div class="alert alert-danger" role="alert">{{ Session::get('error') }}</div>
+        @endif
 
+        @if (Session::get('success'))
+            <div class="alert alert-success" role="status">{{ Session::get('success') }}</div>
+        @endif
 
-<body>
-    
-    
-             <?php  
-                
-                use App\Models\AdminRegister;
-
-                $user_id = Session('LoggedAdmin');
-                $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_category');
-                
-              ?>
-              
-              
-    <div class="container-scroller">
-
-        <!-- partial:partials/_sidebar.html -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
-            <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-                <a class="sidebar-brand brand-logo" href="{{ route('admin-dashboard') }}"><img
-                        src="/assets/images/logo.svg" alt="logo" /></a>
-                <a class="sidebar-brand brand-logo-mini" href="{{ route('admin-dashboard') }}"><img
-                        src="/assets/images/logo-mini.svg" alt="logo" /></a>
-            </div>
-
-            @include('includes.SideBar')
-
-        </nav>
-        <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-            <!-- partial:partials/_navbar.html -->
-            <nav class="navbar p-0 fixed-top d-flex flex-row">
-                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                    <a class="navbar-brand brand-logo-mini" href="{{ route('admin-dashboard') }}"><img
-                            src="/assets/images/logo-mini.svg" alt="logo" /></a>
-                </div>
-                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-                    <button class="navbar-toggler navbar-toggler align-self-center" type="button"
-                        data-toggle="minimize">
-                        <span class="mdi mdi-menu"></span>
-                    </button>
-
-                    @include('includes.TopNav')
-
-
-                    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-                        data-toggle="offcanvas">
-                        <span class="mdi mdi-format-line-spacing"></span>
-                    </button>
-                </div>
-            </nav>
-            <!-- partial -->
-            <div class="main-panel">
-                <div class="content-wrapper">
-                    <div class="row">
-                        <div class="col-12 grid-margin stretch-card">
-
-                        </div>
-                    </div>
-
-                    @if (Session::get('error'))
-                           <div class="alert alert-danger">
-                            {{Session::get('error')}}
-                           </div>
-                        @endif
-
-
-                        @if (Session::get('success'))
-                        <div class="alert alert-success">
-                         {{Session::get('success')}}
-                        </div>
-                     @endif
-                     
-                     <style>
-                        a{
-                            color:white;
-                        }
-                     </style>
-
-                        {{-- <input type="hidden" name="admin_category" value="{{$LoggedAdminInfo['admin_category']}}"> --}}
-
-
-                                                @if($User_access_right == 'SuperAdmin')
-                                                    <div class="row">
-                        <div class="col-sm-4 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Today's Sales</h5>
-                                    <div class="row">
-                                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                                            <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                                <h2 class="mb-0">{{ $totalAmount }}/=</h2>
-                                                {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p> --}}
-                                            </div>
-                                            {{-- <h6 class="text-muted font-weight-normal">11.38% Since last month</h6> --}}
-                                        </div>
-                                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                                            <i class="icon-lg mdi mdi-codepen text-primary ms-auto"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Weekly Sales</h5>
-                                    <div class="row">
-                                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                                            <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                                <h2 class="mb-0">{{ $totalweekSales }}/=</h2>
-                                                {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+8.3%</p> --}}
-                                            </div>
-                                            {{-- <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6> --}}
-                                        </div>
-                                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                                            <i class="icon-lg mdi mdi-wallet-travel text-danger ms-auto"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Monthly Sales</h5>
-                                    <div class="row">
-                                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                                            <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                                <h2 class="mb-0">{{ $totalmonthSales }}/=</h2>
-                                                {{-- <p class="text-danger ms-2 mb-0 font-weight-medium">-2.1% </p> --}}
-                                            </div>
-                                            {{-- <h6 class="text-muted font-weight-normal">2.27% Since last month</h6> --}}
-                                        </div>
-                                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                                            <i class="icon-lg mdi mdi-monitor text-success ms-auto"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                                                @else
-                                                
-                                                @endif   
-
-
-                    <div class="row">
-                        <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">{{ $plots_fully_paid }}</h3>
-                                                {{-- <p class="text-success ms-2 mb-0 font-weight-medium">100%</p> --}}
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            {{-- <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div> --}}
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Plots fully paid</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">{{ $under_payment }}</h3>
-                                                {{-- <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p> --}}
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            {{-- <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div> --}}
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Plots under payments</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <div class="d-flex align-items-center align-self-start">
-                                                <h3 class="mb-0">{{ $amount_in_debts }}/=</h3>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="icon icon-box-danger">
-                                                <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h6 class="text-muted font-weight-normal">Income demanded</h6>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xl-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Most Recent Customers</h4>
-                                    <div class="owl-carousel owl-theme full-width owl-carousel-dash portfolio-carousel"
-                                        id="owl-carousel-basic">
-                                        @foreach ($all_sales as $all_sale)
-                                            <div class="item">
-                                                <img src="{{ '/public/public/national_id/' . $all_sale->national_id_front }}"
-                                                    alt="" alt="">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex flex-row justify-content-between">
-                                        <h4 class="card-title mb-1">Quick Links</h4>
-                                        <p class="text-muted mb-1">Your data status</p>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="preview-list">
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-primary">
-                                                            <i class="mdi mdi-file-document"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <a href="{{ route('accomplished') }}"
-                                                            style="text-decoration: none;color:white;">
-                                                            <div class="flex-grow">
-                                                                <h6 class="preview-subject">Full purchased plots and
-                                                                    Houses</h6>
-                                                                <p class="text-muted mb-0">See details of full
-                                                                    purchased plots and houses</p>
-                                                            </div>
-                                                        </a>
-
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-success">
-                                                            <i class="mdi mdi-cloud-download"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <a href="{{ route('current-sales') }}"
-                                                            style="text-decoration: none;color:white;">
-                                                            <div class="flex-grow">
-                                                                <h6 class="preview-subject">Today's Sales</h6>
-                                                                <p class="text-muted mb-0">See details of full
-                                                                    purchased plots and houses today</p>
-                                                            </div>
-                                                        </a>
-
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-info">
-                                                            <i class="mdi mdi-clock"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <a href="{{ route('weekly-records') }}"
-                                                            style="text-decoration: none;color:white;">
-                                                            <div class="flex-grow">
-                                                                <h6 class="preview-subject">Weekly's Sales</h6>
-                                                                <p class="text-muted mb-0">See details of weekly plots
-                                                                    and houses purchases</p>
-                                                            </div>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item border-bottom">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-danger">
-                                                            <i class="mdi mdi-email-open"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <a href="{{ route('monthly-records') }}"
-                                                            style="text-decoration: none;color:white;">
-                                                            <div class="flex-grow">
-                                                                <h6 class="preview-subject">Monthly's Sales</h6>
-                                                                <p class="text-muted mb-0">See details of monthly plots
-                                                                    and houses purchase</p>
-                                                            </div>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="preview-item">
-                                                    <div class="preview-thumbnail">
-                                                        <div class="preview-icon bg-warning">
-                                                            <i class="mdi mdi-chart-pie"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="preview-item-content d-sm-flex flex-grow">
-                                                        <a href="{{ route('payment-reminder') }}"
-                                                            style="text-decoration: none;color:white;">
-                                                            <div class="flex-grow">
-                                                                <h6 class="preview-subject">Reminders</h6>
-                                                                <p class="text-muted mb-0">See details of client
-                                                                    reminders today</p>
-                                                            </div>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row ">
-                        <div class="col-12 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">All Customer Sales </h4>
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th> Client Name </th>
-                                                    <th> Estate </th>
-                                                    <th> Plot no.</th>
-                                                    <th> Payment Mode </th>
-                                                    <th> Amount paid </th>
-                                                    <th> Balance </th>
-                                                    <th> View </th>
-                                                    
-                                                @if($User_access_right == 'SuperAdmin')
-                                                    <th style="text-align:center;" colspan="2">Action</th>
-                                                @else
-                                                
-                                                @endif
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($all_sales as $key => $all_sale)
-                                                    <tr>
-                                                        <td>{{$key+1}}</td>
-                                                        <td>
-                                                            <a href="{{ 'view-reciept/' . $all_sale->id }}">
-                                                           
-                                                            <span class="ps-2">{{ $all_sale->firstname }}</span>
-                                                            </a>
-                                                        </td>
-
-
-                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->estate }} </a></td>
-                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->plot_number }} </a></td>
-                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->method_payment }} </a></td>
-                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->amount_payed }} </a></td>
-                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"> {{ $all_sale->balance }} </a></td>
-
-                                                        <td><a href="{{ 'view-reciept/' . $all_sale->id }}"
-                                                                class="btn btn-outline-success btn-icon-text">
-                                                                <i class="mdi mdi-eye btn-icon-prepend"></i> View </a>
-                                                        </td>
-
-                                                            @if($User_access_right == 'SuperAdmin')
-
-                                                        <td><a href="{{ 'edit/'.$all_sale->id .'/'. $LoggedAdminInfo['id'] }}"
-                                                            class="btn btn-outline-warning btn-icon-text">
-                                                            <i class="mdi mdi-eye btn-icon-prepend"></i> Edit </a>
-                                                        </td>
-
-                                                        <!--<td>-->
-                                                        <!--<a href="{{ 'delete/' . $all_sale->id .'/'. $all_sale->plot_number .'/'. $all_sale->estate }}" onclick=" return confirm('Please confirm you want to delete this record ?')"-->
-                                                        <!--        class="btn btn-outline-danger btn-icon-text">-->
-                                                        <!--        <i class="mdi mdi-eye btn-icon-prepend"></i> delete </a>-->
-                                                        <!--</td>-->
-                                                        
-                                                        @else
-                                                        
-                                                        @endif
-
-                                                @endforeach
-
-                                                </tr>
-            
-                                            </tbody>
-                                            
-                                        </table>
-
-                                        <br> <br>
-                                        <span>
-                                               {{ $all_sales->links() }}
-                                        </span>
-                                        
-                                        <style>
-                                            .w-5{
-                                                display: none;
-                                            }
-                                        </style>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    
-                     <div class="row ">
-            <div class="col-12 grid-margin">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Most Recent Plots back on market </h4>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th> Plot number</th>
-                                        <th> Estate </th>
-                                        <th> view </th>
-                                        <th> Plot status </th>
-                                         <!--<th> Payment Status </th>-->
-                                        <!--<th> Clearence plot</th>-->
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    @foreach ($paid_not_in_cash as $key => $item)
-                                        <?php
-                                        
-                                        $userinformation = DB::table('buyers')
-                                            ->where('id', $item->user_id)
-                                            ->first();
-                                            
-                                        $plot_status = DB::table('plots')
-                                            ->where('estate', $item->estate)
-                                            ->where('plot_number', $item->plot_number)
-                                            ->first();
-                                        ?>
-
-                                        <tr>
-                                            <td>{{ $key + 1 }}</td>
-                                            <td> {{ @$userinformation->firstname . ' ' . @$userinformation->lastname }}
-                                            </td>
-                                            <td> {{ @$userinformation->plot_number }} </td>
-                                            <td> {{ $item->estate }} </td>
-
-                                            <td><a href="{{ 'view-reciept/' . $item->user_id }}"
-                                                    class="btn btn-outline-info btn-icon-text">
-                                                    <i class="mdi mdi-eye btn-icon-prepend"></i> View </a> </td>
-
-                                            @if ($plot_status->status == 'Not taken')
-                                                <td>
-                                                    <a href="javascript:void();"
-                                                       class="btn btn-outline-success btn-icon-text"> <!-- Green Color -->
-                                                        <i class="mdi mdi-check-circle btn-icon-prepend"></i> Plot available
-                                                    </a>
-                                                </td>
-                                            @else
-                                                <td>
-                                                    <a href="javascript:void();"
-                                                       class="btn btn-outline-danger btn-icon-text"> <!-- Red Color -->
-                                                        <i class="mdi mdi-close-circle btn-icon-prepend"></i> Already Resold
-                                                    </a>
-                                                </td>
-                                            @endif
-                                            
-                                            <!--@if ($item->seller_agreeement == '-')-->
-                                            <!--    <td><a href="{{ 'view-reciept/' . $item->user_id }}"-->
-                                            <!--            class="btn btn-danger btn-icon-text">-->
-                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Pending clearence-->
-                                            <!--        </a>-->
-                                            <!--    </td>-->
-                                            <!--@else-->
-                                            <!--    <td><a href="{{ 'view-reciept/' . $item->user_id }}"-->
-                                            <!--            class="btn btn-success btn-icon-text">-->
-                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Cleared-->
-                                            <!--            successfully</a>-->
-                                            <!--    </td>-->
-                                            <!--@endif-->
-                                            
-
-                                            <!--@if ($item->seller_agreeement == '-')-->
-                                            <!--    <td><a href="{{ 'clearence-user-agreement/' . $item->user_id }}"-->
-                                            <!--            class="btn btn-outline-primary btn-icon-text">-->
-                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Clearence </a>-->
-                                            <!--    </td>-->
-                                            <!--@else-->
-                                            <!--    <td><a href="{{ 'clearence-user-agreement/' . $item->user_id }}"-->
-                                            <!--            class="btn btn-outline-primary btn-icon-text disabled">-->
-                                            <!--            <i class="mdi mdi-eye btn-icon-prepend"></i> Clearence </a>-->
-                                            <!--    </td>-->
-                                            <!--@endif-->
-
-
-
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            
-                             <br> <br>
-                                        <span>
-                                               {{ $paid_not_in_cash->links() }}
-                                        </span>
-                                        
-                                        <style>
-                                            .w-5{
-                                                display: none;
-                                            }
-                                        </style>
-                                        
-                        </div>
-                    </div>
+        {{-- Hero: welcome + a plot plan drawn from the real sales counts --}}
+        <section class="sz-hero" aria-label="Sales overview">
+            <div>
+                <span class="sz-date"><i class="mdi mdi-calendar-today"></i> {{ now()->format('l, j F Y') }}</span>
+                <h2>Welcome back, {{ $szFirstName }}</h2>
+                <p>Sales, instalments and plots across every estate, at a glance.</p>
+                <div class="sz-actions">
+                    <a class="btn btn-primary btn-lg" href="{{ route('admin-buyer') }}"><i class="mdi mdi-plus"></i> Sell a plot</a>
+                    <a class="btn btn-secondary btn-lg" href="{{ route('current-sales') }}">Today's sales</a>
                 </div>
             </div>
+
+            <div class="sz-plan" data-sz-plan data-paid="{{ (int) $plots_fully_paid }}" data-under="{{ (int) $under_payment }}">
+                <div class="sz-legend">
+                    <span><i class="sz-dot" style="background:var(--sz-lake)"></i>Fully paid<b>{{ $szMoney($plots_fully_paid) }}</b></span>
+                    <span><i class="sz-dot" style="background:var(--sz-brass)"></i>Under payment<b>{{ $szMoney($under_payment) }}</b></span>
+                    @if ((int) $plots_fully_paid + (int) $under_payment === 0)
+                        <span>No plots have been sold yet.</span>
+                    @endif
+                </div>
+            </div>
+        </section>
+
+        {{-- Key figures --}}
+        <section class="sz-kpis" aria-label="Key figures">
+            @if ($User_access_right == 'SuperAdmin')
+                <article class="sz-kpi">
+                    <header>Today's sales <i class="mdi mdi-cash-100"></i></header>
+                    <strong><small>UGX</small><span data-sz-count="{{ (float) $totalAmount }}">{{ $szMoney($totalAmount) }}</span></strong>
+                </article>
+                <article class="sz-kpi sky">
+                    <header>This week <i class="mdi mdi-calendar-week"></i></header>
+                    <strong><small>UGX</small><span data-sz-count="{{ (float) $totalweekSales }}">{{ $szMoney($totalweekSales) }}</span></strong>
+                </article>
+                <article class="sz-kpi lake">
+                    <header>This month <i class="mdi mdi-calendar-month"></i></header>
+                    <strong><small>UGX</small><span data-sz-count="{{ (float) $totalmonthSales }}">{{ $szMoney($totalmonthSales) }}</span></strong>
+                </article>
+            @endif
+
+            <article class="sz-kpi lake">
+                <header>Plots fully paid <i class="mdi mdi-check-decagram"></i></header>
+                <strong><span data-sz-count="{{ (int) $plots_fully_paid }}">{{ $szMoney($plots_fully_paid) }}</span></strong>
+            </article>
+            <article class="sz-kpi">
+                <header>Plots under payment <i class="mdi mdi-timer-sand"></i></header>
+                <strong><span data-sz-count="{{ (int) $under_payment }}">{{ $szMoney($under_payment) }}</span></strong>
+            </article>
+            <article class="sz-kpi brick">
+                <header>Income demanded <i class="mdi mdi-arrow-bottom-left"></i></header>
+                <strong><small>UGX</small><span data-sz-count="{{ (float) $amount_in_debts }}">{{ $szMoney($amount_in_debts) }}</span></strong>
+            </article>
+        </section>
+
+        <div class="sz-grid-2">
+            {{-- Recent customers --}}
+            <section class="sz-panel" aria-label="Recent customers">
+                <header>
+                    <h3>Recent customers</h3>
+                    <a href="{{ route('all-buyers') }}">All buyers</a>
+                </header>
+                @if ($all_sales->count())
+                    <div class="sz-people">
+                        @foreach ($all_sales as $all_sale)
+                            <a class="sz-person" href="{{ url('view-reciept/' . $all_sale->id) }}">
+                                <img src="{{ '/public/public/national_id/' . $all_sale->national_id_front }}"
+                                    alt="ID photo for {{ $all_sale->firstname }}" loading="lazy"
+                                    data-sz-fallback data-seed="{{ $all_sale->id }}">
+                                <div>
+                                    <b>{{ $all_sale->firstname }}</b>
+                                    <span>{{ $all_sale->estate }}, plot {{ $all_sale->plot_number }}</span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="sz-empty"><i class="mdi mdi-account-multiple-outline"></i><b>No customers yet</b>Sell a plot and the buyer shows up here.</div>
+                @endif
+            </section>
+
+            {{-- Shortcuts --}}
+            <section class="sz-panel" aria-label="Shortcuts">
+                <header>
+                    <h3>Shortcuts</h3>
+                    <span>Jump straight to a list</span>
+                </header>
+                <nav class="sz-shortcuts">
+                    <a class="sz-shortcut" href="{{ route('accomplished') }}">
+                        <i class="mdi mdi-file-document-outline"></i>
+                        <div><b>Fully purchased</b><span>Plots and houses that are paid in full</span></div>
+                        <i class="mdi mdi-chevron-right"></i>
+                    </a>
+                    <a class="sz-shortcut" href="{{ route('current-sales') }}">
+                        <i class="mdi mdi-cash-100"></i>
+                        <div><b>Today's sales</b><span>Everything sold today</span></div>
+                        <i class="mdi mdi-chevron-right"></i>
+                    </a>
+                    <a class="sz-shortcut" href="{{ route('weekly-records') }}">
+                        <i class="mdi mdi-calendar-week"></i>
+                        <div><b>Weekly sales</b><span>Plots and houses sold this week</span></div>
+                        <i class="mdi mdi-chevron-right"></i>
+                    </a>
+                    <a class="sz-shortcut" href="{{ route('monthly-records') }}">
+                        <i class="mdi mdi-calendar-month"></i>
+                        <div><b>Monthly sales</b><span>Plots and houses sold this month</span></div>
+                        <i class="mdi mdi-chevron-right"></i>
+                    </a>
+                    <a class="sz-shortcut" href="{{ route('payment-reminder') }}">
+                        <i class="mdi mdi-bell-ring-outline"></i>
+                        <div><b>Reminders</b><span>Clients whose instalments fall due today</span></div>
+                        <i class="mdi mdi-chevron-right"></i>
+                    </a>
+                </nav>
+            </section>
         </div>
-        
-        
-                    <div class="row">
 
-                    </div>
-
-                </div>
-                <!-- content-wrapper ends -->
-                <!-- partial:partials/_footer.html -->
-                <footer class="footer">
-                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
-                            SozoPropertiesLimited.com 2023</span>
-                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">E-commerce Coming soon
-                            <a href="javascript:void(0);" target="_blank">Sozo Properties</a></span>
-                    </div>
-                </footer>
-                <!-- partial -->
+        {{-- All customer sales --}}
+        <section class="sz-panel" aria-label="All customer sales">
+            <header>
+                <h3>All customer sales</h3>
+                <span>{{ $all_sales->total() }} in total</span>
+            </header>
+            <div class="table-responsive">
+                <table class="table sz-stack">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Client</th>
+                            <th>Estate</th>
+                            <th>Plot</th>
+                            <th>Payment mode</th>
+                            <th>Amount paid</th>
+                            <th>Balance</th>
+                            <th>View</th>
+                            @if ($User_access_right == 'SuperAdmin')
+                                <th>Edit</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($all_sales as $key => $all_sale)
+                            <tr>
+                                <td>{{ $all_sales->firstItem() + $key }}</td>
+                                <td><a href="{{ url('view-reciept/' . $all_sale->id) }}"><b>{{ $all_sale->firstname }}</b></a></td>
+                                <td>{{ $all_sale->estate }}</td>
+                                <td>{{ $all_sale->plot_number }}</td>
+                                <td>{{ $all_sale->method_payment }}</td>
+                                <td class="sz-money">{{ $szMoney($all_sale->amount_payed) }}</td>
+                                <td>
+                                    @if ((float) $all_sale->balance <= 0)
+                                        <span class="sz-chip lake">Cleared</span>
+                                    @else
+                                        <span class="sz-money">{{ $szMoney($all_sale->balance) }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ url('view-reciept/' . $all_sale->id) }}" class="btn btn-outline-success btn-sm btn-icon-text">
+                                        <i class="mdi mdi-eye btn-icon-prepend"></i> View
+                                    </a>
+                                </td>
+                                @if ($User_access_right == 'SuperAdmin')
+                                    <td>
+                                        <a href="{{ url('edit/' . $all_sale->id . '/' . $LoggedAdminInfo['id']) }}" class="btn btn-outline-warning btn-sm btn-icon-text">
+                                            <i class="mdi mdi-pencil btn-icon-prepend"></i> Edit
+                                        </a>
+                                    </td>
+                                @endif
+                            </tr>
+                        @empty
+                            <tr><td colspan="9"><div class="sz-empty"><i class="mdi mdi-file-document-box"></i><b>No sales recorded</b>New sales will be listed here.</div></td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-            <!-- main-panel ends -->
-        </div>
-        <!-- page-body-wrapper ends -->
+            <div class="mt-4">{{ $all_sales->links('pagination::bootstrap-5') }}</div>
+        </section>
+
+        {{-- Plots back on the market --}}
+        <section class="sz-panel" aria-label="Plots back on the market">
+            <header>
+                <h3>Most recent plots back on market</h3>
+                <a href="{{ route('back-on-market-all') }}">See all</a>
+            </header>
+            <div class="table-responsive">
+                <table class="table sz-stack">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Plot</th>
+                            <th>Estate</th>
+                            <th>View</th>
+                            <th>Plot status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($paid_not_in_cash as $key => $item)
+                            @php
+                                $userinformation = DB::table('buyers')->where('id', $item->user_id)->first();
+                                $plot_status = DB::table('plots')
+                                    ->where('estate', $item->estate)
+                                    ->where('plot_number', $item->plot_number)
+                                    ->first();
+                            @endphp
+                            <tr>
+                                <td>{{ $paid_not_in_cash->firstItem() + $key }}</td>
+                                <td>{{ @$userinformation->firstname . ' ' . @$userinformation->lastname }}</td>
+                                <td>{{ @$userinformation->plot_number }}</td>
+                                <td>{{ $item->estate }}</td>
+                                <td>
+                                    <a href="{{ url('view-reciept/' . $item->user_id) }}" class="btn btn-outline-info btn-sm btn-icon-text">
+                                        <i class="mdi mdi-eye btn-icon-prepend"></i> View
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (optional($plot_status)->status == 'Not taken')
+                                        <span class="sz-chip lake">Plot available</span>
+                                    @else
+                                        <span class="sz-chip brick">Already resold</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6"><div class="sz-empty"><i class="mdi mdi-store"></i><b>Nothing back on the market</b>Plots that return to sale appear here.</div></td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4">{{ $paid_not_in_cash->links('pagination::bootstrap-5') }}</div>
+        </section>
+
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <script src="/assets/vendors/chart.js/Chart.min.js"></script>
-    <script src="/assets/vendors/progressbar.js/progressbar.min.js"></script>
-    <script src="/assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-    <script src="/assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="/assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
-    <script src="/assets/js/jquery.cookie.js" type="text/javascript"></script>
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="/assets/js/off-canvas.js"></script>
-    <script src="/assets/js/hoverable-collapse.js"></script>
-    <script src="/assets/js/misc.js"></script>
-    <script src="/assets/js/settings.js"></script>
-    <script src="/assets/js/todolist.js"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page -->
-    <script src="/assets/js/dashboard.js"></script>
-    <!-- End custom js for this page -->
+    <!-- content-wrapper ends -->
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="d-block text-center text-sm-left d-sm-inline-block">&copy; {{ date('Y') }} Sozo Property Consultants Limited</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Sozo Land Systems</span>
+        </div>
+    </footer>
+</div>
+<!-- main-panel ends -->
+</div>
+<!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller ends -->
+<script src="/assets/vendors/js/vendor.bundle.base.js"></script>
 </body>
 
 </html>
