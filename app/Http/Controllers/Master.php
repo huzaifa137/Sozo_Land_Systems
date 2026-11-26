@@ -31,6 +31,18 @@ class Master extends Controller
      */
     private function paged($items, string $pageName = 'page')
     {
+        // Already a paginator (from ->paginate()): nothing to do.
+        if ($items instanceof \Illuminate\Contracts\Pagination\Paginator) {
+            return $items;
+        }
+
+        // Plain PHP arrays (e.g. results built with $list[] = ... in a loop)
+        // used to slip through unpaginated, which made the view's ->links()
+        // fail with "Call to a member function links() on array".
+        if (is_array($items)) {
+            $items = collect($items);
+        }
+
         return $items instanceof \Illuminate\Support\Collection
             ? $items->paginate(10, $pageName)
             : $items;
