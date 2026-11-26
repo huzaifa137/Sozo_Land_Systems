@@ -67,7 +67,11 @@
                 <a href="{{ url('/admin-register') }}" role="menuitem"><i class="mdi mdi-account-plus-outline"></i> Add a new admin</a>
                 <a href="{{ route('user-information') }}" role="menuitem"><i class="mdi mdi-account-group-outline"></i> Manage users</a>
             @endif
-            <a class="danger" href="{{ route('admin-logout') }}" role="menuitem"><i class="mdi mdi-logout"></i> Log out</a>
+            <a class="danger" href="{{ route('admin-logout') }}" role="menuitem"
+               data-confirm="Are you sure you want to sign out of Sozo Land Systems?"
+               data-confirm-title="Sign out?" data-confirm-icon="question"
+               data-confirm-yes="Yes, sign out" data-confirm-no="Stay signed in"
+               data-sz-loading-text="Signing out, please wait"><i class="mdi mdi-logout"></i> Log out</a>
         </div>
     </div>
 </div>

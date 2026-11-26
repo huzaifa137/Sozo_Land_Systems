@@ -178,7 +178,10 @@
     reset: 'Resetting', change: 'Saving', edit: 'Opening', apply: 'Applying', request: 'Sending', mark: 'Updating', finish: 'Finishing' };
   function verbText(el) {
     var label = el ? (el.value && /^(input)$/i.test(el.tagName) ? el.value : el.textContent) : '';
-    var w = String(label || '').trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
+    label = String(label || '').trim();
+    // "Log out" / "Sign out" must not be read as "Log in" / "Sign in" from the first word alone.
+    if (/^(log|sign)\s*(out|off)\b/i.test(label)) return 'Signing out, please wait';
+    var w = label.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
     return VERBS[w] ? VERBS[w] + ', please wait' : '';
   }
   function loadingText(el, fallback) {
