@@ -65,6 +65,7 @@
     var t = e.target.closest ? e.target : null;
     if (!t) return;
     if (t.closest('[data-sz-burger]')) { body.classList.toggle('sz-nav-open'); return; }
+    if (t.closest('[data-sz-collapse]')) { setCollapsed(!isCollapsed(), true); return; }
     if (t.closest('.sz-scrim')) { closeNav(); return; }
 
     var tog = t.closest('[data-sz-group]');
@@ -86,6 +87,35 @@
 
     if (t.closest('[data-sz-palette]')) { openPalette(); return; }
     if (t.closest('.sz-palette') && !t.closest('.sz-palette-box')) { closePalette(); }
+  });
+
+  /* ---------- Collapsible sidebar (desktop icon rail) ---------- */
+  var rootEl = document.documentElement, SIDEBAR_KEY = 'sz-sidebar';
+  function isCollapsed() { return rootEl.classList.contains('sz-collapsed'); }
+  function syncCollapseButton() {
+    var on = isCollapsed(), label = on ? 'Expand sidebar' : 'Collapse sidebar';
+    $$('[data-sz-collapse]').forEach(function (b) {
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-label', label);
+      b.setAttribute('title', label + ' (Ctrl+B)');
+      var ic = $('.mdi', b);
+      if (ic) { ic.classList.toggle('mdi-menu-open', !on); ic.classList.toggle('mdi-menu', on); }
+    });
+  }
+  function setCollapsed(on, persist) {
+    rootEl.classList.toggle('sz-collapsed', on);
+    syncCollapseButton();
+    if (persist) { try { localStorage.setItem(SIDEBAR_KEY, on ? '1' : '0'); } catch (e) { } }
+    // Let charts and anything width-aware re-measure once the layout has settled.
+    setTimeout(function () { window.dispatchEvent(new Event('resize')); }, reduceMotion ? 0 : 320);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || (e.key || '').toLowerCase() !== 'b') return;
+    var el = e.target, tag = el && el.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (el && el.isContentEditable)) return;
+    if (window.matchMedia && window.matchMedia('(max-width: 991.98px)').matches) return;
+    e.preventDefault();
+    setCollapsed(!isCollapsed(), true);
   });
 
   function markActive() {
@@ -262,6 +292,6 @@
     });
   }
 
-  function init() { rescueImages(); markActive(); stackTables(); countUp(); plotPlan(); filters(); sketches(); }
+  function init() { syncCollapseButton(); rescueImages(); markActive(); stackTables(); countUp(); plotPlan(); filters(); sketches(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

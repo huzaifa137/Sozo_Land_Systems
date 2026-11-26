@@ -67,6 +67,7 @@
     <link rel="stylesheet" href="/assets/sozo/sozo.css?v={{ $szVersion }}">
     <link rel="icon" type="image/png" href="/assets/sozo/favicon.png" />
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
+    <script>try { if (localStorage.getItem('sz-sidebar') === '1') document.documentElement.classList.add('sz-collapsed'); } catch (e) {}</script>
     <script src="/assets/sozo/sozo.js?v={{ $szVersion }}" defer></script>
   </head>
   <body>

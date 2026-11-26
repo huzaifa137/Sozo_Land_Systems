@@ -7,6 +7,7 @@
     $szDueToday = \App\Models\buyer::whereDate('next_installment_pay', \Carbon\Carbon::now()->format('Y/m/d'))->count();
 @endphp
 <button class="sz-burger" type="button" data-sz-burger aria-label="Open menu"><i class="mdi mdi-menu"></i></button>
+<button class="sz-collapse" type="button" data-sz-collapse aria-label="Collapse sidebar" aria-pressed="false" title="Collapse sidebar (Ctrl+B)"><i class="mdi mdi-menu-open"></i></button>
 
 <div class="sz-crumb">
     <small>{{ $szSection }}</small>

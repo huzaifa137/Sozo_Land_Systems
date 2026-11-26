@@ -541,3 +541,65 @@ nav .small.text-muted .fw-semibold, nav p.small .fw-semibold { color: var(--sz-c
 .table tr.sz-detail-row > td small, .table tr.sz-detail-row > td strong { color: var(--sz-muted); font-weight: 600; }
 .table tr.sz-detail-row:hover > td { background: rgba(210, 164, 78, .06) !important; }
 .modal-header .btn-close { filter: invert(1) grayscale(1) brightness(1.6); opacity: .8; }
+
+
+/* =====================================================================
+   Sidebar: centred logo + collapsible icon rail (desktop)
+   - The toggle in the top bar (or Ctrl/Cmd + B) collapses the sidebar to a
+     slim icon rail and gives the page the freed width.
+   - Hovering or tabbing into the rail "peeks" it open over the page, so every
+     link stays reachable without shifting the layout.
+   - The choice is remembered (localStorage key "sz-sidebar").
+   ===================================================================== */
+
+/* Logo centred over the navigation links, expanded and in the mobile drawer */
+.sz-brand { justify-content: center; padding: 1.25rem 1.4rem .75rem; }
+.sz-brand a { justify-content: center; width: 100%; }
+.sz-logo { margin: 0 auto; transition: width .28s cubic-bezier(.2, .8, .2, 1); }
+
+.sz-collapse {
+  display: none; flex: none; width: 42px; height: 42px; border-radius: 11px; border: 1px solid var(--sz-rule);
+  background: var(--sz-canopy); color: var(--sz-chalk); font-size: 1.35rem; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color .15s ease, color .15s ease;
+}
+.sz-collapse:hover { border-color: var(--sz-brass); color: var(--sz-brass); }
+.sz-collapse:focus-visible { outline: 2px solid var(--sz-brass); outline-offset: 2px; }
+
+@media (min-width: 992px) {
+  .sz-collapse { display: inline-flex; }
+
+  /* Smooth width change for the sidebar and everything that follows it */
+  .sidebar.sz-side { transition: width .28s cubic-bezier(.2, .8, .2, 1), box-shadow .28s ease, transform .28s cubic-bezier(.2, .8, .2, 1); }
+  .page-body-wrapper { transition: padding-left .28s cubic-bezier(.2, .8, .2, 1); }
+  .navbar.sz-top { transition: left .28s cubic-bezier(.2, .8, .2, 1); }
+  .sz-label { white-space: nowrap; }
+  .sz-scroll { overflow-x: hidden; }
+
+  html.sz-collapsed { --sz-side-w: 84px; }
+  /* The freed space goes to the content, not to empty margins */
+  html.sz-collapsed .content-wrapper { max-width: 1880px; }
+
+  /* Peek: the rail opens over the page while hovered or focused */
+  html.sz-collapsed .sidebar.sz-side:hover,
+  html.sz-collapsed .sidebar.sz-side:focus-within { width: 276px !important; box-shadow: 30px 0 60px -24px rgba(0, 0, 0, .85); }
+
+  /* The rail itself */
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-brand { padding: 1.1rem .5rem .6rem; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-logo { width: 54px; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-scroll { padding-left: .6rem; padding-right: .6rem; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-label,
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-chev,
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-subwrap { display: none; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-heading { font-size: 0; height: 1px; padding: 0; margin: .8rem .55rem; background: var(--sz-rule-soft); }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-link,
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-toggle { justify-content: center; gap: 0; padding: .72rem 0; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-pill { position: absolute; top: .2rem; right: .3rem; min-width: 1.05rem; height: 1.05rem; margin: 0; padding: 0 .25rem; font-size: .6rem; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-link.is-active::before,
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-group.has-active > .sz-toggle::before { left: -.6rem; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-account { justify-content: center; margin-left: .6rem; margin-right: .6rem; padding: .6rem 0; }
+  html.sz-collapsed .sidebar.sz-side:not(:hover):not(:focus-within) .sz-account > div { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar.sz-side, .page-body-wrapper, .navbar.sz-top, .sz-logo { transition: none !important; }
+}
