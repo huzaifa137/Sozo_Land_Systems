@@ -49,7 +49,7 @@
                                         ?>
 
                                         <tr>
-                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $paid_not_in_cash->firstItem() + $key }}</td>
                                             <td> {{ @$userinformation->firstname . ' ' . @$userinformation->lastname }}
                                             </td>
                                             <td> {{ @$userinformation->plot_number }} </td>
@@ -94,6 +94,7 @@
                                 </tbody>
                             </table>
                         </div>
+<div class="mt-4">{{ $paid_not_in_cash->links() }}</div>
                     </div>
                 </div>
             </div>

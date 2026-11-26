@@ -89,7 +89,7 @@
 
                                     @foreach ($user_records as $key => $user_record)
                                         <tr>
-                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $user_records->firstItem() + $key }}</td>
                                             <td> {{ $user_record->username }} </td>
                                             <td> {{ $user_record->firstname }} </td>
                                             <td> {{ $user_record->lastname }} </td>
@@ -118,6 +118,7 @@
 
                             </table>
                         </div>
+<div class="mt-4">{{ $user_records->links() }}</div>
                     </div>
                 </div>
             </div>

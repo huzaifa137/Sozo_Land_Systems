@@ -103,7 +103,7 @@
                             @foreach ($weeklyRecords as $key => $weeklyRecord)
                           <tr>
                             
-                            <td>{{$key+1}}</td>
+                            <td>{{ $weeklyRecords->firstItem() + $key }}</td>
                             
                             <td>
                                 <a href="{{'view-reciept/'.$weeklyRecord->id}}">
@@ -129,6 +129,7 @@
                         </tbody>
                       </table>
                     </div>
+<div class="mt-4">{{ $weeklyRecords->links() }}</div>
                   </div>
                 </div>
               </div>

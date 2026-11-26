@@ -139,7 +139,7 @@
         
                                                     <tr>
                                                         
-                                                        <td>{{$key+1}}</td>
+                                                        <td>{{ $not_fully_paid->firstItem() + $key }}</td>
                                                       <td>
                                                         {{-- <img src="assets/images/faces/face1.jpg" alt="image" /> --}}
                                                         <span >{{$item->firstname}} {{$item->lastname}}</span>
@@ -175,6 +175,7 @@
                                                   </tbody>
                                                 </table>
                                               </div>
+<div class="mt-4">{{ $not_fully_paid->links() }}</div>
                                             </div>
                                           </div>
                                         </div>

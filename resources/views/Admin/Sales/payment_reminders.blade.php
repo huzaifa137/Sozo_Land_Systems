@@ -125,6 +125,7 @@
                             </tbody>
                           </table>
                         </div>
+<div class="mt-4">{{ $records->links() }}</div>
                     @endif
 
                   </div>
@@ -203,6 +204,7 @@
                         </tbody>
                       </table>
                     </div>
+<div class="mt-4">{{ $upcomingreminders->links() }}</div>
                  @endif
 
                     
@@ -277,6 +279,7 @@
                   </tbody>
                 </table>
               </div>
+<div class="mt-4">{{ $expiredreminders->links() }}</div>
 
                  @endif
 

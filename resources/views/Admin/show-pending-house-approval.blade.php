@@ -43,7 +43,7 @@
                                     <tbody>
                                         @foreach ($pendingApprovals as $key => $all_sale)
                                             <tr>
-                                                <td>{{ $key + 1 }}</td>
+                                                <td>{{ $pendingApprovals->firstItem() + $key }}</td>
 
                                                 <td><a href="{{ 'pending-house-information/' . $all_sale->id }}">
                                                         {{ $all_sale->price }}
@@ -72,7 +72,7 @@
 
                                 <br> <br>
                                 <span>
-                                    {{ $pendingApprovals->links() }}
+                                    <div class="mt-4">{{ $pendingApprovals->links() }}</div>
                                 </span>
 
                                 <style>

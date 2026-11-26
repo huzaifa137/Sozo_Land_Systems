@@ -39,7 +39,7 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
                                     @foreach ($estate_data as $key => $data)
 
                                         <tr>
-                                            <td>{{$key + 1}}</td>
+                                            <td>{{ $estate_data->firstItem() + $key }}</td>
                                             <td> {{ $data->estate }} </td>
                                             <td> {{ $data->plot_number }} </td>
 
@@ -68,6 +68,7 @@ $userInfo = AdminRegister::where('id', '=', $user_id)->value('admin_category');
                                 </tbody>
                             </table>
                         </div>
+<div class="mt-4">{{ $estate_data->links() }}</div>
                     </div>
                 </div>
             </div>

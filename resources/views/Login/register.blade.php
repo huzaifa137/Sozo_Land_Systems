@@ -1,152 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
+@include('includes.header')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
-    {{-- <link rel="stylesheet" href="/assets/css/style.css"> --}}
-    {{-- <link rel="stylesheet" href="/assets/images"> --}}
-    <link rel="shortcut icon" href="/img/favicon.jpg" />
+<div class="main-panel">
+    <div class="content-wrapper">
 
-    <title>..:: Admin - Register Portal ::..</title>
-</head>
-
-<body>
-    <div style="display: flex;justify-content:center;align-content:center">
-        <a href="#"><img src="/logo.png" alt="COMESA_logo" class="responsive"></a>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="signup-form">
-                    <form action="{{ route('admin-registration') }}" class="mt-5 border p-4 bg-light shadow"
-                        method="POST">
-                        @csrf
-                        <h2 class="mb-2 text-primary" style="text-align: center">SOZO LAND SYSTEMS <br> REGISTRATION
-                        </h2>
-
-                        @if (Session::get('success'))
-                            <div class="alert alert-success">
-                                {{ Session::get('success') }}
-                            </div>
-                        @endif
-
-                        @if (Session::get('fail'))
-                            <div class="alert alert-danger">
-                                {{ Session::get('fail') }}
-                            </div>
-                        @endif
-
-
-                        <div class="row">
-
-                            <div class="mb-3 col-md-12">
-                                <label>Username<span class="text-danger">*</span></label>
-                                <input type="text" name="username" id="username" class="form-control"
-                                    placeholder="Enter username" value="{{ old('username') }}" required>
-                                <span class="text-danger">
-                                    @error('username')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-
-
-                            <div class="mb-3 col-md-6">
-                                <label>Firstname<span class="text-danger">*</span></label>
-                                <input type="text" name="firstname" id="firstname" class="form-control"
-                                    placeholder="Enter Firstname" value="{{ old('username') }}" required>
-                                <span class="text-danger">
-                                    @error('firstname')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-
-                            <div class="mb-3 col-md-6">
-                                <label>Lastname<span class="text-danger">*</span></label>
-                                <input type="text" name="lastname" id="lastname" class="form-control"
-                                    placeholder="Enter Lastname" value="{{ old('username') }}" required>
-                                <span class="text-danger">
-                                    @error('lastname')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-
-
-                            <div class="mb-3 col-md-12">
-                                <label>Email<span class="text-danger">*</span></label>
-                                <input type="email" name="email" id="email" class="form-control"
-                                    placeholder="Enter Email" value="{{ old('email') }}" required>
-                                <span class="text-danger">
-                                    @error('email')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-
-                            <div class="mb-3 col-md-12">
-                                <label>Admin Category<span class="text-danger">*</span></label>
-                                <select class="form-control" name="admin_category" id="" required>
-                                    <option value="">--- Select Category ---</option>
-                                    <option value="SuperAdmin">1.Super Admin</option>
-                                    <option value="Admin">2. Admin</option>
-                                    <option value="Admin">3. Sales</option>
-                                </select>
-                                <span class="text-danger">
-                                    @error('email')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-
-                            <div class="mb-3 col-md-12">
-                                <label>Password<span class="text-danger">*</span></label>
-                                <input type="password" name="password" id="password" class="form-control"
-                                    placeholder="Enter Password" required>
-                                <span class="text-danger">
-                                    @error('password')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-
-                            <div class="mb-3 col-md-12">
-                                <label>Confirm Password<span class="text-danger">*</span></label>
-                                <input type="password" name="confirm_password" id="confirm_password"
-                                    class="form-control" placeholder="Enter Password" required>
-                                <span class="text-danger">
-                                    @error('confirm_password')
-                                        {{ $message }}
-                                    @enderror
-                                </span>
-                            </div>
-                            
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary float-end">Register Admin</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <br> <br>
-
-                    <p class="text-center mt-3 text-secondary"><a
-                            href="{{ url('admin-dashboard') }}">Return back to dashboard</a></p>
-
-                </div>
+        <div class="sz-page-head">
+            <div>
+                <h2>Register a user</h2>
+                <p>Create a new account and choose what the person is allowed to do in Sozo Land Systems.</p>
+            </div>
+            <div class="sz-actions">
+                <a class="btn btn-secondary" href="{{ route('user-information') }}"><i class="mdi mdi-account-multiple"></i> All users</a>
             </div>
         </div>
+
+        @if (Session::get('success'))
+            <div class="alert alert-success" role="status">{{ Session::get('success') }}</div>
+        @endif
+
+        @if (Session::get('fail'))
+            <div class="alert alert-danger" role="alert">{{ Session::get('fail') }}</div>
+        @endif
+
+        <section class="sz-panel" aria-label="Registration form" style="max-width: 860px;">
+            <header>
+                <h3>Account details</h3>
+                <span>Fields marked * are required</span>
+            </header>
+
+            <form action="{{ route('admin-registration') }}" method="POST" autocomplete="off">
+                @csrf
+
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <label for="username">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" id="username" class="form-control"
+                            placeholder="Enter username" value="{{ old('username') }}" required>
+                        <small class="text-danger">@error('username'){{ $message }}@enderror</small>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="firstname">First name <span class="text-danger">*</span></label>
+                        <input type="text" name="firstname" id="firstname" class="form-control"
+                            placeholder="Enter first name" value="{{ old('firstname') }}" required>
+                        <small class="text-danger">@error('firstname'){{ $message }}@enderror</small>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="lastname">Last name <span class="text-danger">*</span></label>
+                        <input type="text" name="lastname" id="lastname" class="form-control"
+                            placeholder="Enter last name" value="{{ old('lastname') }}" required>
+                        <small class="text-danger">@error('lastname'){{ $message }}@enderror</small>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="email">Email <span class="text-danger">*</span></label>
+                        <input type="email" name="email" id="email" class="form-control"
+                            placeholder="name@example.com" value="{{ old('email') }}" required>
+                        <small class="text-danger">@error('email'){{ $message }}@enderror</small>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="admin_category">Role <span class="text-danger">*</span></label>
+                        <select class="form-control" name="admin_category" id="admin_category" required>
+                            <option value="">Select a role</option>
+                            <option value="SuperAdmin" {{ old('admin_category') == 'SuperAdmin' ? 'selected' : '' }}>Super Admin</option>
+                            <option value="Admin" {{ old('admin_category') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="Sales" {{ old('admin_category') == 'Sales' ? 'selected' : '' }}>Sales</option>
+                        </select>
+                        <small class="text-danger">@error('admin_category'){{ $message }}@enderror</small>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="password">Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password" id="password" class="form-control"
+                            placeholder="Enter password" autocomplete="new-password" required>
+                        <small class="text-danger">@error('password'){{ $message }}@enderror</small>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="confirm_password">Confirm password <span class="text-danger">*</span></label>
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control"
+                            placeholder="Repeat the password" autocomplete="new-password" required>
+                        <small class="text-danger">@error('confirm_password'){{ $message }}@enderror</small>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end flex-wrap mt-3" style="gap:.75rem;">
+                    <a href="{{ url('admin-dashboard') }}" class="btn btn-secondary">Back to dashboard</a>
+                    <button type="submit" class="btn btn-primary"><i class="mdi mdi-account-plus"></i> Register user</button>
+                </div>
+            </form>
+        </section>
+
     </div>
-
-
-    <script type="text/javascript"></script>
-    <script src="/assets/js/jquery.min.js"></script>
-
+    <!-- content-wrapper ends -->
+    <footer class="footer">
+        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="d-block text-center text-sm-left d-sm-inline-block">&copy; {{ date('Y') }} Sozo Property Consultants Limited</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Sozo Land Systems</span>
+        </div>
+    </footer>
+</div>
+<!-- main-panel ends -->
+</div>
+<!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller ends -->
+<script src="/assets/vendors/js/vendor.bundle.base.js"></script>
 </body>
-
 
 </html>

@@ -103,7 +103,7 @@
                             @foreach ($records as $key => $all_sale)
                           <tr>
                             
-                            <td>{{$key+1}}</td>
+                            <td>{{ $records->firstItem() + $key }}</td>
                             <td>
                                 <a href="{{'view-reciept/'.$all_sale->id}}">
                                 <img style="width: 100%; height:100%" src="{{'/public/public/national_id/'.$all_sale->national_id_front}}" alt="" id="week_img">
@@ -128,6 +128,7 @@
                         </tbody>
                       </table>
                     </div>
+<div class="mt-4">{{ $records->links() }}</div>
                   </div>
                 </div>
               </div>

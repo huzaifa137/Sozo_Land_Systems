@@ -84,26 +84,6 @@
       .dropdown-item:hover p {
         color: black !important;
       }
-
-      thead th {
-        background-color: #343a40;
-        /* Dark grey */
-        border-bottom: 2px solid #495057;
-        padding: 12px 15px;
-      }
-
-      tbody td {
-        padding: 12px 15px;
-      }
-
-      .table-hover tbody tr:hover {
-        background-color: #495057;
-        color: #fff !important;
-      }
-
-      .table-hover tbody tr:hover td {
-        color: #fff !important;
-      }
     </style>
 
     <?php
@@ -215,7 +195,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ?>
 
                                                     <tr>
-                                                      <td>{{$key + 1}}</td>
+                                                      <td>{{ $not_fully_paid->firstItem() + $key }}</td>
                                                       <td>
                                                         <span>{{$item->firstname}} {{$item->lastname}}</span>
                                                       </td>
@@ -281,6 +261,7 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
 
                         </tbody>
                       </table>
+                      <div class="mt-4">{{ $not_fully_paid->links() }}</div>
 
                       <!-- Upload Receipt Modal -->
                       <div class="modal fade" id="uploadReceiptModal" tabindex="-1" role="dialog"
@@ -298,7 +279,6 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                               </div>
-
                               <div class="modal-body">
                                 <!-- Receipt File Upload -->
                                 <div class="form-group">

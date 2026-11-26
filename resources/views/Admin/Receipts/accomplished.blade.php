@@ -51,7 +51,7 @@
                         <tbody>
                           @foreach ($fully_paid as $key => $item)
                             <tr>
-                              <td>{{ $key + 1 }}</td>
+                              <td>{{ $fully_paid->firstItem() + $key }}</td>
                               <td>
                                 <a href="{{ url('view-agreement/' . $item->id) }}">
                                   {{ $item->firstname }} {{ $item->lastname }}
@@ -101,18 +101,7 @@
                         </tbody>
                       </table>
 
-                      <br> <br>
-                      <span>
-
-                        {{ $fully_paid->links() }}
-
-                      </span>
-
-                      <style>
-                        .w-5 {
-                          display: none;
-                        }
-                      </style>
+                      <div class="mt-4">{{ $fully_paid->links() }}</div>
                     </div>
                   </div>
                 </div>

@@ -110,7 +110,7 @@
 
         <div class="mt-4">
             <div class="pagination-container d-flex justify-content-center">
-                {{ $houses->onEachSide(1)->links('pagination::bootstrap-4') }}
+                {{ $houses->links() }}
             </div>
         </div>
 

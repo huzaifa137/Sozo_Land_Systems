@@ -119,12 +119,12 @@
 
                                        ?>
                                         <tr>
-                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $allResales->firstItem() + $key }}</td>
                                             <td> {{ $username }}</td>
                                             <td> {{ $item->estate }} </td>
                                             <td> {{ $item->plot_number }} </td>
 
-                                            @if ($plot_status->status == 'Not taken')
+                                            @if (optional($plot_status)->status == 'Not taken')
                                                 <td>
                                                     <a href="javascript:void();"
                                                        class="btn btn-outline-success btn-icon-text"> 
@@ -157,6 +157,7 @@
                                 </tbody>
                             </table>
                         </div>
+<div class="mt-4">{{ $allResales->links() }}</div>
                     </div>
                 </div>
             </div>

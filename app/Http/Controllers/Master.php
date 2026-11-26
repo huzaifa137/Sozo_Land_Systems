@@ -26,6 +26,16 @@ use Illuminate\Support\Str;
 
 class Master extends Controller
 {
+    /**
+     * Paginate a collection at 10 per page; query-builder results are left untouched.
+     */
+    private function paged($items, string $pageName = 'page')
+    {
+        return $items instanceof \Illuminate\Support\Collection
+            ? $items->paginate(10, $pageName)
+            : $items;
+    }
+
     public function login(Request $request)
     {
 
@@ -799,6 +809,8 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
+        $total_estate_data = $this->paged($total_estate_data);
+
         return view('Admin.all_halfs_data', $data, compact([
             'specific_estate',
             'total_half_plots_count',
@@ -856,6 +868,8 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
+        $total_half_plots_fully_taken_data = $this->paged($total_half_plots_fully_taken_data);
+
         return view('Admin.total_half_plots_fully_taken_data', $data, compact(['total_half_plots_fully_taken_data', 'TotalFullyPaidHalfsCount', 'estate_name']));
     }
 
@@ -879,6 +893,8 @@ class Master extends Controller
             ->count();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $not_taken_half_plots = $this->paged($not_taken_half_plots);
 
         return view('Admin.not_taken_half_plots', $data, compact(['not_taken_half_plots', 'not_taken_half_plots_count', 'estate_name']));
 
@@ -904,6 +920,8 @@ class Master extends Controller
             ->count();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
+
+        $not_taken_half_plots = $this->paged($not_taken_half_plots);
 
         return view('Admin.partially_taken_half_plots', $data, compact(['not_taken_half_plots', 'not_taken_half_plots_count', 'estate_name']));
 
@@ -1275,12 +1293,19 @@ class Master extends Controller
 
     public function pending_agreements()
     {
+        $records = Estate::all();
+
         $pending_agreements = DB::table('buyers')->where('reciepts', '=', "0")
-            ->where('next_installment_pay', '=', "Fully payed")->get();
+            ->where('next_installment_pay', '=', "Fully payed")
+            ->orderBy('id', 'desc')
+            ->paginate(10)->withQueryString();
+
+        // The view loops over $not_fully_paid; keep both names available.
+        $not_fully_paid = $pending_agreements;
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Receipts.pending_agreements', $data, compact(['pending_agreements']));
+        return view('Admin.Receipts.pending_agreements', $data, compact(['pending_agreements', 'not_fully_paid', 'records']));
 
     }
 
@@ -1291,7 +1316,7 @@ class Master extends Controller
 
         $not_fully_paid = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")
             ->orderBy('id', 'Desc')
-            ->get();
+            ->paginate(10)->withQueryString();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
@@ -1301,7 +1326,9 @@ class Master extends Controller
     public function pending_receipts()
     {
         $pending_reciepts = DB::table('buyers')->where('reciepts', '=', "0")
-            ->where('next_installment_pay', '!=', "Fully payed")->get();
+            ->where('next_installment_pay', '!=', "Fully payed")
+            ->orderBy('id', 'desc')
+            ->paginate(10)->withQueryString();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
@@ -1314,7 +1341,7 @@ class Master extends Controller
             ->where('next_installment_pay', '=', "Fully payed")
             ->where('reciepts', '!=', "0")
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)->withQueryString();
 
         // Attach agreement filename to each buyer
         foreach ($fully_paid as $buyer) {
@@ -1908,7 +1935,7 @@ $AmountFormatted = number_format($Amount);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        $weeklyRecords = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->get();
+        $weeklyRecords = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         $totalAmount = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('amount_payed');
         $plots_sold = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay', "Fully payed")->count();
         $under_payment_plots = buyer::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('next_installment_pay', '!=', "Fully payed")->where('next_installment_pay', '!=', "Resold")->count();
@@ -1927,7 +1954,7 @@ $AmountFormatted = number_format($Amount);
     {
 
         // $all_sales = buyer::all();
-        $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10);
+        $all_sales = Buyer::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         $totalAmount = buyer::sum('amount_payed');
         $plots_sold = DB::table('buyers')->where('next_installment_pay', "Fully payed")->count();
@@ -1942,7 +1969,7 @@ $AmountFormatted = number_format($Amount);
     {
 
         $currentDate = Carbon::today();
-        $records = buyer::whereDate('created_at', $currentDate)->get();
+        $records = buyer::whereDate('created_at', $currentDate)->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         $totalAmount = buyer::whereDate('created_at', $currentDate)->sum('amount_payed');
         $plots_sold = buyer::whereDate('created_at', $currentDate)->where('next_installment_pay', "Fully payed")->count();
         $under_payment_plots = DB::table('buyers')->where('next_installment_pay', '!=', "Fully payed")->where('next_installment_pay', '!=', "Resold")->count();
@@ -1959,7 +1986,8 @@ $AmountFormatted = number_format($Amount);
         $currentYear = Carbon::now()->year;
 
         $records = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
-            ->get();
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)->withQueryString();
 
         $totalAmount = buyer::whereYear('created_at', $currentYear)->whereMonth('created_at', $currentMonth)
             ->sum('amount_payed');
@@ -1983,14 +2011,22 @@ $AmountFormatted = number_format($Amount);
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->format('Y/m/d');
 
-        $records = buyer::whereDate('next_installment_pay', $formattedDate)->get();
-        $records_count = $records->count();
+        $records_count = buyer::whereDate('next_installment_pay', $formattedDate)->count();
+
+        // Three tables on one screen, so each has its own page parameter.
+        $records = buyer::whereDate('next_installment_pay', $formattedDate)
+            ->orderBy('id', 'desc')
+            ->paginate(10, ['*'], 'today_page')->withQueryString();
 
         $upcomingreminders = buyer::where('next_installment_pay', '!=', 'Fully payed')
-            ->whereDate('next_installment_pay', '>', $formattedDate)->get();
+            ->whereDate('next_installment_pay', '>', $formattedDate)
+            ->orderBy('next_installment_pay', 'asc')
+            ->paginate(10, ['*'], 'upcoming_page')->withQueryString();
 
         $expiredreminders = buyer::where('next_installment_pay', '!=', 'Fully payed')
-            ->whereDate('next_installment_pay', '<', $formattedDate)->get();
+            ->whereDate('next_installment_pay', '<', $formattedDate)
+            ->orderBy('next_installment_pay', 'desc')
+            ->paginate(10, ['*'], 'expired_page')->withQueryString();
 
         $data = [
             'LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()
@@ -2807,7 +2843,7 @@ $AmountFormatted = number_format($Amount);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         $currentDate = Carbon::today();
-        $totalExpenditureAll = expenditure::whereDate('created_at', $currentDate)->get();
+        $totalExpenditureAll = expenditure::whereDate('created_at', $currentDate)->orderBy('id', 'desc')->paginate(10)->withQueryString();
         $totalExpenditureServices = expenditure_service::whereDate('created_at', $currentDate)->get();
 
         $totalExpenditureServices = $totalExpenditureServices->groupBy('random_number');
@@ -2872,6 +2908,8 @@ $AmountFormatted = number_format($Amount);
             ->where('estate', '=', $estate_name)
             ->where('next_installment_pay', '=', "Fully payed")->count();
 
+        $estate_data = $this->paged($estate_data);
+
         return view('Admin.total_plots_list_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info']));
     }
 
@@ -2895,6 +2933,8 @@ $AmountFormatted = number_format($Amount);
         $count_estates_fully = plot::where('estate', $estate_name)
             ->where('status', 'Fully payed')
             ->count();
+
+        $estate_data = $this->paged($estate_data);
 
         return view(
             'Admin.total_fully_paid_plots_in_estate',
@@ -3033,6 +3073,8 @@ $AmountFormatted = number_format($Amount);
 
         $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
 
+        $estate_data = $this->paged($estate_data);
+
         return view('Admin.total_not_taken_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
     }
 
@@ -3125,7 +3167,7 @@ $AmountFormatted = number_format($Amount);
             $query->where('user_id', $request->buyer_id);
         }
 
-        $allResales = $query->get();
+        $allResales = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
         $estates = Estate::all();
 
         return view('Admin.Resale.back-on-market-all', [
@@ -3161,7 +3203,7 @@ $AmountFormatted = number_format($Amount);
         $paid_in_cash = Resale::where('paid_cash', '=', 1)
             ->orderBy('estate', 'asc')
             ->orderBy('plot_number', 'asc')
-            ->get();
+            ->paginate(10)->withQueryString();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
         return view('Admin.Resale.back_for_client_on_sale', $data, compact(['paid_in_cash']));
@@ -3173,7 +3215,7 @@ $AmountFormatted = number_format($Amount);
         $paid_not_in_cash = Resale::where('paid_cash', '=', 0)
             ->orderBy('estate', 'asc')
             ->orderBy('plot_number', 'asc')
-            ->get();
+            ->paginate(10)->withQueryString();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
         return view('Admin.Resale.back_for_company_on_sale', $data, compact(['paid_not_in_cash']));
@@ -3195,8 +3237,8 @@ $AmountFormatted = number_format($Amount);
     public function userInformation()
     {
 
-        $user_records = AdminRegister::all();
-        $user_records_count = AdminRegister::all()->count();
+        $user_records = AdminRegister::orderBy('id', 'asc')->paginate(10)->withQueryString();
+        $user_records_count = AdminRegister::count();
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
@@ -3342,6 +3384,8 @@ $AmountFormatted = number_format($Amount);
         $total_plots_with_posters = buyer::where('estate', $specific_estate->estate_name)
             ->where('plot_poster', 1)->count();
 
+        $estate_data = $this->paged($estate_data);
+
         return view('Admin.Posters.all_plot_posters_in_estate', $data, compact(['specific_estate', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'total_plots_with_posters']));
     }
 
@@ -3360,6 +3404,8 @@ $AmountFormatted = number_format($Amount);
 
         $total_plots_without_posters = buyer::where('estate', $specific_estate->estate_name)
             ->where('plot_poster', 0)->count();
+
+        $estate_data = $this->paged($estate_data);
 
         return view('Admin.Posters.all_plot_without_posters_in_estate', $data, compact(['specific_estate', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'total_plots_without_posters']));
     }
@@ -3735,7 +3781,7 @@ $AmountFormatted = number_format($Amount);
             $query->where('status', $request->status);
         }
 
-        $houses = $query->orderBy('id', 'desc')->paginate(50);
+        $houses = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         if ($request->ajax()) {
             return response()->view('Admin.house-images', compact('houses'), 200)
@@ -3839,7 +3885,7 @@ $AmountFormatted = number_format($Amount);
 
     public function approvalHouseSell()
     {
-        $pendingApprovals = house::where('status', 1)->paginate(2);
+        $pendingApprovals = house::where('status', 1)->paginate(10)->withQueryString();
 
         return view('Admin.show-pending-house-approval', compact(['pendingApprovals']));
     }
@@ -4030,6 +4076,8 @@ $AmountFormatted = number_format($Amount);
 
         $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
 
+        $estate_data = $this->paged($estate_data);
+
         return view('Admin.total_available_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
     }
 
@@ -4053,6 +4101,8 @@ $AmountFormatted = number_format($Amount);
             ->where('status', '=', 'Not taken')->count();
 
         $estate_price = estate::where('estate_name', $estate_name)->value('estate_price');
+
+        $estate_data = $this->paged($estate_data);
 
         return view('Admin.Sales.view_specific_available_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
     }
@@ -4213,16 +4263,36 @@ $AmountFormatted = number_format($Amount);
             ->groupBy('multiple_user_id', 'firstname', 'lastname', 'request_permission')
             ->get();
 
-        $all_pending_buyers = DB::table('buyers')
+        // Paginate the client groups (10 clients per page), not the individual
+        // plots, so a client's plots are never split across two pages.
+        $pendingScope = fn () => DB::table('buyers')
             ->where('next_installment_pay', '!=', "Fully payed")
-            ->whereIn('request_permission', [1, 2]) // Get pending (1) and confirmed (2)
+            ->whereIn('request_permission', [1, 2]); // Get pending (1) and confirmed (2)
+
+        $groupPage = $pendingScope()
+            ->select('multiple_user_id')
+            ->groupBy('multiple_user_id')
+            ->orderByRaw('MIN(id) asc')
+            ->paginate(10)
+            ->withQueryString();
+
+        $groupIds = $groupPage->getCollection()->pluck('multiple_user_id')->all();
+
+        $pageBuyers = $pendingScope()
+            ->where(function ($q) use ($groupIds) {
+                $q->whereIn('multiple_user_id', array_filter($groupIds, fn ($v) => $v !== null));
+                if (in_array(null, $groupIds, true)) {
+                    $q->orWhereNull('multiple_user_id');
+                }
+            })
+            ->orderBy('id', 'asc')
             ->get();
 
-        $grouped_buyers = $all_pending_buyers->groupBy('multiple_user_id');
+        $grouped_buyers = $pageBuyers->groupBy('multiple_user_id');
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
-        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['grouped_buyers', 'records']));
+        return view('Admin.Receipts.grant-agreement-permission', $data, compact(['grouped_buyers', 'groupPage', 'records']));
     }
 
 

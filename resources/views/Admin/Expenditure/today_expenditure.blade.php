@@ -87,6 +87,7 @@
                         </tbody>
                       </table>
                     </div>
+<div class="mt-4">{{ $totalExpenditureAll->links() }}</div>
                   </div>
                 </div>
               </div>

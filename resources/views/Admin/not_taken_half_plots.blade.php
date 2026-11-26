@@ -47,7 +47,7 @@
                                     <tbody>
                                         @foreach ($not_taken_half_plots as $key => $data)
                                             <tr>
-                                                <td>{{ $key + 1 }}</td>
+                                                <td>{{ $not_taken_half_plots->firstItem() + $key }}</td>
                                                 <td> {{ $data->estate }} </td>
                                                 <td> {{ $data->plot_number }} </td>
                                                 <td> {{ $data->width_1 }} </td>
@@ -63,6 +63,7 @@
                                     </tbody>
                                 </table>
                             </div>
+<div class="mt-4">{{ $not_taken_half_plots->links() }}</div>
                         </div>
                     </div>
                 </div>

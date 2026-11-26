@@ -83,7 +83,7 @@
                                                     <td style="background-color: red;"><input type="checkbox"
                                                             name="selected_items[]" value="{{ $data->id }}"></td>
                                                     <!-- Checkbox column -->
-                                                    <td>{{ $key + 1 }}</td>
+                                                    <td>{{ $estate_data->firstItem() + $key }}</td>
                                                     <td> {{ $data->estate }} </td>
                                                     <td> {{ $data->plot_number }} </td>
                                                     <td> {{ $data->width_1 }} </td>
@@ -97,6 +97,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+<div class="mt-4">{{ $estate_data->links() }}</div>
                                 <br>
 
                                 <button type="submit" class="btn btn-success btn-sm"

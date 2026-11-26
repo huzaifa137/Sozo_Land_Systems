@@ -47,7 +47,7 @@
                                     <tbody>
                                         @foreach ($total_half_plots_fully_taken_data as $key => $data)
                                             <tr>
-                                                <td><a class="text-white" href="{{ url('view-reciept-half-info/' . $data->id .'/'. $data->estate) }}"> {{$key+1}} </a></td>
+                                                <td><a class="text-white" href="{{ url('view-reciept-half-info/' . $data->id .'/'. $data->estate) }}"> {{ $total_half_plots_fully_taken_data->firstItem() + $key }} </a></td>
                                                 <td><a class="text-white" href="{{ url('view-reciept-half-info/' . $data->id .'/'. $data->estate) }}"> {{ $data->estate }} </a></td>
                                                 <td><a class="text-white" href="{{ url('view-reciept-half-info/' . $data->id .'/'. $data->estate) }}"> {{ $data->plot_number }} </a></td>
                                                 <td><a class="text-white" href="{{ url('view-reciept-half-info/' . $data->id .'/'. $data->estate) }}"> {{ $data->width_1 }} </a></td>
@@ -62,6 +62,7 @@
                                     </tbody>
                                 </table>
                             </div>
+<div class="mt-4">{{ $total_half_plots_fully_taken_data->links() }}</div>
                         </div>
                     </div>
                 </div>

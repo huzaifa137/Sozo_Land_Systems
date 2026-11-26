@@ -89,7 +89,7 @@
                                             <tr>
 
                                                 <td><a
-                                                        href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $key + 1 }}</a>
+                                                        href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $estate_data->firstItem() + $key }}</a>
                                                 </td>
                                                 <td><a
                                                         href="{{ url('view-reciept-info/' . $data->plot_number . '/' . $data->estate) }}">{{ $data->firstname }}</a>
@@ -151,6 +151,7 @@
                                     </tbody>
                                 </table>
                             </div>
+<div class="mt-4">{{ $estate_data->links() }}</div>
                         </div>
                     </div>
 

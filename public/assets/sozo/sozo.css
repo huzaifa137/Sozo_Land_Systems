@@ -502,3 +502,42 @@ nav svg.w-5 { width: 1rem; height: 1rem; }
 .sz-doc-open:hover { background: var(--sz-brass); color: var(--sz-brass-ink); }
 .sz-doc-preview { width: 100%; max-width: 420px; aspect-ratio: 4 / 3; border-radius: 12px; border: 1px solid var(--sz-rule); }
 .sz-file-row { margin-top: .5rem; padding-top: 1.2rem; border-top: 1px solid var(--sz-rule-soft); }
+
+
+/* =====================================================================
+   Shared list pages: pagination footer and contextual table rows
+   (keeps every table readable on the dark theme, same as the dashboard)
+   ===================================================================== */
+
+/* Pagination footer: "Showing x to y of z results" + page buttons */
+nav[aria-label*="agination"], nav.d-flex.justify-items-center { margin-top: .25rem; }
+nav .small.text-muted, nav p.small { color: var(--sz-muted) !important; margin: 0; font-size: .84rem; }
+nav .small.text-muted .fw-semibold, nav p.small .fw-semibold { color: var(--sz-chalk); font-weight: 600; }
+.pagination { margin-bottom: 0; }
+.page-item.disabled .page-link, .page-item.disabled span.page-link { cursor: not-allowed; }
+.page-item.active .page-link { font-weight: 700; }
+
+/* Bootstrap's contextual row/header classes (table-light, table-primary,
+   table-header-colored...) paint rows white or pale blue. Pages that still use
+   them get the same dark rows and headers as the dashboard tables. */
+.table > :not(caption) > * > * { background-color: transparent; }
+.table tr.table-light > *, .table tr.table-light, .table .table-light { --bs-table-bg: transparent; --bs-table-color: var(--sz-chalk); background: transparent !important; color: var(--sz-chalk) !important; }
+.table tr.table-primary > *, .table tr.table-primary, .table .table-primary { --bs-table-bg: rgba(210, 164, 78, .09); --bs-table-color: var(--sz-chalk); background: rgba(210, 164, 78, .09) !important; color: var(--sz-chalk) !important; border-color: var(--sz-rule-soft) !important; }
+.table tr.table-primary { border-top: 1px solid var(--sz-brass) !important; }
+.table thead.table-primary th, .table tr.table-header-colored th, .table thead.table-light th, .table thead.table-dark th { background: rgba(236, 234, 224, .035) !important; color: var(--sz-muted) !important; border-bottom: 1px solid var(--sz-rule) !important; }
+.table tr.table-light td strong, .table tr.table-light td small, .table tr.table-light td .text-muted { color: var(--sz-chalk) !important; }
+.table tr.table-light td small.text-muted, .table tr.table-primary td .text-muted { color: var(--sz-muted) !important; }
+.table tr.table-light:hover, .table tr.table-primary:hover { background: rgba(210, 164, 78, .06) !important; }
+.table tr.table-light td .btn-outline-info, .table td .btn-outline-info { color: var(--sz-sky) !important; border-color: var(--sz-sky) !important; }
+.table td .btn-outline-info:hover { background: var(--sz-sky) !important; color: #08121c !important; }
+.table td .text-warning { color: var(--sz-brass) !important; }
+.table td .text-primary { color: var(--sz-brass) !important; }
+.btn-xs { padding: .3rem .65rem; font-size: .78rem; }
+
+/* Grouped rows (a client's header row followed by that client's plot rows) */
+.table tr.sz-group-row > td { background: rgba(210, 164, 78, .09) !important; border-top: 1px solid rgba(210, 164, 78, .45) !important; color: var(--sz-chalk) !important; }
+.table tr.sz-group-row > td i.mdi { color: var(--sz-brass); }
+.table tr.sz-detail-row > td { background: transparent !important; color: var(--sz-chalk) !important; }
+.table tr.sz-detail-row > td small, .table tr.sz-detail-row > td strong { color: var(--sz-muted); font-weight: 600; }
+.table tr.sz-detail-row:hover > td { background: rgba(210, 164, 78, .06) !important; }
+.modal-header .btn-close { filter: invert(1) grayscale(1) brightness(1.6); opacity: .8; }

@@ -84,26 +84,6 @@
             .dropdown-item:hover p {
                 color: black !important;
             }
-
-            thead th {
-                background-color: #343a40;
-                /* Dark grey */
-                border-bottom: 2px solid #495057;
-                padding: 12px 15px;
-            }
-
-            tbody td {
-                padding: 12px 15px;
-            }
-
-            .table-hover tbody tr:hover {
-                background-color: #495057;
-                color: #fff !important;
-            }
-
-            .table-hover tbody tr:hover td {
-                color: #fff !important;
-            }
         </style>
 
         <?php
@@ -116,231 +96,160 @@ $User_access_right = AdminRegister::where('id', '=', $user_id)->value('admin_cat
     ?>
 
 
-        <div class="row">
+        @include('sweetalert::alert')
 
-            <div class="col-12 grid-margin">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Grant Permission</h4>
+        <section class="sz-panel" aria-label="Grant agreement permission">
+            <header>
+                <h3>Grant permission</h3>
+                <span>{{ $groupPage->total() }} {{ \Illuminate\Support\Str::plural('client', $groupPage->total()) }} awaiting a decision</span>
+            </header>
 
-                        @include('sweetalert::alert')
+            <div class="table-responsive">
+                <table class="table sz-stack">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No.</th>
+                            <th>Client name</th>
+                            <th class="text-center">Total plots</th>
+                            <th class="text-center">Total amount paid</th>
+                            <th class="text-center">Actions</th>
+                            <th class="text-center">View receipts</th>
+                            <th class="text-center">Sketches</th>
+                        </tr>
+                    </thead>
 
-                        <div class="row">
-                            <div class="col-12 grid-margin">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr class="table-header-colored">
-                                                        <th class="text-center">No.</th>
-                                                        <th class="text-center">Client Name</th>
-                                                        <th class="text-center">Total Plots</th>
-                                                        <th class="text-center">Total Amount Paid</th>
-                                                        <th class="text-center">Actions</th>
-                                                        <th class="text-center">View Receipts</th>
-                                                        <th class="text-center">Sketches</th>
-                                                    </tr>
-                                                </thead>
+                    <tbody>
+                        @forelse ($grouped_buyers as $multiple_user_id => $plots)
+                            @php
+                                $main_item = $plots->first();
+                                $key = $loop->index;
+                                $total_plots = $plots->count();
+                                $total_paid = $plots->sum('amount_payed');
+                                $group_status = $main_item->request_permission;
+                            @endphp
+                            <tr class="sz-group-row">
+                                <td class="text-center" data-label="No.">{{ $groupPage->firstItem() + $key }}</td>
+                                <td data-label="Client">
+                                    <i class="mdi mdi-account-group me-2"></i>
+                                    <strong>{{ $main_item->firstname }} {{ $main_item->lastname }}</strong>
+                                </td>
+                                <td class="text-center" data-label="Plots">
+                                    <span class="sz-chip sky">{{ $total_plots }} {{ \Illuminate\Support\Str::plural('plot', $total_plots) }}</span>
+                                </td>
+                                <td class="text-center sz-money" data-label="Amount paid">{{ number_format($total_paid, 2) }}</td>
+                                <td class="text-center" data-label="Action">
+                                    @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) == 'SuperAdmin')
+                                        <button class="btn btn-primary btn-sm confirm-permission-btn"
+                                            data-id="{{ $multiple_user_id }}"
+                                            data-name="{{ $main_item->firstname }}"
+                                            data-plot-count="{{ $total_plots }}">
+                                            <i class="mdi mdi-check-decagram me-1"></i> Confirm agreement for all ({{ $total_plots }})
+                                        </button>
+                                    @elseif ($group_status == 2)
+                                        <a href="{{ url('add-agreement/' . $multiple_user_id) }}"
+                                            class="btn btn-success btn-icon-text btn-sm">
+                                            <i class="mdi mdi-file-document-box me-1"></i> Make agreement for all ({{ $total_plots }})
+                                        </a>
+                                    @endif
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
 
-                                                <tbody>
-                                                    @forelse ($grouped_buyers as $multiple_user_id => $plots)
-                                                        @php
-                                                            $main_item = $plots->first();
-                                                            $key = $loop->index;
-                                                            $total_plots = $plots->count();
-                                                            $total_paid = $plots->sum('amount_payed');
-                                                            $group_status = $main_item->request_permission;
-                                                        @endphp
-                                                        <tr class="table-primary" style="border-top: 2px solid #007bff;">
-                                                            <td class="text-center">{{ $key + 1 }}</td>
-                                                            <td class="text-center">
-                                                                <i class="mdi mdi-account-group me-2 text-primary"></i>
-                                                                <strong>{{ $main_item->firstname }}
-                                                                    {{ $main_item->lastname }}</strong>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <span class="badge bg-info text-dark">{{ $total_plots }}
-                                                                    Plots</span>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <strong>{{ number_format($total_paid, 2) }}</strong>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) == 'SuperAdmin')
-                                                                    <button
-                                                                        class="btn btn-primary btn-sm confirm-permission-btn"
-                                                                        data-id="{{ $multiple_user_id }}"
-                                                                        data-name="{{ $main_item->firstname }}"
-                                                                        data-plot-count="{{ $total_plots }}">
-                                                                        <i class="mdi mdi-check-decagram me-1"></i> Confirm
-                                                                        Agreement for All ({{ $total_plots }})
-                                                                    </button>
-                                                                @elseif ($group_status == 2)
-                                                                    <a href="{{ url('add-agreement/' . $multiple_user_id) }}"
-                                                                        class="btn btn-success btn-icon-text btn-sm">
-                                                                        <i class="mdi mdi-file-document-box me-1"></i> Make
-                                                                        Agreement for All ({{ $total_plots }})
-                                                                    </a>
-                                                                @endif
-                                                            </td>
-                                                            <td colspan="2"></td>
-                                                        </tr>
+                            @foreach ($plots as $plot_item)
+                                @php
+                                    $estate_pdf = DB::table('estates')->where('estate_name', $plot_item->estate)->value('estate_pdf');
+                                @endphp
+                                <tr class="sz-detail-row">
+                                    <td></td>
+                                    <td data-label=""><small class="fst-italic">Details</small></td>
+                                    <td class="text-center" data-label="Estate">{{ $plot_item->estate }}</td>
+                                    <td class="text-center" data-label="Plot"><strong>Plot no:</strong> {{ $plot_item->plot_number }}</td>
+                                    <td class="text-center sz-money" data-label="Paid"><strong>Paid:</strong> {{ number_format((float) $plot_item->amount_payed) }}</td>
+                                    <td class="text-center" data-label="Receipts">
+                                        <a href="{{ url('/all-client-receipts/' . $plot_item->id) }}" class="btn btn-outline-info btn-sm btn-icon-text">
+                                            <i class="mdi mdi-receipt btn-icon-prepend"></i> View receipts
+                                        </a>
+                                    </td>
+                                    <td class="text-center" data-label="Sketch">
+                                        <button type="button" class="btn btn-outline-warning btn-sm btn-icon-text open-pdf"
+                                            data-bs-toggle="modal" data-bs-target="#pdfModal"
+                                            data-pdf="{{ asset('/public/estate_pdf/' . $estate_pdf) }}">
+                                            <i class="mdi mdi-file-pdf-box btn-icon-prepend"></i> View sketch
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
 
-                                                        @foreach ($plots as $plot_item)
-                                                       
-                                                            <tr class="table-light" style="color: #000 !important;">
-                                                                <td style="color: #000 !important;"></td>
-                                                                <td style="color: #000 !important;">
-                                                                    <small class="text-muted fst-italic"
-                                                                        style="color: #000 !important;">Details:</small>
-                                                                </td>
-                                                                <td style="color: #000 !important;">{{ $plot_item->estate }}
-                                                                </td>
-                                                                <td style="color: #000 !important;">
-                                                                    <strong style="color: #000 !important;">Plot No:</strong>
-                                                                    {{ $plot_item->plot_number }}
-                                                                </td>
-                                                                <td style="color: #000 !important;">
-                                                                    <strong style="color: #000 !important;">Paid:</strong>
-                                                                    {{ $plot_item->amount_payed }}
-                                                                </td>
-                                                                <td class="text-center" style="color: #000 !important;">
-                                                                    <a href="{{ url('/all-client-receipts/' . $plot_item->id) }}"
-                                                                        class="btn btn-outline-info btn-xs"
-                                                                        style="color: #000 !important; border-color: #0d6efd;">
-                                                                        <i class="mdi mdi-receipt"
-                                                                            style="color: #000 !important;"></i>
-                                                                        View Receipts
-                                                                    </a>
-                                                                </td>
-                                                                
-                                                                 <?php
-                                                                $estate_pdf = DB::table('estates')->where('estate_name',$plot_item->estate)->value('estate_pdf');
-                                                                ?>
-                                                            
-                                                                <td>
-                                                                    <button type="button"
-                                                                        class="btn btn-primary open-pdf"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#pdfModal"
-                                                                        data-pdf="{{ asset('/public/estate_pdf/' . $estate_pdf) }}">
-                                                                        <i class="fas fa-file-pdf"></i> View Sketch
-                                                                    </button>
+                            @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) != 'SuperAdmin')
+                                <tr class="sz-detail-row">
+                                    <td colspan="7" class="text-center">
+                                        <a href="javascript:void(0);" class="btn btn-primary btn-sm confirm-permission-btn"
+                                            data-id="{{ $multiple_user_id }}"
+                                            data-name="{{ $main_item->firstname }}"
+                                            data-plot-count="{{ $total_plots }}">
+                                            <i class="mdi mdi-check-decagram me-1"></i> Confirm permission
+                                        </a>
 
-                                                                </td>
-                                                            </tr>
-                                                            
-                                                            <link
-                                                                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-                                                                rel="stylesheet">
+                                        <a href="javascript:void(0);" class="btn btn-warning btn-sm confirm-revoke-btn"
+                                            data-id="{{ $multiple_user_id }}"
+                                            data-name="{{ $main_item->firstname }}"
+                                            data-action="revoke"
+                                            data-plot-count="{{ $total_plots }}">
+                                            <i class="mdi mdi-shield-off-outline me-1"></i> Revoke permission
+                                        </a>
 
-                                                        @endforeach
-                                                        
-                                                        
-                                                        <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-                                                            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-                                                                <div class="modal-content">
-                                                        
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">Estate Document</h5>
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            style="color: white; background-color: white;"></button>  
-                                                                    </div>
-                                                        
-                                                                    <div class="modal-body p-0">
-                                                                        <iframe id="pdfFrame"
-                                                                            width="100%"
-                                                                            height="600px"
-                                                                            style="border:none;">
-                                                                        </iframe>
-                                                                    </div>
-                                                        
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                        <a href="javascript:void(0);" class="btn btn-danger btn-sm confirm-delete-user"
+                                            data-id="{{ $multiple_user_id }}"
+                                            data-name="{{ $main_item->firstname }}"
+                                            data-action="delete"
+                                            data-plot-count="{{ $total_plots }}">
+                                            <i class="mdi mdi-account-remove-outline me-1"></i> Delete user
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endif
+                        @empty
+                            <tr>
+                                <td colspan="7">
+                                    <div class="sz-empty"><i class="mdi mdi-shield-check-outline"></i><b>Nothing to approve</b>No records requiring agreement permission were found.</div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                                                        <script>
-    document.querySelectorAll('.open-pdf').forEach(button => {
-        button.addEventListener('click', function () {
-            const pdfUrl = this.dataset.pdf + '#toolbar=0&navpanes=0&scrollbar=0';
-            document.getElementById('pdfFrame').src = pdfUrl;
-        });
-    });
+            <div class="mt-4">{{ $groupPage->links() }}</div>
+        </section>
 
-    // Clear iframe when modal closes
-    document.getElementById('pdfModal').addEventListener('hidden.bs.modal', function () {
-        document.getElementById('pdfFrame').src = '';
-    });
-</script>
-
-
-                                                        @if ($group_status == 1 && ($LoggedAdminInfo->User_access_right ?? null) != 'SuperAdmin')
-                                                            <tr style="
-                                                                                        background-color:#f8f9fa;
-                                                                                        color:#000;
-                                                                                        --bs-table-hover-color:#000 !important;
-                                                                                        --bs-table-hover-bg:#e9ecef !important;
-                                                                                    "
-                                                                onmouseover="this.style.backgroundColor='#e9ecef';"
-                                                                onmouseout="this.style.backgroundColor='#f8f9fa';">
-                                                                <!-- Update colspan to 7 to match all columns -->
-                                                                <td colspan="7" class="text-center">
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-primary btn-sm confirm-permission-btn"
-                                                                        data-id="{{ $multiple_user_id }}"
-                                                                        data-name="{{ $main_item->firstname }}"
-                                                                        data-plot-count="{{ $total_plots }}">
-                                                                        <i class="mdi mdi-check-decagram me-1"></i>
-                                                                        Confirm Permission
-                                                                    </a>
-
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-warning btn-sm confirm-revoke-btn text-white"
-                                                                        data-id="{{ $multiple_user_id }}"
-                                                                        data-name="{{ $main_item->firstname }}"
-                                                                        data-action="revoke"
-                                                                        data-plot-count="{{ $total_plots }}">
-                                                                        <i class="mdi mdi-shield-off-outline me-1"></i>
-                                                                        Revoke Permission
-                                                                    </a>
-
-                                                                    <a href="javascript:void(0);"
-                                                                        class="btn btn-danger btn-sm confirm-delete-user"
-                                                                        data-id="{{ $multiple_user_id }}"
-                                                                        data-name="{{ $main_item->firstname }}"
-                                                                        data-action="delete"
-                                                                        data-plot-count="{{ $total_plots }}">
-                                                                        <i class="mdi mdi-account-remove-outline me-1"></i>
-                                                                        Delete User
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="7" class="text-center text-warning py-4">
-                                                                <i class="mdi mdi-alert-circle me-2"></i> No records
-                                                                requiring agreement permission found.
-                                                            </td>
-                                                        </tr>
-                                                    @endforelse
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+        {{-- One sketch viewer for the whole page --}}
+        <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Estate document</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <iframe id="pdfFrame" width="100%" height="600px" style="border:none;"></iframe>
                     </div>
                 </div>
             </div>
         </div>
+
+        <script>
+            document.querySelectorAll('.open-pdf').forEach(button => {
+                button.addEventListener('click', function () {
+                    document.getElementById('pdfFrame').src = this.dataset.pdf + '#toolbar=0&navpanes=0&scrollbar=0';
+                });
+            });
+
+            // Clear the iframe when the modal closes
+            document.getElementById('pdfModal').addEventListener('hidden.bs.modal', function () {
+                document.getElementById('pdfFrame').src = '';
+            });
+        </script>
     </div>
-
-
 
     <footer class="footer">
         <div class="d-sm-flex justify-content-center justify-content-sm-between">

@@ -55,7 +55,7 @@
                                             <tr>
                                                
 
-                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $key + 1 }}</a></td>
+                                        <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $not_taken_half_plots->firstItem() + $key }}</a></td>
                                         <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->estate }}</a></td>
                                         <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->plot_number }}</a></td>
                                         <td><a href="{{ url('view-reciept/' . $data->id) }}">{{ $data->width_1 }}</a></td>
@@ -71,6 +71,7 @@
                                     </tbody>
                                 </table>
                             </div>
+<div class="mt-4">{{ $not_taken_half_plots->links() }}</div>
                         </div>
                     </div>
                 </div>

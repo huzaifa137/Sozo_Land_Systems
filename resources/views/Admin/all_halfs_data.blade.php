@@ -111,7 +111,7 @@
                                     <tbody>
                                         @foreach ($total_estate_data as $key => $data)
                                             <tr>
-                                                <td>{{ $key + 1 }}</td>
+                                                <td>{{ $total_estate_data->firstItem() + $key }}</td>
                                                 <td> {{ $data->estate }} </td>
                                                 <td> {{ $data->plot_number }} </td>
                                                 <td> {{ $data->width_1 }} </td>
@@ -127,6 +127,7 @@
                                     </tbody>
                                 </table>
                             </div>
+<div class="mt-4">{{ $total_estate_data->links() }}</div>
                         </div>
                     </div>
                 </div>

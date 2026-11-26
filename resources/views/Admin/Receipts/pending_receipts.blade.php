@@ -50,7 +50,7 @@
         
                                                     <tr>
                                                         
-                                                        <td>{{$key+1}}</td>
+                                                        <td>{{ $pending_reciepts->firstItem() + $key }}</td>
                                                       <td>
                                                         {{-- <img src="assets/images/faces/face1.jpg" alt="image" /> --}}
                                                         <span >{{$item->firstname}} {{$item->lastname}}</span>
@@ -83,6 +83,7 @@
                                                   </tbody>
                                                 </table>
                                               </div>
+<div class="mt-4">{{ $pending_reciepts->links() }}</div>
                                             </div>
                                           </div>
                                         </div>
