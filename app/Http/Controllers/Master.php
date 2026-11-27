@@ -20,6 +20,8 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -66,15 +68,7 @@ class Master extends Controller
     public function register()
     {
 
-        $admin_category = Session('LoggedAdmin');
-
-        if ($admin_category == 'Admin') {
-            return back()->with('error', 'Only Super Admins can Add more Admins');
-        } else if ($admin_category == null) {
-
-            return back()->with('error', 'Only Super Admins can Add more Admins');
-        }
-
+        // Access is restricted to SuperAdmins by the 'SuperAdmin' route middleware.
         return view('Login.register');
     }
 
@@ -85,9 +79,9 @@ class Master extends Controller
             'username' => 'required',
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email',
-            'admin_category' => 'required',
-            'password' => 'required',
+            'email' => 'required|email|unique:admin_registers,email',
+            'admin_category' => 'required|in:Admin,SuperAdmin',
+            'password' => 'required|min:8',
             'confirm_password' => 'required',
         ]);
 
@@ -145,6 +139,7 @@ class Master extends Controller
                         DB::table('admin_registers')->where('id', $AdminEmail->id)->update(['ip_address' => $device_ip]);
                     }
 
+                    $request->session()->regenerate();
                     $request->session()->put('LoggedAdmin', $AdminEmail->id);
 
                     return redirect('admin-dashboard');
@@ -168,6 +163,7 @@ class Master extends Controller
 
                     $user_category = $AdminEmail->admin_category;
 
+                    $request->session()->regenerate();
                     $request->session()->put('LoggedAdmin', $AdminEmail->id);
 
                     return redirect('admin-dashboard');
@@ -256,19 +252,118 @@ class Master extends Controller
     }
 
 
+    /**
+     * Server-generated file name that keeps only a verified extension, so an uploaded
+     * file can never be stored under an attacker-chosen name or as an executable type.
+     */
+    private function safeUploadName(\Illuminate\Http\UploadedFile $file): string
+    {
+        return date('YmdHi') . '_' . Str::random(8) . '.' . strtolower($file->extension());
+    }
+
+    private function ensureDir(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+    }
+
+    /** Receipt numbers start above the legacy random range and increase with the receipts table id. */
+    private function nextReceiptNumber(): int
+    {
+        return (int) config('sozo.receipt_number_offset', 50000) + (int) DB::table('reciepts')->max('id') + 1;
+    }
+
+    /** "1,500,000" -> 1500000; null when the value is not a plain number. */
+    private function parseMoney($value): ?int
+    {
+        $clean = str_replace([',', ' '], '', (string) $value);
+
+        return preg_match('/^\d+(\.\d+)?$/', $clean) ? (int) round((float) $clean) : null;
+    }
+
+    /**
+     * Returns an error message when any requested plot already has an active buyer.
+     * Resold / shifted-away rows (back_on_market_status = 1) do not count, and a half plot may
+     * be held by two buyers. Mirrors the "already taken" rule of the Add Plot page.
+     */
+    private function plotAvailabilityError(array $plots, string $half): ?string
+    {
+        $seen = [];
+
+        foreach ($plots as $plot) {
+            $estate = $plot['estate'] ?? null;
+            $number = $plot['plot_number'] ?? null;
+
+            if ($estate === null || $estate === '' || $number === null || $number === '') {
+                continue;
+            }
+
+            $key = $estate . '|' . $number;
+            $seen[$key] = ($seen[$key] ?? 0) + 1;
+
+            $active = DB::table('buyers')
+                ->where('estate', $estate)
+                ->where('plot_number', $number)
+                ->where(function ($q) {
+                    $q->where('back_on_market_status', 0)->orWhereNull('back_on_market_status');
+                })
+                ->pluck('half_or_full');
+
+            $isHalf = $half === '1';
+            $takenByFull = $active->contains(fn ($h) => (string) $h !== '1');
+            $halfCount = $active->count() + $seen[$key] - 1;
+
+            if ($takenByFull || (!$isHalf && $active->count() >= 1) || ($isHalf && $halfCount >= 2) || (!$isHalf && $seen[$key] > 1)) {
+                return "Plot {$number} in {$estate} has already been sold.";
+            }
+        }
+
+        return null;
+    }
+
     public function store_buyer_details(Request $request)
     {
+        $request->validate([
+            // The buyers table declares all three NOT NULL, so they must be present.
+            'national_id_front' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
+            'national_id_back' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
+            'profile_pic' => 'required|file|mimes:jpg,jpeg,png,webp|max:10240',
+        ]);
+
+        // Refuse to sell a plot that already has an active buyer (checked before any file is stored).
+        $requestedPlots = [['estate' => $request->estate, 'plot_number' => $request->plot_number]];
+        if ($request->has('multiple_estates')) {
+            $decoded = json_decode($request->multiple_estates, true);
+            if (is_array($decoded)) {
+                $requestedPlots = $decoded;
+            }
+        }
+        if ($message = $this->plotAvailabilityError($requestedPlots, (string) $request->half_or_full)) {
+            return response()->json(['status' => false, 'message' => $message], 422);
+        }
+
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->format('Y/m/d');
+
+        // The form sends either a date, or "Fully payed". Honour it; never store a made-up date.
+        $posted = trim((string) $request->next_installment_pay);
+        if ($posted === 'Fully payed' && (float) str_replace(',', '', (string) ($request->balance ?? 0)) <= 0) {
+            $nextInstallment = 'Fully payed';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $posted) && strtotime($posted) !== false) {
+            $nextInstallment = $posted;
+        } else {
+            $nextInstallment = now()->addMonth()->toDateString();
+        }
 
         // --- Uploads ---
         $frontFile = $request->file('national_id_front');
         $backFile = $request->file('national_id_back');
         $profileFile = $request->file('profile_pic');
 
-        $frontName = $frontFile ? date('YmdHi') . $frontFile->getClientOriginalName() : null;
-        $backName = $backFile ? date('YmdHi') . $backFile->getClientOriginalName() : null;
-        $profileName = $profileFile ? date('YmdHi') . $profileFile->getClientOriginalName() : null;
+        $frontName = $frontFile ? $this->safeUploadName($frontFile) : null;
+        $backName = $backFile ? $this->safeUploadName($backFile) : null;
+        $profileName = $profileFile ? $this->safeUploadName($profileFile) : null;
 
         if ($frontFile)
             $frontFile->move(public_path('public/national_id'), $frontName);
@@ -309,7 +404,7 @@ class Master extends Controller
                     $buyer->balance = $request->balance ?? 0;
                     $buyer->reciepts = $request->receipt_img ?? '0';
                     $buyer->agreement = $request->agreement ?? 'Pending';
-                    $buyer->next_installment_pay = "2024-11-12";
+                    $buyer->next_installment_pay = $nextInstallment;
                     $buyer->added_by = $request->hidden_user_name;
                     $buyer->date_sold = $formattedDate;
 
@@ -366,7 +461,7 @@ class Master extends Controller
         $buyer->agreement = $request->agreement ?? 'Pending';
         $buyer->date_sold = $formattedDate;
         $buyer->half_or_full = $request->half_or_full;
-        $buyer->next_installment_pay = "2024-11-12";
+        $buyer->next_installment_pay = $nextInstallment;
         $buyer->added_by = $request->hidden_user_name;
         $buyer->multiple_user_id = $multipleUserId;
 
@@ -385,7 +480,8 @@ class Master extends Controller
     public function edit_sales(Request $request, $id, $user_id)
     {
 
-        $admin_category = AdminRegister::where('id', $user_id)->value('admin_category');
+        // Identity comes from the session; the {user_id} URL segment is ignored (it was caller-controlled).
+        $admin_category = AdminRegister::where('id', session('LoggedAdmin'))->value('admin_category');
 
         if ($admin_category == 'Admin') {
             return back()->with('error', 'Only Super Admins can edit records');
@@ -394,7 +490,7 @@ class Master extends Controller
             return back()->with('error', 'Only Super Admins can edit records');
         }
 
-        $info = buyer::find($id);
+        $info = buyer::findOrFail($id);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
@@ -432,18 +528,21 @@ class Master extends Controller
             return redirect()->back()->with('error', 'You dont have rights to use the delete feature');
         }
 
-        $buyerInfo = buyer::find($buyerId);
+        $buyerInfo = buyer::findOrFail($buyerId);
         $plotId = DB::table('plots')
             ->where('estate', $estate)
             ->where('plot_number', $plotNumber)->value('id');
 
-        $post = plot::find($plotId);
+        DB::transaction(function () use ($plotId, $buyerInfo) {
+            if ($plotId) {
+                $post = plot::find($plotId);
+                $post->status = 'Not taken';
+                $post->buyer_id = 0;
+                $post->save();
+            }
 
-        $post->status = 'Not taken';
-        $post->buyer_id = 0;
-        $post->save();
-
-        $buyerInfo->delete();
+            $buyerInfo->delete();
+        });
 
         return redirect()->back()->with('success', 'Record has been deleted successfully, plot has been taken back to market');
 
@@ -451,7 +550,7 @@ class Master extends Controller
 
     public function view_specific_sale($id)
     {
-        $userdata = buyer::find($id);
+        $userdata = buyer::findOrFail($id);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.view_specific_buyer', $data, compact(['userdata']));
@@ -958,13 +1057,36 @@ class Master extends Controller
 
     public function send_plot_estate(Request $request)
     {
+        $rules = [
+            'land_status' => 'required|in:Not_taken,Under_payment,Fully_taken',
+            'Estate' => 'required|string',
+            'plot_number' => 'required|string',
+        ];
 
-    dd('welcome home zaipha ...');
+        // Buyer documents only exist for plots that already have a buyer.
+        if (in_array($request->land_status, ['Under_payment', 'Fully_taken'], true)) {
+            $rules += [
+                'national_id_front' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
+                'national_id_back' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
+                'profile_pic' => 'required|file|mimes:jpg,jpeg,png,webp|max:10240',
+                'files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:20480',
+            ];
+        }
+
+        $request->validate($rules);
+
+        return DB::transaction(fn () => $this->send_plot_estate_inner($request));
+    }
+
+
+    private function send_plot_estate_inner(Request $request)
+    {
+
 
         $status = $request->land_status;
         $estate_name = $request->Estate;
         $plot_number = $request->plot_number;
-        $user_name = $request->hidden_user_naeme;
+        $user_name = $request->hidden_user_naeme ?: optional(AdminRegister::find(session('LoggedAdmin')))->username;
 
         $exceptional_status = $request->exceptional_status;
         $exceptional_amount = $request->exceptional_amount;
@@ -1097,8 +1219,8 @@ class Master extends Controller
 
             foreach ($request->file('files') as $key => $file) {
 
-                $filename = date('YmdHi') . $file->getClientOriginalName();
-                $file->move('agreements', $filename);
+                $filename = $this->safeUploadName($file);
+                $file->move(public_path('agreements'), $filename);
 
                 if ($key + 1 > 1) {
 
@@ -1126,17 +1248,17 @@ class Master extends Controller
             $post->agreement = $ref;
 
             $file = $request->national_id_front;
-            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $filename = $this->safeUploadName($file);
             $file->move(public_path('public/national_id'), $filename);
             $post->national_id_front = $filename;
 
             $file = $request->national_id_back;
-            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $filename = $this->safeUploadName($file);
             $file->move(public_path('public/national_id'), $filename);
             $post->national_id_back = $filename;
 
             $file = $request->profile_pic;
-            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $filename = $this->safeUploadName($file);
             $file->move(public_path('profile_pic'), $filename);
             $post->profile_pic = $filename;
 
@@ -1202,17 +1324,17 @@ class Master extends Controller
             $post->agreement = 'Pending';
 
             $file = $request->national_id_front;
-            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $filename = $this->safeUploadName($file);
             $file->move(public_path('public/national_id'), $filename);
             $post->national_id_front = $filename;
 
             $file = $request->national_id_back;
-            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $filename = $this->safeUploadName($file);
             $file->move(public_path('public/national_id'), $filename);
             $post->national_id_back = $filename;
 
             $file = $request->profile_pic;
-            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $filename = $this->safeUploadName($file);
             $file->move(public_path('profile_pic'), $filename);
             $post->profile_pic = $filename;
 
@@ -1380,7 +1502,7 @@ class Master extends Controller
     {
 
         $user_id = $id;
-        $userInformation = Buyer::find($id);
+        $userInformation = Buyer::findOrFail($id);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Receipts.add_receipt', $data, compact(['user_id', 'userInformation']));
@@ -1391,6 +1513,7 @@ class Master extends Controller
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+        abort_if($user_information->isEmpty(), 404);
         $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
         $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
 
@@ -1479,6 +1602,7 @@ class Master extends Controller
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
         $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+        abort_if($user_information->isEmpty(), 404);
         $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
         $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
         $user_reciepts_pdf = DB::table('reciepts')->where('user_id', '=', $id)->get();
@@ -1492,8 +1616,8 @@ class Master extends Controller
 
     public function store_new_receipt(Request $request)
     {
-
         $request->validate([
+            'user_id' => 'required|integer|exists:buyers,id',
             'amount_paid' => 'required',
             'Date_of_payment' => 'required',
             'balance_pending' => 'required',
@@ -1501,76 +1625,75 @@ class Master extends Controller
             'amount_in_words' => 'required',
         ]);
 
-        $amount_paid = str_replace(',', '', $request->amount_paid);
-        $amountPaidRaw = $request->amount_paid;
-        $balancePendingRaw = $request->balance_pending;
-        $balance_pending = str_replace(',', '', $request->balance_pending);
+        $amount = $this->parseMoney($request->amount_paid);
+        $balance = $this->parseMoney($request->balance_pending);
 
+        if ($amount === null || $amount <= 0) {
+            throw ValidationException::withMessages(['amount_paid' => 'Amount paid must be a number greater than zero.']);
+        }
+        if ($balance === null) {
+            throw ValidationException::withMessages(['balance_pending' => 'Balance must be a number (0 or more).']);
+        }
 
-$Balance = $balance_pending; // e.g., 1000000
-$Amount = $amount_paid;      // e.g., 2000000
+        $user_info = buyer::findOrFail($request->user_id);
 
-// Only format for display
-$BalanceFormatted = number_format($Balance); // "1,000,000"
-$AmountFormatted = number_format($Amount);  
+        // The balance box is typed by hand, so by default a different figure is accepted but audited.
+        // Set STRICT_RECEIPT_BALANCE=true to require balance = previous balance - amount.
+        if (is_numeric($user_info->balance)) {
+            $expected = max(0, (int) $user_info->balance - $amount);
+            if ($expected !== $balance) {
+                if (config('sozo.strict_receipt_balance')) {
+                    throw ValidationException::withMessages([
+                        'balance_pending' => 'Balance should be ' . number_format($expected) . ' (previous balance minus this payment).',
+                    ]);
+                }
+                Log::warning('Receipt balance differs from computed balance', [
+                    'buyer_id' => $user_info->id, 'previous_balance' => $user_info->balance,
+                    'amount_paid' => $amount, 'expected_balance' => $expected, 'posted_balance' => $balance,
+                    'admin_id' => session('LoggedAdmin'),
+                ]);
+            }
+        }
 
         $user_email = $request->user_email;
         $user_name = $request->user_name;
-        $user_id = $request->user_id;
         $Phonenumber = $request->phone_number;
         $amount_in_words = $request->amount_in_words;
+        $admin_user_info = AdminRegister::where('id', session('LoggedAdmin'))->first();
+        $formattedDate = Carbon::now()->format('Y/m/d');
+        $Amount = number_format($amount);
+        $Balance = number_format($balance);
 
-        $admin_user_spec_id = session('LoggedAdmin');
-        $admin_user_info = AdminRegister::where('id', $admin_user_spec_id)->first();
-        $user_info = buyer::where('id', $user_id)->first();
-        $receipt_no = rand(10000, 50000);
+        $filename = null;
 
-        $currentDate = Carbon::now();
-        $formattedDate = $currentDate->format('Y/m/d');
+        // Receipt row, PDF and the buyer's totals succeed or fail together.
+        DB::transaction(function () use (&$filename, $request, $amount, $balance, $Amount, $Balance, $Phonenumber, $amount_in_words, $user_email, $user_name, $formattedDate, $admin_user_info, $user_info) {
+            $post = new reciept();
+            $post->reciept = '-';
+            $post->user_id = $request->user_id;
+            $post->Amount = $Amount;
+            $post->Date_of_payment = $request->Date_of_payment;
+            $post->Balance = $Balance;
+            $post->Phonenumber = $Phonenumber;
+            $post->amount_in_words = $amount_in_words;
+            $post->save();
 
-        $user_id = $request->user_id;
-        $amount_paid = $AmountFormatted;
-        $Balance = $BalanceFormatted;
-        $Amount = $AmountFormatted;
+            // Unique by construction: derived from the receipt row's own id.
+            $receipt_no = (int) config('sozo.receipt_number_offset', 50000) + $post->id;
 
-        $post = new reciept();
+            $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'admin_user_info', 'amount_in_words', 'user_info']));
+            $filename = 'payment_reciepet' . time() . '_' . $post->id . '.pdf';
 
-        $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'admin_user_info', 'amount_in_words', 'user_info']));
-        $filename = 'payment_reciepet' . time() . '.pdf';
-        // Make sure destination directory exists
-        $destinationDirectory = public_path("storage/pdf_receipts");
+            $this->ensureDir(storage_path('app/public/pdf_receipts'));
+            $this->ensureDir(public_path('storage/pdf_receipts'));
+            $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
+            copy(storage_path("app/public/pdf_receipts/{$filename}"), public_path("storage/pdf_receipts/{$filename}"));
 
-        if (!file_exists($destinationDirectory)) {
-            mkdir($destinationDirectory, 0755, true); // create folders recursively
-        }
+            $post->reciept = $filename;
+            $post->save();
 
-        // Save PDF to Laravel's internal storage path
-        $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
-
-        // Copy to public folder
-        copy(
-            storage_path("app/public/pdf_receipts/{$filename}"),
-            public_path("storage/pdf_receipts/{$filename}")
-        );
-
-        $post->reciept = $filename;
-        $post->user_id = $request->user_id;
-        $post->Amount = $amount_paid;
-        $post->Date_of_payment = $request->Date_of_payment;
-        $post->Balance = $BalanceFormatted;
-        $post->Phonenumber = $Phonenumber;
-        $post->amount_in_words = $request->amount_in_words;
-        $post->save();
-
-        $original_amount = buyer::where('id', $user_id)->value('amount_payed');
-
-        $all_cash = $original_amount + str_replace(',', '', $request->amount_paid);
-
-        $update_buyer_amount = buyer::where('id', $user_id)
-            ->update([
-                'amount_payed' => $all_cash,
-                'balance' => str_replace(',', '', $request->balance_pending),
-            ]);
+            buyer::where('id', $request->user_id)->increment('amount_payed', $amount, ['balance' => $balance]);
+        });
 
         return redirect()->back()->with('download_link', asset("storage/pdf_receipts/{$filename}"));
     }
@@ -1606,7 +1729,7 @@ $AmountFormatted = number_format($Amount);
         $amount_in_words = $request->amount_in_words;
 
         $user_info = buyer::where('id', $user_id)->first();
-        $receipt_no = rand(10000, 50000);
+        $receipt_no = $this->nextReceiptNumber();
 
         $admin_user_spec_id = session('LoggedAdmin');
         $admin_user_info = Adminregister::where('id', $admin_user_spec_id)->first();
@@ -1617,6 +1740,7 @@ $AmountFormatted = number_format($Amount);
         $pdf = PDF::loadView('invoice_pdf', compact(['user_email', 'user_name', 'formattedDate', 'admin_user_info', 'receipt_no', 'Amount', 'Balance', 'Phonenumber', 'amount_in_words', 'user_info']));
         $filename = 'payment_reciepet' . time() . '.pdf';
 
+        $this->ensureDir(storage_path('app/public/pdf_receipts'));
         $pdf->save(storage_path("app/public/pdf_receipts/{$filename}"));
 
         $post = new reciept();
@@ -1892,6 +2016,7 @@ $AmountFormatted = number_format($Amount);
         $filename = 'payment_agreement_' . time() . '.pdf';
 
         // Save the PDF to the specified path
+        $this->ensureDir(storage_path('app/public/agreements'));
         $pdf->save(storage_path("app/public/agreements/{$filename}"));
 
         // Create a new agreement record (optional)
@@ -2073,7 +2198,7 @@ $AmountFormatted = number_format($Amount);
     {
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
-        $records = buyer::find($id);
+        $records = buyer::findOrFail($id);
 
         return view('Admin.Sales.update_payment_reminder', $data, compact(['records']));
     }
@@ -2541,6 +2666,7 @@ $AmountFormatted = number_format($Amount);
     {
 
         $user_information = DB::table('buyers')->where('id', '=', $id)->get();
+        abort_if($user_information->isEmpty(), 404);
 
         $user_reciepts = DB::table('pdf_receipts')->where('user_id', '=', $id)->get();
         $user_agreements = DB::table('pdf_agreements')->where('user_id', '=', $id)->get();
@@ -2560,6 +2686,7 @@ $AmountFormatted = number_format($Amount);
 
         $user_id = $id;
         $asset_info = DB::table('buyers')->where('id', '=', $id)->first();
+        abort_unless($asset_info, 404);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
         return view('Admin.Resale.resale_amount', $data, compact(['asset_info', 'user_id']));
     }
@@ -2713,18 +2840,7 @@ $AmountFormatted = number_format($Amount);
 
     // Generate Invoice and Agreement
 
-    public function generate_invoice()
-    {
 
-        $pdf = PDF::loadView('invoice_pdf');
-        return $pdf->download('techsolutionstuff.pdf');
-
-    }
-
-    public function show_invoice()
-    {
-        return view('invoice_pdf');
-    }
 
     public function attach_agreement_view($id)
     {
@@ -2800,7 +2916,12 @@ $AmountFormatted = number_format($Amount);
 
     public function download_receipt_payment($filename)
     {
-        return response()->download(storage_path('public/pdf_receipts/' . $filename));
+        // Receipts are written to storage/app/public/pdf_receipts (see store_new_receipt).
+        $path = storage_path('app/public/pdf_receipts/' . basename($filename));
+
+        abort_unless(is_file($path), 404);
+
+        return response()->download($path);
     }
 
     public function add_expenditure()
@@ -3097,47 +3218,6 @@ $AmountFormatted = number_format($Amount);
         return view('Admin.total_not_taken_plots_in_estate', $data, compact(['specific_estate', 'count_estates_fully', 'estate_id', 'estate_name', 'estate_data', 'estate_pdf_info', 'estate_price']));
     }
 
-    public function enter_saved_estate()
-    {
-        $estate_names = Estate::all()->pluck('estate_name');
-
-        foreach ($estate_names as $estate_name) {
-
-            $estate_records = buyer::where('estate', $estate_name)->get();
-
-            foreach ($estate_records as $estate_record) {
-
-                $estate_record_plot_number = buyer::where('id', $estate_record->id)->value('plot_number');
-
-                $existing_record = plot::where('plot_number', $estate_record_plot_number)
-                    ->where('estate', '=', $estate_name)->first();
-
-                if ($existing_record == null) {
-
-                    $post = new plot;
-
-                    $post->estate = $estate_name;
-                    $post->plot_number = $estate_record->plot_number;
-                    $post->location = $estate_record->location;
-                    $post->width_1 = $estate_record->width_1;
-                    $post->width_2 = $estate_record->width_2;
-                    $post->height_1 = $estate_record->height_1;
-                    $post->height_2 = $estate_record->height_2;
-                    $post->buyer_id = $estate_record->id;
-                    $post->status = $estate_record->next_installment_pay;
-                    $post->exceptional_status = "No";
-                    $post->exceptional_amount = "0";
-                    $post->half_or_full = "0";
-                    $post->save();
-
-                } else {
-                    continue;
-                }
-            }
-        }
-
-        dd('Data has been saved successfully in the db');
-    }
 
     public function view_estate_pdf($id, $estate)
     {
@@ -3268,7 +3348,11 @@ $AmountFormatted = number_format($Amount);
 
     public function deleteUser($id)
     {
-        $record = AdminRegister::find($id);
+        if ((int) $id === (int) session('LoggedAdmin')) {
+            return redirect()->back()->with('error', 'You cannot delete your own account');
+        }
+
+        $record = AdminRegister::findOrFail($id);
         $record->delete();
 
         return redirect()->back()->with('success', 'User has been deleted successfully');
@@ -3277,7 +3361,7 @@ $AmountFormatted = number_format($Amount);
     public function editUser($id)
     {
 
-        $record = AdminRegister::find($id);
+        $record = AdminRegister::findOrFail($id);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Login.editUser', $data, compact(['record']));
@@ -3287,12 +3371,13 @@ $AmountFormatted = number_format($Amount);
     {
 
         $request->validate([
+            'record_id' => 'required|exists:admin_registers,id',
             'username' => 'required',
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email',
-            'admin_category' => 'required',
-            'password' => 'required',
+            'email' => 'required|email|unique:admin_registers,email,' . (int) $request->record_id,
+            'admin_category' => 'required|in:Admin,SuperAdmin',
+            'password' => 'required|min:8',
             'confirm_password' => 'required',
         ]);
 
@@ -3303,7 +3388,7 @@ $AmountFormatted = number_format($Amount);
 
             $record_id = $request->record_id;
 
-            $register_admin = AdminRegister::find($record_id);
+            $register_admin = AdminRegister::findOrFail($record_id);
 
             $register_admin->username = $request->username;
             $register_admin->firstname = $request->firstname;
@@ -3467,30 +3552,6 @@ $AmountFormatted = number_format($Amount);
         }
     }
 
-    public function get_multiple_records()
-    {
-
-        $records = [];
-
-        for ($counter = 1; $counter < 100; $counter++) {
-
-            $one = DB::table('plots')
-                ->where('estate', '=', 'Nakibano_1')
-                ->where('status', '!=', 'Fully payed')
-                ->where('plot_number', '=', $counter)->first();
-
-            $two = DB::table('plots')
-                ->where('estate', '=', 'Nakibano_1')
-                ->where('status', '=', 'Fully payed')
-                ->where('plot_number', '=', $counter)->first();
-
-            if ($one != null && $two != null) {
-                $records[] = $one;
-            }
-        }
-
-        dd($records);
-    }
 
     public function get_repeatitive_records()
     {
@@ -3566,6 +3627,7 @@ $AmountFormatted = number_format($Amount);
         $user_information = DB::table('buyers')
             ->where('plot_number', '=', $plot_id)
             ->where('estate', '=', $estate)->get();
+        abort_if($user_information->isEmpty(), 404);
 
         $id = DB::table('buyers')->where('plot_number', '=', $plot_id)
             ->where('estate', '=', $estate)->value('id');
@@ -3602,7 +3664,7 @@ $AmountFormatted = number_format($Amount);
     public function editPlotInformation($plotId)
     {
 
-        $plotInformation = plot::find($plotId);
+        $plotInformation = plot::findOrFail($plotId);
 
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
@@ -3631,7 +3693,7 @@ $AmountFormatted = number_format($Amount);
     public function editEstateInformation($estateId)
     {
 
-        $estateInformation = estate::find($estateId);
+        $estateInformation = estate::findOrFail($estateId);
         $data = ['LoggedAdminInfo' => AdminRegister::where('id', '=', session('LoggedAdmin'))->first()];
 
         return view('Admin.Edit.edit-estate-information', $data, compact(['estateInformation', 'estateId']));
@@ -3915,7 +3977,7 @@ $AmountFormatted = number_format($Amount);
 
     public function pendingHouseInformation($id)
     {
-        $pendingHouses = house::where('id', $id)->first();
+        $pendingHouses = house::where('id', $id)->firstOrFail();
 
         return view('Admin.show-pending-approval-houses', compact(['pendingHouses']));
     }
@@ -4323,7 +4385,7 @@ $AmountFormatted = number_format($Amount);
     {
         $user_id = $id;
 
-        $userInformation = Buyer::find($id);
+        $userInformation = Buyer::findOrFail($id);
 
         $data = [
             'LoggedAdminInfo' => AdminRegister::where('id', session('LoggedAdmin'))->first(),
@@ -4340,32 +4402,38 @@ $AmountFormatted = number_format($Amount);
 
     public function uploadOldReciepts(Request $request)
     {
+        $request->validate([
+            'receipt' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
+            'item_id' => 'required|integer|exists:buyers,id',
+            'amount_paid' => 'required|numeric|min:0',
+            'balance' => 'required|numeric|min:0',
+        ]);
+
         $file = $request->file('receipt');
-        $filename = time() . '_' . $file->getClientOriginalName();
+        $filename = time() . '_' . $this->safeUploadName($file);
 
         $path = $file->storeAs('receipts', $filename, 'public');
 
+        $publicDir = public_path('storage/receipts');
+        if (!is_dir($publicDir)) {
+            mkdir($publicDir, 0755, true);
+        }
         copy(
             storage_path("app/public/receipts/{$filename}"),
-            public_path("storage/receipts/{$filename}")
+            "{$publicDir}/{$filename}"
         );
 
-        $original_amount = buyer::where('id', $request->item_id)->value('amount_payed');
-
-        DB::table('oldreceipts')->insert([
-            'buyer_id' => $request->item_id,
-            'file_path' => 'receipts/' . $filename, // Just save relative path
-            'amount_paid' => $request->amount_paid,
-            'balance' => $request->balance,
-        ]);
-
-
-        $all_cash = $original_amount + $request->amount_paid;
-
-        $update_buyer_amount = buyer::where('id', $request->item_id)
-            ->update([
-                'amount_payed' => $all_cash,
+        DB::transaction(function () use ($request, $filename) {
+            DB::table('oldreceipts')->insert([
+                'buyer_id' => $request->item_id,
+                'file_path' => 'receipts/' . $filename, // Just save relative path
+                'amount_paid' => $request->amount_paid,
+                'balance' => $request->balance,
             ]);
+
+            // Atomic increment: no read-modify-write race between two concurrent uploads.
+            buyer::where('id', $request->item_id)->increment('amount_payed', $request->amount_paid);
+        });
 
         return redirect()->back()->with('success', 'Receipt uploaded successfully.');
     }
@@ -4480,6 +4548,80 @@ $AmountFormatted = number_format($Amount);
             'message' => 'General agreement for the entire group generated.'
         ]);
     }
+
+    /**
+     * Confirm ONE buyer's permission request (the per-plot "Confirm" button on Pending Receipts).
+     * Same effect as confirmGroupPermission, limited to this buyer: generate the agreement, mark the
+     * buyer and plot fully paid, record the zero receipt, set request_permission = 2.
+     */
+    public function confirmRequestPermission(Request $request, $id)
+    {
+        $buyer = buyer::find($id);
+
+        if (!$buyer) {
+            return response()->json(['status' => 'error', 'message' => 'Buyer not found.'], 404);
+        }
+
+        if ((int) $buyer->request_permission !== 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => (int) $buyer->request_permission === 2
+                    ? 'Permission has already been confirmed for this buyer.'
+                    : 'There is no pending permission request for this buyer.',
+            ], 422);
+        }
+
+        $plots = collect([$buyer]);
+
+        $pdf = PDF::loadView('agreement_pdf', [
+            'user_amount_paid' => $buyer->amount_payed,
+            'user_info' => $buyer,
+            'all_cash' => $buyer->amount_payed,
+            'day' => $buyer->created_at->day,
+            'month' => $buyer->created_at->month,
+            'year' => $buyer->created_at->year,
+            'amount_in_words' => $request->amount_in_words ?? '-',
+            'profile_pic' => public_path('profile_pic/' . $buyer->profile_pic),
+            'plots' => $plots,
+            'groupedEstates' => $plots->groupBy('estate'),
+        ]);
+
+        $filename = 'payment_agreement_' . $buyer->id . '_' . time() . '.pdf';
+        $this->ensureDir(public_path('agreements'));
+        $pdf->save(public_path('agreements') . '/' . $filename);
+
+        DB::transaction(function () use ($buyer, $filename, $request) {
+            $agreement = new agreement();
+            $agreement->user_id = $buyer->id;
+            $agreement->Amount_paid = $buyer->amount_payed;
+            $agreement->Date_of_payment = now();
+            $agreement->agreement = $filename;
+            $agreement->reciept = '-';
+            $agreement->save();
+
+            buyer::where('id', $buyer->id)->update([
+                'next_installment_pay' => 'Fully payed',
+                'reciepts' => '-',
+                'agreement' => $filename,
+                'request_permission' => 2,
+            ]);
+
+            DB::table('plots')
+                ->where(['estate' => $buyer->estate, 'plot_number' => $buyer->plot_number])
+                ->update(['status' => 'Fully payed']);
+
+            DB::insert(
+                'insert into reciepts (user_id, amount, balance, reciept, Date_of_payment, Phonenumber, amount_in_words) values (?, ?, ?, ?, ?, ?, ?)',
+                [$buyer->id, 0, 0, '-', now(), '-', $request->amount_in_words ?? '-']
+            );
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Agreement generated for ' . $buyer->firstname . ' ' . $buyer->lastname . '.',
+        ]);
+    }
+
 
 
     public function revokeGroupedPermission(Request $request, $group_id)
@@ -4663,41 +4805,4 @@ $AmountFormatted = number_format($Amount);
         }
     }
     
-    public function insertPlots()
-    {
-
-        $estate = "Kayabwe";
-        $location = "Mukono";
-
-        // common measurements
-        $width1 = 25.0;
-        $width2 = 25.0;
-        $height1 = 45.0;
-        $height2 = 45.0;
-
-        for ($i = 1; $i <= 70; $i++) {
-
-            DB::table('plots')->insert([
-                'estate' => $estate,
-                'plot_number' => $i,
-                'width_1' => $width1,
-                'width_2' => $width2,
-                'height_1' => $height1,
-                'height_2' => $height2,
-                'status' => 'Not taken',
-                'location' => $location,
-                'half_or_full' => 0,
-                'buyer_id' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-                'exceptional_status' => 'No',
-                'exceptional_amount' => 0,
-                'is_half' => 0,
-                'group_id' => null
-            ]);
-
-        }
-
-        dd("Plots generated successfully");
-    }
 }

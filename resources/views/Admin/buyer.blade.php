@@ -554,6 +554,18 @@
 <script src="/assets/js/jquery.min.js"></script>
 
 <script>
+        function sozoShowSaleError(message) {
+            $('#submit_click').attr('disabled', false).html($('#submit_click').data('orig') || 'Submit');
+            Swal.fire({
+                icon: 'error',
+                title: 'Sale not recorded',
+                html: message || 'Something went wrong.',
+                color: '#FFF',
+                background: '#452e6f',
+            });
+        }
+
+
     $(document).ready(function () {
 
         $('#Estate_plot').change(function () {
@@ -685,7 +697,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
 
-                    $('#submit_click').attr('disabled', true).html('Selling...');
+                    $('#submit_click').data('orig', $('#submit_click').html()).attr('disabled', true).html('Selling...');
 
                     var form_data = new FormData();
 
@@ -781,10 +793,18 @@
                                         (window.SozoLoader ? SozoLoader.go('/admin-buyer') : (window.location.href = '/admin-buyer'));
                                     }
                                 });
+                            } else {
+                                sozoShowSaleError(data.message);
                             }
                         },
-                        error: function (data) {
-                            $('body').html(data.responseText);
+                        error: function (xhr) {
+                            var r = xhr.responseJSON;
+                            if (r && (r.message || r.errors)) {
+                                var msg = r.errors ? Object.values(r.errors).flat().join('<br>') : r.message;
+                                sozoShowSaleError(msg);
+                            } else {
+                                $('body').html(xhr.responseText);
+                            }
                         }
                     });
                 }

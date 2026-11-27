@@ -96,9 +96,12 @@
                                                 <a data-confirm="Do you want to edit user ?"
                                                     href="{{ 'edit-user/' . $user_record->id }}"><i
                                                         class="btn btn-primary">Edit User</i></a>
-                                                <a data-confirm="Do you want to delete user ?"
-                                                    href="{{ 'delete-user/' . $user_record->id }}"><i
-                                                        class="btn btn-danger">Delete User</i></a>
+                                                <form method="POST" action="{{ url('delete-user/' . $user_record->id) }}"
+                                                    style="display:inline"
+                                                    onsubmit="return confirm('Do you want to delete user ?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-danger">Delete User</button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @endforeach

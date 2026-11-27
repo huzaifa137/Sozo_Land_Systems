@@ -16,6 +16,14 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        // config/database.php ships without a sqlite connection; tests run on in-memory sqlite.
+        $app['config']->set('database.connections.sqlite', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+        ]);
+
         return $app;
     }
 }

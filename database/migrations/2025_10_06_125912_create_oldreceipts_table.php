@@ -11,6 +11,11 @@ return new class extends Migration {
 
     public function up()
     {
+        // Guarded: production already has this table (it was created outside the migration set).
+        if (Schema::hasTable('oldreceipts')) {
+            return;
+        }
+
         Schema::create('oldreceipts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('buyer_id');

@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Guarded: production already has this column (it was added outside the migration set).
+        if (Schema::hasColumn('buyers', 'request_permission')) {
+            return;
+        }
+
         Schema::table('buyers', function (Blueprint $table) {
-             $table->integer('request_permission')->default(0);
+            $table->integer('request_permission')->default(0);
         });
     }
 

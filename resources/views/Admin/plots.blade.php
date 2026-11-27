@@ -493,7 +493,7 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        url: '/send-plot-data',
+                        url: '/send-plot-estate',
                         success: function(data) {
                             if (data.status) {
                                 Swal.fire({
@@ -521,8 +521,20 @@
                             $('#my_form button').prop('disabled', false);
                             $('#my_form button').html('Submit');
                         },
-                        error: function(data) {
-                            $('body').html(data.responseText);
+                        error: function(xhr) {
+                            var r = xhr.responseJSON;
+                            if (r && (r.message || r.errors)) {
+                                var msg = r.errors ? Object.values(r.errors).flat().join('<br>') : r.message;
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Plot not saved',
+                                    html: msg,
+                                    color: '#FFF',
+                                    background: '#452e6f',
+                                });
+                            } else {
+                                $('body').html(xhr.responseText);
+                            }
                         }
                     });
                 }
