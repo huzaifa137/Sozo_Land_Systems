@@ -20,7 +20,9 @@ public function handle(Request $request, Closure $next): Response
         // }
         
         if (!session()->has('LoggedAdmin') && !in_array($request->path(), ['/', 'login', 'privacy-policy'])) {
-    return redirect('login')->with('fail', 'You must be logged in');
+    // Own key on purpose: 'fail' is turned into a SweetAlert popup site-wide (ui-extras);
+        // this notice is shown as an inline red alert on the login page instead.
+        return redirect('login')->with('auth_required', 'You must be logged in');
 }
 
 

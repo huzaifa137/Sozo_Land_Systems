@@ -3012,7 +3012,7 @@ class Master extends Controller
 
         $user_id = $id;
 
-        $user_info = buyer::where('id', $user_id)->first();
+        $user_info = buyer::findOrFail($user_id);
         $national_id_front = buyer::where('id', $user_id)->value('national_id_front');
         $national_id_back = buyer::where('id', $user_id)->value('national_id_back');
 

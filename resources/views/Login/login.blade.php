@@ -144,6 +144,13 @@
                 <h2>Welcome back</h2>
                 <p>Sign in to manage estates, plots, receipts and agreements.</p>
 
+                @if (session('auth_required'))
+                    <div class="alert alert-danger fail" role="alert">
+                        <i class="mdi mdi-alert-outline"></i>
+                        <span>{{ session('auth_required') }}</span>
+                    </div>
+                @endif
+
                 <form action="{{ route('admin-send') }}" method="POST" id="loginForm" novalidate>
                     @csrf
                     <input type="hidden" name="user_registered_ip" value="{{ $user_registered_ip }}">
