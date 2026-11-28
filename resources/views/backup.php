@@ -1,11 +1,9 @@
-<script type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-<button type="button" class="btn btn-lg btn-primary btn-block px-4" onclick="confirmSubmission(this)">
-    <i class="fe fe-check"></i> Send
-</button>
-
+cd ~/domains/sozoestates.com/public_html
+git status                      # only the leftovers below should appear
+git pull origin main
+php artisan optimize:clear
+php artisan migrate --force     # if there are new migrations
+composer install --no-dev --optimize-autoloader   # if composer.lock changed
 
 <script type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
